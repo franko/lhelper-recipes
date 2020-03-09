@@ -2,7 +2,13 @@ WXWIDGETS_PACKAGE="wxWidgets-$2"
 enter_remote_archive "$WXWIDGETS_PACKAGE" "https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.3/$WXWIDGETS_PACKAGE.tar.bz2" "$WXWIDGETS_PACKAGE.tar.bz2" "tar xjf ARCHIVE_FILENAME"
 
 if [[ "$OSTYPE" == "linux"* ]]; then
-    BACKEND_OPTIONS=(--with-gtk=3)
+    X_OS_OPTIONS=(--with-gtk=3 --disable-unicode)
+elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
+    # on windows do not disable unicode, it doesn't work
+    X_OS_OPTIONS=(--with-msw)
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    # on MAC OS X do not disable unicode, not tested
+    X_OS_OPTIONS=(--with-osx)
 fi
 
 # Normally we may use --enable-no_exceptions but as 3.1.3 is broken because Scintilla
@@ -16,12 +22,9 @@ fi
 
 # Disable language localisation maybe.
 
-X_OPTIONS=(--disable-{svg,webkit,webview,unicode,compat30} --without-{libxpm,libiconv,gnomevfs,libnotify,opengl,dmalloc,sdl,regex,zlib,expat,libpng,libjpeg,libtiff})
+# Problem: on install we have the script wx-config that works correctly but
+# we have no pkg-config file. It would be convenient to have a pkg-config file.
 
-build_and_install configure "${X_OPTIONS[@]}" "${BACKEND_OPTIONS[@]}"
+X_OPTIONS=(--disable-{svg,webkit,webview,compat30} --without-{libxpm,libiconv,gnomevfs,libnotify,opengl,dmalloc,sdl,regex,zlib,expat,libpng,libjpeg,libtiff})
 
-# replace string like:
-# BK_DEPS = /c/fra/src/wxwidgets/bk-deps
-# with:
-# BK_DEPS = c:/fra/src/wxwidgets/bk-deps
-# find . -name 'Makefile' -exec sed -i 's/= *\/c\//= c:\//g' '{}' \;
+build_and_install configure "${X_OPTIONS[@]}" "${X_OS_OPTIONS[@]}"
