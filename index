@@ -20,3 +20,4 @@ luabridge 2.4.1-franko1
 lua 5.1.5-lhelper1
 sol2 3.2.0
 zlib 1.2.11
+libpng16 1.6.37
