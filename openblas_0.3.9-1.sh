@@ -1,12 +1,18 @@
-version="$2"
+version="${2%-*}"
 enter_git_repository OpenBLAS https://github.com/xianyi/OpenBLAS.git "v${version}"
 
 options=("DYNAMIC_ARCH=1" "NUM_THREADS=6")
-no_shared="NO_SHARED=1"
+shared=
+lapack=
+targets=("libs")
 while [ ! -z ${3+x} ]; do
     case $3 in
+	-lapack)
+	    targets+=("netlib")
+	    lapack=yes
+            ;;
         -shared)
-            no_shared=
+            shared=yes
             ;;
         -pic)
             options+=("NEED_PIC=1")
@@ -19,8 +25,15 @@ while [ ! -z ${3+x} ]; do
     shift
 done
 
-if [ -n "$no_shared" ]; then
-    options+=("$no_shared")
+if [ -z "$lapack" ]; then
+    options+=("NO_LAPACK=1")
+fi
+
+if [ -z "$shared" ]; then
+    options+=("NO_SHARED=1")
+else
+    options+=("NO_STATIC=1")
+    targets+=("shared")
 fi
 
 # Problem reported when installed, static library only: the library
@@ -36,5 +49,6 @@ fi
 # USE_THREAD=0 or 1 to force or not support for multi-threading
 # Possible target of make: libs netlib tests shared
 options+=("PREFIX=$WIN_INSTALL_PREFIX")
-make "${options[@]}" libs
+echo "using command: " make "${options[@]}" "${targets[@]}"
+make "${options[@]}" "${targets[@]}"
 make "${options[@]}" install
