@@ -3,10 +3,12 @@ check_commands make gcc
 # Options in the array below will be disabled unless they are
 # explicitly enabled.
 availables=( \
-    video render audio joystick haptic hidapi sensor power \
+    video video-opengl loadso render audio joystick haptic hidapi sensor power \
     filesystem threads timers file cpuinfo)
 
-# Problem: when loadso is not activated, like below, when compiling
+# Notes about the activation of loadso
+#
+# When loadso is not activated, when compiling
 # using "sdl2-config" --libs to link we get the error:
 # libSDL2.a(SDL_dynapi.o): undefined reference to symbol 'dlopen@@GLIBC_2.1'
 # The problem is the option -ldl is required but not included by sdl2-config.
@@ -16,18 +18,20 @@ availables=( \
 #
 # Could not create window: Failed loading libGL.so.1: SDL_LoadObject() not implemented
 #
-# We activate therefore the loadso module as it seems required for opengl.
+# We activate therefore the loadso module when opengl is enabled.
 
 # By default we build video, render and events modules
-enables=(video render events loadso sdl2-config)
+enables=(video render events sdl2-config)
+
+needs_loadso=no
 
 disables=(atomic dbus ibus ime fcitx input-tslib)
-audio_disables=(arts nas sndio fusionsound diskaudio dummyaudio libsamplerate)
+audio_disables=(jack arts nas sndio fusionsound diskaudio dummyaudio libsamplerate)
 video_disables=(video-{directfb,dummy,opengles,opengles1,opengles2,vivante})
 if [[ "$OSTYPE" == "linux"* ]]; then
     os_audio_enables=(pulseaudio)
     os_audio_disables=(oss esd "${audio_disables[@]}")
-    enables+=(video-{x11,opengl} video-x11-{xcursor,xrandr})
+    enables+=(video-x11 video-x11-{xcursor,xrandr})
     disables+=(
         "${video_disables[@]}" video-vulkan render-metal \
         video-{metal,wayland} \
@@ -35,14 +39,12 @@ if [[ "$OSTYPE" == "linux"* ]]; then
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
     os_audio_enables=(wasapi)
     os_audio_disables=("${audio_disables[@]}")
-    enables+=(directx render-d3d)
-    disables+=("${video_disables[@]}")
+    disables+=(directx render-d3d "${video_disables[@]}")
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    enables+=(cocoa video-metal render-metal)
-    disables+=("${video_disables[@]}")
+    enables+=(cocoa)
+    disables+=(video-metal render-metal "${video_disables[@]}")
 fi
 
-# TODO: handle options for other modules like haptic and others.
 options=()
 while [ ! -z ${3+x} ]; do
     case $3 in
@@ -50,21 +52,41 @@ while [ ! -z ${3+x} ]; do
         enables+=(audio "${os_audio_enables[@]}")
         disables+=("${os_audio_disables[@]}")
         ;;
+    -opengl)
+        enables+=(video-opengl)
+        needs_loadso=yes
+        ;;
     -threads)
         enables+=(threads)
         ;;
     -joystick)
         enables+=(joystick)
         ;;
+    -loadso)
+        needs_loadso=yes
+        ;;
     -filesystem)
         enables+=(filesystem)
-        ;;            
+        ;;
+    -file)
+        enables+=(file)
+        ;;
+    -threads)
+        enables+=(threads)
+        ;;
+    -cpuinfo)
+        enables+=(cpuinfo)
+        ;;
     *)
         options+=("$3")
         ;;
     esac
     shift
 done
+
+if [[ $needs_loadso == yes ]]; then
+    enables+=(loadso)
+fi
 
 all_enables="${enables[*]}"
 for opt in "${availables[@]}"; do
