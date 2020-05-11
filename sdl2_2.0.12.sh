@@ -25,24 +25,26 @@ enables=(video render events sdl2-config)
 
 needs_loadso=no
 
-disables=(atomic dbus ibus ime fcitx input-tslib)
+disables=(atomic dbus ibus ime fcitx input-tslib render-metal)
 audio_disables=(jack arts nas sndio fusionsound diskaudio dummyaudio libsamplerate)
-video_disables=(video-{directfb,dummy,opengles,opengles1,opengles2,vivante})
+video_disables=(video-{vulkan,metal,directfb,dummy,opengles,opengles1,opengles2,vivante})
 if [[ "$OSTYPE" == "linux"* ]]; then
     os_audio_enables=(pulseaudio)
     os_audio_disables=(oss esd "${audio_disables[@]}")
     enables+=(video-x11 video-x11-{xcursor,xrandr})
     disables+=(
-        "${video_disables[@]}" video-vulkan render-metal \
-        video-{metal,wayland} \
+        "${video_disables[@]}" video-wayland \
         video-x11-{xdbe,xinerama,scrnsaver,xshape,vm})
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
     os_audio_enables=(wasapi)
     os_audio_disables=("${audio_disables[@]}")
+    # On windows the default video driver is directx but windib will
+    # be used if directx is disabled. Windib is based on GDI32 and doesn't
+    # need to be explicitly enabled with configure.
     disables+=(directx render-d3d "${video_disables[@]}")
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     enables+=(cocoa)
-    disables+=(video-metal render-metal "${video_disables[@]}")
+    disables+=("${video_disables[@]}")
 fi
 
 options=()
