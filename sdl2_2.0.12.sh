@@ -1,3 +1,7 @@
+package=$1
+version=$2
+shift 2
+
 check_commands make gcc
 
 # Options in the array below will be disabled unless they are
@@ -48,8 +52,8 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 options=()
-while [ ! -z ${3+x} ]; do
-    case $3 in
+while [ ! -z ${1+x} ]; do
+    case $1 in
     -audio)
         enables+=(audio "${os_audio_enables[@]}")
         disables+=("${os_audio_disables[@]}")
@@ -80,7 +84,7 @@ while [ ! -z ${3+x} ]; do
         enables+=(cpuinfo)
         ;;
     *)
-        options+=("$3")
+        options+=("$1")
         ;;
     esac
     shift
@@ -104,6 +108,6 @@ for name in "${disables[@]}"; do
     options+=("--disable-$name")
 done
 
-SDL_ARCHIVE_NAME=SDL2-"$2"
+SDL_ARCHIVE_NAME="SDL2-$version"
 enter_remote_archive "$SDL_ARCHIVE_NAME" "http://libsdl.org/release/${SDL_ARCHIVE_NAME}.tar.gz" "${SDL_ARCHIVE_NAME}.tar.gz" "tar xzf ARCHIVE_FILENAME"
 build_and_install configure "${options[@]}"
