@@ -1,5 +1,5 @@
 package=$1
-version=$2
+version=${2%-rcp*}
 shift 2
 
 check_commands make gcc
@@ -83,6 +83,9 @@ while [ ! -z ${1+x} ]; do
     -cpuinfo)
         enables+=(cpuinfo)
         ;;
+    -timers)
+	enables+=(timers)
+	;;
     *)
         options+=("$1")
         ;;
