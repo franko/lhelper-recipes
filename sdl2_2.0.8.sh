@@ -23,9 +23,16 @@ availables=( \
 # Could not create window: Failed loading libGL.so.1: SDL_LoadObject() not implemented
 #
 # We activate therefore the loadso module when opengl is enabled.
+#
+# The module timers is very important and should be enabled whenever the
+# events subsystem is used.
+# If timers is disabled and SDL_PollEvent is used the application will use
+# 100% of the CPU. In addition the SDL_Delay function will do nothing.
+# It could be disabled if events are also disabled but this configuration
+# is not currently supported.
 
-# By default we build video, render and events modules
-enables=(video render events)
+# By default we build video, render, timers and events modules
+enables=(video render events timers)
 
 needs_loadso=no
 
@@ -83,9 +90,6 @@ while [ ! -z ${1+x} ]; do
     -cpuinfo)
         enables+=(cpuinfo)
         ;;
-    -timers)
-	enables+=(timers)
-	;;
     *)
         options+=("$1")
         ;;
