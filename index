@@ -8,7 +8,7 @@ nlopt 2.4.2
 libui alpha4.1
 luajit 2.0.5-lhelper2
 sndfile 1.0.28
-sdl2 2.0.12-rcp2
+sdl2 2.0.12-rcp3
 magnum 2019.01
 magnum-examples 2019.01
 magnum-plugins 2019.01
