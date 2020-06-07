@@ -1,0 +1,47 @@
+version="$2"
+shift 2
+check_commands perl
+
+# When using tests on MSYS2, in fuzz/test-corpus.c the build of the test fails because
+# PATH_MAX is redefined.
+options=(no-tests no-dso disable-zlib)
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -shared)
+        shared=yes
+        ;;
+    -pic)
+        pic=yes
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+if [ -z ${shared+x} ]; then
+    options+=("no-shared")
+fi
+
+if [ -z ${pic+x} ]; then
+    options+=("no-pic")
+fi
+
+case ${BUILD_TYPE,,} in
+release)
+    options+=(--release)
+    ;;
+*)
+    options+=(--debug)
+    ;;
+esac
+
+# we use a global directory for the ssl directory, not one for each environement.
+options+=("--prefix=$INSTALL_PREFIX" "--openssldir=${LHELPER_PREFIX}/ssl")
+
+enter_git_repository openssl https://github.com/openssl/openssl.git "OpenSSL_${version//./_}"
+./config "${options[@]}"
+make
+make install
+
