@@ -1,4 +1,4 @@
-version="${2%-rcp*}"
+version="$2"
 check_commands gcc
 enter_git_repository OpenBLAS https://github.com/xianyi/OpenBLAS.git "v${version}"
 

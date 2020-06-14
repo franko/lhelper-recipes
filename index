@@ -8,14 +8,14 @@ nlopt 2.4.2
 libui alpha4.1
 luajit 2.0.5-lhelper2
 sndfile 1.0.28
-sdl2 2.0.12-rcp3
+sdl2 2.0.12
 magnum 2019.01
 magnum-examples 2019.01
 magnum-plugins 2019.01
 libgit2 0.27.7
 glew 2.1.0
 wxwidgets 3.1.3
-openblas 0.3.9-rcp2
+openblas 0.3.9
 luabridge 2.4.1-franko1
 lua 5.1.5-lhelper1
 sol2 3.2.0

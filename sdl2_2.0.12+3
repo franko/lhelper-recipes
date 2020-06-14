@@ -1,5 +1,5 @@
 package=$1
-version=${2%-rcp*}
+version=$2
 shift 2
 
 check_commands make gcc
