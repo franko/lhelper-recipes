@@ -1,5 +1,5 @@
 package=$1
-version=${2%-rcp*}
+version=$2
 shift 2
 
 check_commands make gcc
@@ -31,8 +31,8 @@ availables=( \
 # It could be disabled if events are also disabled but this configuration
 # is not currently supported.
 
-# By default we build video, render, timers and events modules
-enables=(video render events timers)
+# By default we build video, timers and events modules
+enables=(video events timers)
 
 needs_loadso=no
 
@@ -89,6 +89,9 @@ while [ ! -z ${1+x} ]; do
         ;;
     -cpuinfo)
         enables+=(cpuinfo)
+        ;;
+    -render)
+        enables+=(render)
         ;;
     *)
         options+=("$1")
