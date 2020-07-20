@@ -1,0 +1,2 @@
+enter_git_repository dealii https://github.com/dealii/dealii.git "v$2"
+build_and_install cmake "${@:3}"
