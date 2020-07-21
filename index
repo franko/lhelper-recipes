@@ -25,3 +25,4 @@ blas 3.8.0-netlib1
 microui 2.01-lhelper1
 stb-truetype 1.24
 openssl 1.1.1g
+dealii 9.2.0
