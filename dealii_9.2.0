@@ -1,2 +1,7 @@
 enter_git_repository dealii https://github.com/dealii/dealii.git "v$2"
-build_and_install cmake "${@:3}"
+# The build takes a lot of memory so to limit the risk of thrashing
+# the system we limit the build to a single thread.
+# If should be safe to use parallel build on system that has
+# Memory(Gb) > (N + 2) * 4
+# where N is the number of cores.
+CMAKE_BUILD_PARALLEL_LEVEL=1 build_and_install cmake "${@:3}"
