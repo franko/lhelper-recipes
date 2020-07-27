@@ -1,4 +1,11 @@
 enter_git_repository dealii https://github.com/dealii/dealii.git "v$2"
+
+# RECIPE known problems:
+# The generated pkg-config file is names deal.II_release which seems unorthodox
+# at least because of the "_release" suffix.
+# The pkg-config file also seems to be installed in the wrong path on
+# Linux.
+
 # The build takes a lot of memory so to limit the risk of thrashing
 # the system we limit the build to a single thread.
 # If should be safe to use parallel build on system that has
@@ -6,7 +13,7 @@ enter_git_repository dealii https://github.com/dealii/dealii.git "v$2"
 # where N is the number of cores.
 
 # Creating a shared library on Windows does not work because there
-# are too manu exporting symbols.
+# are too many exported symbols.
 
 use_shared=
 for option in "${@:3}"; do
@@ -15,7 +22,10 @@ for option in "${@:3}"; do
     fi
 done
 
-add_options=("-DDEAL_II_SETUP_DEFAULT_COMPILER_FLAGS=OFF")
+# We use CMAKE_ENABLE_EXPORTES to FALSE because otherwise the linker is invoked
+# with the option --export-all-symbols on Windows and the link fails because
+# there are too many symbols.
+add_options=("-DDEAL_II_COMPONENT_EXAMPLES=OFF" "-DCMAKE_ENABLE_EXPORTS=FALSE" "-DDEAL_II_SETUP_DEFAULT_COMPILER_FLAGS=OFF")
 if [ -z "$use_shared" ]; then
     add_options+=("-DDEAL_II_STATIC_EXECUTABLE=ON")
 fi
