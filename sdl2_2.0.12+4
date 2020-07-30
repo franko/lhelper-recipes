@@ -120,4 +120,15 @@ done
 
 SDL_ARCHIVE_NAME="SDL2-$version"
 enter_remote_archive "$SDL_ARCHIVE_NAME" "http://libsdl.org/release/${SDL_ARCHIVE_NAME}.tar.gz" "${SDL_ARCHIVE_NAME}.tar.gz" "tar xzf ARCHIVE_FILENAME"
+
+# There seems to be a bug in the configure script that prevent it
+# to succeed testing the compiler when there is a non empty CFLAGS.
+# As a work-around add a final space in CFLAGS if it is not empty.
+if [ ! -z "$CFLAGS" ]; then
+    CFLAGS="${CFLAGS} "
+fi
+if [ ! -z "$CXXFLAGS" ]; then
+    CXXFLAGS="${CXXFLAGS} "
+fi
+
 build_and_install configure "${options[@]}"
