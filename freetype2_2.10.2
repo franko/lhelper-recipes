@@ -26,13 +26,6 @@ for name in "${with_list[@]}"; do
     fi
 done
 
-# There seems to be a bug in the configure script that prevent it
-# to succeed testing the compiler when there is a non empty CFLAGS.
-# As a work-around add a final space in CFLAGS if it is not empty.
-if [ ! -z "$CFLAGS" ]; then
-    CFLAGS="${CFLAGS} "
-fi
-
 # Note for 2.10.2 the gz file seems wrong because gzipped twice,
 # use xz instead.
 zip=xz
