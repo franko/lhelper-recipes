@@ -1,0 +1,50 @@
+# Boost source archive use underscores instead of points.
+version="${2//./_}"
+shift 2
+
+function join_by { local IFS="$1"; shift; echo "$*"; }
+
+libraries=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -shared|-pic)
+        # Ignore these options. No known way to pass these option to
+        # Boost's build system.
+        ;;
+    -icu)
+        icu=yes
+        ;;
+    -all)
+        all=yes
+        ;;
+    -*)
+        libraries+=("${1#-}")
+        ;;
+    *)
+        echo "Unknown option $1"
+        exit 1
+        ;;
+    esac
+    shift
+done
+
+options=()
+if [ -z ${icu+x} ]; then
+    options+=(--without-icu)
+fi
+
+if [ -z ${all+x} ]; then
+    libraries_opt=$(join_by , ${libraries[@]})
+else
+    echo "Building Boost with all libraries."
+    libraries_opt=all
+fi
+
+enter_remote_archive "boost_${version}" "https://dl.bintray.com/boostorg/release/1.74.0/source/boost_${version}.tar.gz" "boost_${version}.tar.gz" "tar xf ARCHIVE_FILENAME"
+./bootstrap.sh "${options[@]}" --with-libraries=${libraries_opt} --prefix=${WIN_INSTALL_PREFIX} || echo
+# Use a "if" below to avoid terminating on error when calling ./b2.
+# The script b2 can terminate with error just because it skipped some targets.
+if ./b2 install; then
+    echo done
+fi
+
