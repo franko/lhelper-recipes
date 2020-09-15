@@ -4,6 +4,16 @@ build_and_install cmake "${@:3}"
 
 PKG_NAME=eigen
 
+# Eigen is a header library so there are no compile options.
+# It can use with BLAS and LAPACK for some function by defining the
+# variables 'EIGEN_USE_BLAS' and 'EIGEN_USE_LAPACKE' before including the
+# Eigen headers. In this case the application should be linked with the BLAS
+# and LAPACK libraries.
+
+# In alternative (or may be in addition) to what described above Eigen can
+# use OpenMP by linking to 'openmp'.
+# See http://eigen.tuxfamily.org/dox/TopicMultiThreading.htm for more details.
+
 # Warning, since the 'EOF' below is unquoted shell variables substitutions
 # will be done on the text body. The '$' should be therefore escaped to
 # avoid shell substitution when needed.
