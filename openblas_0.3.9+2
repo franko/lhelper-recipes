@@ -22,7 +22,7 @@ while [ ! -z ${1+x} ]; do
             options+=("NEED_PIC=1")
             ;;
         *)
-            echo "lhelper openblas recipe error: unknown option \"$3\""
+            echo "lhelper openblas recipe error: unknown option \"$1\""
             exit 1
             ;;
     esac
