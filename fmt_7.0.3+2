@@ -1,6 +1,6 @@
 version="$2"
 enter_git_repository fmt https://github.com/fmtlib/fmt.git "${version}"
-build_and_install cmake "${@:3}"
+build_and_install cmake -DFMT_TEST=OFF "${@:3}"
 
 PKG_NAME=fmt
 
