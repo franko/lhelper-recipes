@@ -10,12 +10,13 @@ PKG_NAME=fmt
 cat << EOF > "${PKG_NAME}.pc"
 prefix=${WIN_INSTALL_PREFIX}
 includedir=\${prefix}/include
+libdir=\${prefix}/lib
 
 Name: ${PKG_NAME}
 Description: A C++ open-source formatting library
 Version: ${version}
 
-Libs:
+Libs: -L\${libdir} -lfmt
 Cflags: -I\${includedir}
 EOF
 
