@@ -1,0 +1,23 @@
+version="$2"
+enter_git_repository fmt https://github.com/fmtlib/fmt.git "${version}"
+build_and_install cmake "${@:3}"
+
+PKG_NAME=fmt
+
+# Warning, since the 'EOF' below is unquoted shell variables substitutions
+# will be done on the text body. The '$' should be therefore escaped to
+# avoid shell substitution when needed.
+cat << EOF > "${PKG_NAME}.pc"
+prefix=${WIN_INSTALL_PREFIX}
+includedir=\${prefix}/include
+
+Name: ${PKG_NAME}
+Description: A C++ open-source formatting library
+Version: ${version}
+
+Libs:
+Cflags: -I\${includedir}
+EOF
+
+install_pkgconfig_file "${PKG_NAME}.pc"
+
