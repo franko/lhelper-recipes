@@ -27,7 +27,7 @@ stb-truetype 1.24
 openssl 1.1.1g
 dealii 9.2.0
 fltk 1.3.5
-eigen 3.3.7
+eigen3 3.3.7
 boost 1.74.0
 fftw3 3.3.8
 fmt 7.0.3
