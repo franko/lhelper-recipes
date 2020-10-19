@@ -31,3 +31,5 @@ eigen3 3.3.7
 boost 1.74.0
 fftw3 3.3.8
 fmt 7.0.3
+cmake 3.18.4
+hdf5 1.12.0
