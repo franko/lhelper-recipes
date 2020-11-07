@@ -1,0 +1,51 @@
+version="$2"
+shift 2
+
+# Inside the "auto" directory there are some Perl scripts to be
+# executed. The author also mention using Python.
+# On linux it is required to enter the "auto" directory and run "make".
+# It may be not needed on Windows.
+check_commands make gcc perl python
+
+enter_git_repository glew https://github.com/nigels-com/glew.git "glew-$version"
+
+echo "Applying patch glew-remove-nostdlib-flag"
+inside_git_apply_patch "glew-remove-nostdlib-flag"
+
+lib_target="glew.lib.static"
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -shared)
+        lib_target="glew.lib.shared"
+        ;;
+    *)
+        echo "error: option not available for this recipe: \"$1\""
+        exit 1
+        ;;
+    esac
+    shift
+done
+
+# It is possible to use SYSTEM variable to choose a toolchain
+# but the system seems to autodetect the system so the variable
+# SYSTEM can be left undefined.
+#
+#uname_out="$(uname -s)"
+#if [[ $uname_out =~ (MINGW32[^\-]+-[^\-]+) ]]; then
+#    export SYSTEM="mingw-win32"
+#elif [[ $uname_out =~ (MINGW64[^\-]+-[^\-]+) ]]; then
+#    export SYSTEM="msys-win64"
+#fi
+
+# FIXME: even if building only glew.lib.static the target "bin" or
+# "install.lib" will trigger the build of the shared library.
+# In addition, on debian based systems, the shared library is installed
+# in the wrong directory and glewinfo won't run due to missing shared
+# library.
+
+export GLEW_DEST="${INSTALL_PREFIX}"
+make extensions
+make "$lib_target" # bin
+# make install.pkgconfig
+make install.all
+
