@@ -1,0 +1,13 @@
+#!/bin/bash
+version="$2"
+enter_git_repository gcc https://github.com/gcc-mirror/gcc.git "releases/gcc-$2"
+
+# Instructions from https://gcc.gnu.org/wiki/InstallingGCC
+
+bash contrib/download_prerequisites
+# FIXME: use at least: --enable-languages=c,c++,fortran
+# Enable go as an option.
+./configure --prefix="$INSTALL_PREFIX" --enable-languages=c
+make
+make install
+
