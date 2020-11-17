@@ -1,0 +1,16 @@
+version=$2
+enter_git_repository ninja https://github.com/ninja-build/ninja.git "v$2"
+
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
+  build_options=("--platform=mingw")
+  NINJA_EXE="ninja.exe"
+else
+  build_options=()
+  NINJA_EXE="ninja"
+fi
+
+./configure.py --bootstrap "${build_options[@]}"
+
+mkdir -p "$DESTDIR$INSTALL_PREFIX/bin"
+cp "$NINJA_EXE" "$DESTDIR$INSTALL_PREFIX/bin"
+
