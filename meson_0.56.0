@@ -1,0 +1,23 @@
+#!/bin/bash
+package=$1
+version=$2
+shift 2
+
+check_commands python3
+
+version_output=($(python3 --version))
+pymajver=${version_output[1]%.*}
+
+# To be able to install meson we need to have the wheel and setuptools
+# packages.
+
+# DOES NOT WORK if some python packages are not available.
+# It requires additional lhelper's support to configure PYTHONPATH
+# to somehing like:
+#
+# "${INSTALL_PREFIX}/lib/python${pymajver}/site-packages"
+
+enter_git_repository meson https://github.com/mesonbuild/meson.git "$version"
+mkdir -p "${INSTALL_PREFIX}/lib/python${pymajver}/site-packages"
+python3 setup.py install --prefix="${WIN_INSTALL_PREFIX}"
+
