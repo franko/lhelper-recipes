@@ -1,5 +1,5 @@
 version="$2"
-enter_remote_archive "zlib-${version}" "https://www.zlib.net/zlib-${version}.tar.gz" "zlib-${version}.tar.gz" "tar xf ARCHIVE_FILENAME"
+enter_archive "https://www.zlib.net/zlib-${version}.tar.gz"
 
 use_static="yes"
 while [ ! -z ${3+x} ]; do

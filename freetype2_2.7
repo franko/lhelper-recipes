@@ -1,5 +1,5 @@
 FREETYPE_VERSION="$2"
-enter_remote_archive "freetype-${FREETYPE_VERSION}" "http://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.gz" "freetype-${FREETYPE_VERSION}.tar.gz" "tar xzf ARCHIVE_FILENAME"
+enter_archive "http://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.gz"
 
 pic_option="OFF"
 while [ ! -z ${3+x} ]; do

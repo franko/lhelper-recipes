@@ -119,5 +119,5 @@ for name in "${disables[@]}"; do
 done
 
 SDL_ARCHIVE_NAME="SDL2-$version"
-enter_remote_archive "$SDL_ARCHIVE_NAME" "http://libsdl.org/release/${SDL_ARCHIVE_NAME}.tar.gz" "${SDL_ARCHIVE_NAME}.tar.gz" "tar xzf ARCHIVE_FILENAME"
+enter_archive "http://libsdl.org/release/${SDL_ARCHIVE_NAME}.tar.gz"
 build_and_install configure "${options[@]}"

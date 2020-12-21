@@ -3,5 +3,5 @@ version="$2"
 # on Windows using a proxy. The SSL certificate check is disabled and
 # redirects are enabled with curl but it does not work.
 # Use github source code repository instead: glennrp/libpng.
-enter_remote_archive "libpng-${version}" "https://github.com/glennrp/libpng/archive/v${version}.tar.gz" "libpng-${version}.tar.gz" "tar xf ARCHIVE_FILENAME"
+enter_archive "https://github.com/glennrp/libpng/archive/v${version}.tar.gz"
 build_and_install configure "${@:3}"

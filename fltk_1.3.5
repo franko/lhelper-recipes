@@ -36,5 +36,5 @@ for name in "${enables_list[@]}"; do
     fi
 done
 
-enter_remote_archive "fltk-${version}" "https://www.fltk.org/pub/fltk/1.3.5/fltk-${version}-source.tar.gz" "fltk-${version}.tar.gz" "tar xf ARCHIVE_FILENAME"
+enter_archive "https://www.fltk.org/pub/fltk/${version}/fltk-${version}-source.tar.gz"
 build_and_install configure "${options[@]}"

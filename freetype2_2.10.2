@@ -29,5 +29,5 @@ done
 # Note for 2.10.2 the gz file seems wrong because gzipped twice,
 # use xz instead.
 zip=xz
-enter_remote_archive "freetype-${version}" "http://download.savannah.gnu.org/releases/freetype/freetype-${version}.tar.$zip" "freetype-${version}.tar.$zip" "tar xf ARCHIVE_FILENAME"
+enter_archive "http://download.savannah.gnu.org/releases/freetype/freetype-${version}.tar.$zip"
 build_and_install configure "${options[@]}"

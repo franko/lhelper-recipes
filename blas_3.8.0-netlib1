@@ -1,5 +1,5 @@
 version="${2%-netlib*}"
-enter_remote_archive "BLAS-${version}" "http://www.netlib.org/blas/blas-${version}.tgz" "blas-${version}.tar.gz" "tar xf ARCHIVE_FILENAME"
+enter_archive "http://www.netlib.org/blas/blas-${version}.tgz"
 options=()
 while [ ! -z ${3+x} ]; do
     case $3 in

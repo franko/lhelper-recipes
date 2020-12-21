@@ -1,4 +1,4 @@
 version="$2"
-enter_remote_archive "eigen-${version}" "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-${version}.tar.gz" "eigen-${version}.tar.gz" "tar xf ARCHIVE_FILENAME"
+enter_archive "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-${version}.tar.gz"
 build_and_install cmake "${@:3}"
 

@@ -1,5 +1,5 @@
 version="$2"
-enter_remote_archive "fftw-$version" "http://www.fftw.org/fftw-$version.tar.gz" "fftw-$version.tar.gz" "tar xf ARCHIVE_FILENAME"
+enter_archive "http://www.fftw.org/fftw-$version.tar.gz"
 
 options=(--disable-fortran)
 
@@ -8,4 +8,3 @@ options=(--disable-fortran)
 # because otherwise they are detected based on the current CPU.
 
 build_and_install configure "${options[@]}" "${@:3}"
-
