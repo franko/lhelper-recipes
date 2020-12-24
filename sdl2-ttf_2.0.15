@@ -1,0 +1,6 @@
+version="$2"
+# Main page: https://www.libsdl.org/projects/SDL_ttf/
+# Mercurial repository: http://hg.libsdl.org/SDL_ttf/
+# Documentation: https://www.libsdl.org/projects/SDL_ttf/docs/index.html
+enter_archive "https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-${version}.tar.gz"
+build_and_install configure "${@:3}"
