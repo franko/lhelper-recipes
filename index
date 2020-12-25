@@ -37,3 +37,4 @@ ninja 1.10.1
 glib 2.66.4
 sdl2-ttf 2.0.15
 stb-image 2.26
+glfw3 3.3.2
