@@ -1,4 +1,4 @@
-enter_git_repository dealii https://github.com/dealii/dealii.git "v$2"
+enter_git_repository https://github.com/dealii/dealii.git "v$version"
 
 # RECIPE known problems:
 # The generated pkg-config file is names deal.II_release which seems unorthodox
@@ -16,8 +16,8 @@ enter_git_repository dealii https://github.com/dealii/dealii.git "v$2"
 # are too many exported symbols.
 
 use_shared=
-for option in "${@:3}"; do
-    if [ "$option" == "-shared" ]; then
+for option in "$@"; do
+    if [ "$option" == "-shared"@hen
         use_shared=true
     fi
 done
@@ -48,4 +48,4 @@ index 44bb1a523b..4ef003fc6f 100644
        "\nCygwin and forks such as MinGW and MinGW-64 are unsupported due to "
 EOF
 
-CMAKE_BUILD_PARALLEL_LEVEL=1 build_and_install cmake "${add_options[@]}" "${@:3}"
+CMAKE_BUILD_PARALLEL_LEVEL=1 build_and_install cmake "${add_options[@]}" "$@"

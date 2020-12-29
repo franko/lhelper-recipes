@@ -1,3 +1,2 @@
-version=$2
-enter_git_repository hdf5 https://github.com/HDFGroup/hdf5.git "hdf5-${version//./_}"
-build_and_install cmake "${@:3}"
+enter_git_repository https://github.com/HDFGroup/hdf5.git "hdf5-${version//./_}"
+build_and_install cmake "$@"

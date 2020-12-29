@@ -1,5 +1,4 @@
-version=$2
-enter_git_repository ninja https://github.com/ninja-build/ninja.git "v$2"
+enter_git_repository https://github.com/ninja-build/ninja.git "v${version}"
 
 if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
   build_options=("--platform=mingw")

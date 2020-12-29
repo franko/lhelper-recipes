@@ -1,6 +1,3 @@
-version=$2
-shift 2
-
 options=()
 shared=disabled
 while [ ! -z ${1+x} ]; do
@@ -15,5 +12,5 @@ while [ ! -z ${1+x} ]; do
     shift
 done
 
-enter_git_repository lua https://github.com/franko/lua.git "v${version}-6"
+enter_git_repository https://github.com/franko/lua.git "v${version}-6"
 build_and_install meson -Dshared="$shared" "${options[@]}"

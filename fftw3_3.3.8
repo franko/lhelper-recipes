@@ -1,4 +1,3 @@
-version="$2"
 enter_archive "http://www.fftw.org/fftw-$version.tar.gz"
 
 options=(--disable-fortran)
@@ -7,4 +6,4 @@ options=(--disable-fortran)
 # In principe the options above with enable or disable should be all specified
 # because otherwise they are detected based on the current CPU.
 
-build_and_install configure "${options[@]}" "${@:3}"
+build_and_install configure "${options[@]}" "$@"

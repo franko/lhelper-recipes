@@ -1,3 +1,2 @@
-GSL_VERSION="gsl-$2"
-enter_archive "http://ftpmirror.gnu.org/gsl/${GSL_VERSION}.tar.gz"
-build_and_install configure "${@:3}"
+enter_archive "http://ftpmirror.gnu.org/gsl/gsl-${version}.tar.gz"
+build_and_install configure "$@"

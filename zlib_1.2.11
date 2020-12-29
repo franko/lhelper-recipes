@@ -1,9 +1,8 @@
-version="$2"
 enter_archive "https://www.zlib.net/zlib-${version}.tar.gz"
 
 use_static="yes"
-while [ ! -z ${3+x} ]; do
-    case $3 in
+while [ ! -z ${1+x} ]; do
+    case $1 in
         -shared)
             use_static="no"
             ;;
@@ -11,7 +10,7 @@ while [ ! -z ${3+x} ]; do
             CFLAGS+=" -fPIC"
             ;;
         *)
-            echo "error: unknown option \"$3\" in package recipe"
+            echo "error: unknown option \"$1\" in package recipe"
             exit 1
             ;;
     esac

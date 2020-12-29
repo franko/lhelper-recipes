@@ -1,7 +1,6 @@
-version="$2"
 # No longer use the sourceforge download because it does no longer works
 # on Windows using a proxy. The SSL certificate check is disabled and
 # redirects are enabled with curl but it does not work.
 # Use github source code repository instead: glennrp/libpng.
 enter_archive "https://github.com/glennrp/libpng/archive/v${version}.tar.gz"
-build_and_install configure "${@:3}"
+build_and_install configure "$@"

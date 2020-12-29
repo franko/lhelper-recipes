@@ -1,4 +1,3 @@
-version="$2"
 enter_archive "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-${version}.tar.gz"
-build_and_install cmake "${@:3}"
+build_and_install cmake "$@"
 

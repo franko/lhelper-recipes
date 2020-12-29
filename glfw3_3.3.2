@@ -1,3 +1,3 @@
-enter_git_repository glfw https://github.com/glfw/glfw.git "$2"
+enter_git_repository https://github.com/glfw/glfw.git "$version"
 # Not tested on Windows but based on the instructions it should work.
-build_and_install cmake "${@:3}"
+build_and_install cmake "$@"

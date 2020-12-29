@@ -1,8 +1,8 @@
-version="${2%-netlib*}"
+version="${version%-netlib*}"
 enter_archive "http://www.netlib.org/blas/blas-${version}.tgz"
 options=()
-while [ ! -z ${3+x} ]; do
-    case $3 in
+while [ ! -z ${1+x} ]; do
+    case $1 in
         -shared)
             echo "error: -shared option not supported"
             exit 1
@@ -11,7 +11,7 @@ while [ ! -z ${3+x} ]; do
             options+=("-fPIC")
             ;;
         *)
-            echo "error: unknown option \"$3\" in package recipe"
+            echo "error: unknown option \"$1\" in package recipe"
             exit 1
             ;;
     esac

@@ -1,4 +1,4 @@
-enter_git_repository sol2 https://github.com/ThePhD/sol2.git "v$2"
+enter_git_repository https://github.com/ThePhD/sol2.git "v${version}"
 
 python3 single/single.py
 
@@ -18,7 +18,7 @@ includedir=\${prefix}/include
 
 Name: ${PKG_NAME}
 Description: Sol2 C++ to Lua API wrapper
-Version: $2
+Version: "${version}"
 
 Libs: 
 Cflags: -I\${includedir}

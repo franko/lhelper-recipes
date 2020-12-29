@@ -1,3 +1,2 @@
-NLOPT_VERSION="$2"
-enter_archive "https://github.com/stevengj/nlopt/releases/download/nlopt-$NLOPT_VERSION/nlopt-$NLOPT_VERSION.tar.gz"
-build_and_install configure "${@:3}"
+enter_archive "https://github.com/stevengj/nlopt/releases/download/nlopt-${version}/nlopt-${version}.tar.gz"
+build_and_install configure "$@"

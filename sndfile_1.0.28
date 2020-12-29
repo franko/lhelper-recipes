@@ -1,3 +1,2 @@
-SNDFILE_PACKAGE=libsndfile-"$2"
-enter_archive "http://www.mega-nerd.com/libsndfile/files/$SNDFILE_PACKAGE.tar.gz"
+enter_archive "http://www.mega-nerd.com/libsndfile/files/libsndfile-${version}.tar.gz"
 build_and_install configure --disable-{sqlite,alsa,octave} --enable-shared=no

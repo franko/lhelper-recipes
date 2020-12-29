@@ -1,8 +1,5 @@
-version="$2"
-shift 2
-
 check_commands gcc
-enter_git_repository OpenBLAS https://github.com/xianyi/OpenBLAS.git "v${version}"
+enter_git_repository https://github.com/xianyi/OpenBLAS.git "v${version}"
 
 options=("DYNAMIC_ARCH=1" "NUM_THREADS=6")
 shared=

@@ -7,5 +7,5 @@ luabridge_install () {
     cp -r Source/LuaBridge "$INSTALL_PREFIX/include"
 }
 
-enter_git_repository LuaBridge https://github.com/vinniefalco/LuaBridge.git "$2" --recurse-submodules
+enter_git_repository https://github.com/vinniefalco/LuaBridge.git "$version" --recurse-submodules
 luabridge_install

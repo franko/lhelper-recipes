@@ -1,5 +1,3 @@
-version="$2"
-shift 2
 check_commands perl
 
 # When using tests on MSYS2, in fuzz/test-corpus.c the build of the test fails because
@@ -40,7 +38,7 @@ esac
 # we use a global directory for the ssl directory, not one for each environement.
 options+=("--prefix=$INSTALL_PREFIX" "--openssldir=${LHELPER_PREFIX}/ssl")
 
-enter_git_repository openssl https://github.com/openssl/openssl.git "OpenSSL_${version//./_}"
+enter_git_repository https://github.com/openssl/openssl.git "OpenSSL_${version//./_}"
 ./config "${options[@]}"
 make
 make install

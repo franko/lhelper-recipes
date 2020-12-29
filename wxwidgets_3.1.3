@@ -1,5 +1,4 @@
-WXWIDGETS_PACKAGE="wxWidgets-$2"
-enter_archive "https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.3/$WXWIDGETS_PACKAGE.tar.bz2"
+enter_archive "https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.3/wxWidgets-${version}.tar.bz2"
 
 if [[ "$OSTYPE" == "linux"* ]]; then
     X_OS_OPTIONS=(--with-gtk=3 --disable-unicode)

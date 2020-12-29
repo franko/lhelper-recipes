@@ -1,10 +1,9 @@
-version="$2"
-enter_git_repository OpenBLAS https://github.com/xianyi/OpenBLAS.git "v${version}"
+enter_git_repository https://github.com/xianyi/OpenBLAS.git "v${version}"
 
 options=("DYNAMIC_ARCH=1")
 no_shared="NO_SHARED=1"
-while [ ! -z ${3+x} ]; do
-    case $3 in
+while [ ! -z ${1+x} ]; do
+    case $1 in
         -shared)
             no_shared=
             ;;
@@ -12,7 +11,7 @@ while [ ! -z ${3+x} ]; do
             options+=("NEED_PIC=1")
             ;;
         *)
-            echo "lhelper openblas recipe error: unknown option \"$3\""
+            echo "lhelper openblas recipe error: unknown option \"$1\""
             exit 1
             ;;
     esac

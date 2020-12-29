@@ -1,6 +1,5 @@
 # Boost source archive use underscores instead of points.
-version="${2//./_}"
-shift 2
+version="${version//./_}"
 
 function join_by { local IFS="$1"; shift; echo "$*"; }
 

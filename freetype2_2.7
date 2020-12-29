@@ -1,9 +1,8 @@
-FREETYPE_VERSION="$2"
-enter_archive "http://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.gz"
+enter_archive "http://download.savannah.gnu.org/releases/freetype/freetype-${version}.tar.gz"
 
 pic_option="OFF"
-while [ ! -z ${3+x} ]; do
-    case $3 in
+while [ ! -z ${1+x} ]; do
+    case $1 in
         -shared | -pic)
             pic_option="ON"
             ;;
