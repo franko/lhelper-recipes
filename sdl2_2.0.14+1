@@ -5,7 +5,7 @@ check_commands make gcc
 # explicitly enabled.
 availables=( \
     video video-opengl loadso render audio joystick haptic hidapi sensor power \
-    filesystem threads timers file cpuinfo)
+    filesystem threads timers file cpuinfo ime)
 
 # Notes about the activation of loadso
 #
@@ -33,12 +33,12 @@ enables=(video events timers sdl2-config)
 
 needs_loadso=no
 
-disables=(atomic dbus ibus ime fcitx render-metal)
-audio_disables=(jack arts nas sndio fusionsound diskaudio dummyaudio libsamplerate)
+disables=(atomic dbus ibus fcitx render-metal)
+audio_disables=(jack arts nas fusionsound)
 video_disables=(video-{vulkan,metal,directfb,dummy,opengles,opengles1,opengles2,vivante})
 if [[ "$OSTYPE" == "linux"* ]]; then
     os_audio_enables=(pulseaudio)
-    os_audio_disables=(oss esd "${audio_disables[@]}")
+    os_audio_disables=(esd "${audio_disables[@]}")
     enables+=(video-x11 video-x11-{xcursor,xrandr})
     disables+=(
         "${video_disables[@]}" video-wayland \
@@ -92,6 +92,18 @@ while [ ! -z ${1+x} ]; do
         ;;
     -render)
         enables+=(render)
+        ;;
+    -haptic)
+        enables+=(haptic)
+        ;;
+    -sensor)
+        enables+=(sensor)
+        ;;
+    -hidapi)
+        enables+=(hidapi)
+        ;;
+    -ime)
+        enables+=(ime)
         ;;
     *)
         options+=("$1")
