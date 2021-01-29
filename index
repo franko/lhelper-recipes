@@ -42,3 +42,4 @@ sdl2-net 2.0.1
 stb-image 2.26
 glfw3 3.3.2
 libjpeg 9d
+cppcheck 2.3
