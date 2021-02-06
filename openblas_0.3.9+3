@@ -1,0 +1,61 @@
+check_commands gcc
+enter_git_repository https://github.com/xianyi/OpenBLAS.git "v${version}"
+
+options=("DYNAMIC_ARCH=1" "NUM_THREADS=32")
+shared=
+lapack=
+targets=("libs")
+while [ ! -z ${1+x} ]; do
+    case $1 in
+	-lapack)
+	    targets+=("netlib")
+	    lapack=yes
+	    check_commands gfortran
+            ;;
+        -shared)
+            shared=yes
+            ;;
+        -pic)
+            options+=("NEED_PIC=1")
+            ;;
+        *)
+            echo "lhelper openblas recipe error: unknown option \"$1\""
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+if [ -z "$lapack" ]; then
+    options+=("NO_LAPACK=1")
+fi
+
+if [ -z "$shared" ]; then
+    options+=("NO_SHARED=1")
+else
+    options+=("NO_STATIC=1")
+    targets+=("shared")
+fi
+
+# Problem reported when installed, static library only: the library
+# require pthread library to link but the pkg-config --libs does not
+# report the options to include the pthread library.
+
+# TODO: take into account options
+# DEBUG=1 can be passed to make to enable debug version
+# TARGET=NEHALEM can be used to set a specific CPU
+# DYNAMIC_ARCH=1 All kernel will be included in the library and dynamically switched
+# the best architecutre at run time.
+# BINARY=32 or 64 can be used to choose 32 or 64 bit support
+# USE_THREAD=0 or 1 to force or not support for multi-threading
+# Possible target of make: libs netlib tests shared
+options+=("PREFIX=$WIN_INSTALL_PREFIX")
+
+while IFS= read -r line; do
+    echo "${line/-lopenblas/-lopenblas -lpthread}"
+done < "openblas.pc.in" > "openblas.pc.tmp"
+rm "openblas.pc.in" && mv "openblas.pc.tmp" "openblas.pc.in"
+
+echo "using command: " make "${options[@]}" "${targets[@]}"
+make "${options[@]}" "${targets[@]}"
+make "${options[@]}" install

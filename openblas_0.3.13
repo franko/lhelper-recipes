@@ -1,7 +1,8 @@
+#!/bin/bash
 check_commands gcc
 enter_git_repository https://github.com/xianyi/OpenBLAS.git "v${version}"
 
-options=("DYNAMIC_ARCH=1" "NUM_THREADS=6")
+options=("DYNAMIC_ARCH=1" "NUM_THREADS=32")
 shared=
 lapack=
 targets=("libs")
@@ -50,6 +51,12 @@ fi
 # USE_THREAD=0 or 1 to force or not support for multi-threading
 # Possible target of make: libs netlib tests shared
 options+=("PREFIX=$WIN_INSTALL_PREFIX")
+
+while IFS= read -r line; do
+    echo "${line/-lopenblas/-lopenblas -lpthread}"
+done < "openblas.pc.in" > "openblas.pc.tmp"
+rm "openblas.pc.in" && mv "openblas.pc.tmp" "openblas.pc.in"
+
 echo "using command: " make "${options[@]}" "${targets[@]}"
 make "${options[@]}" "${targets[@]}"
 make "${options[@]}" install
