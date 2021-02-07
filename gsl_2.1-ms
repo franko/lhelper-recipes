@@ -1,0 +1,21 @@
+#!/bin/bash
+enter_git_repository "https://github.com/franko/gsl.git" "v${version%-ms}"
+
+options=()
+while [ ! -z ${1+x} ]; do
+  case $1 in
+	-blas=*)
+    options+=("${1/#-/-D}")
+    ;;
+	-shared | -pic)
+    options+=("$1")
+    ;;
+	*)
+    echo "recipe ${package} ${version}: unknown option \"$1\""
+    exit 1
+    ;;
+  esac
+  shift
+done
+
+build_and_install meson "${options[@]}"
