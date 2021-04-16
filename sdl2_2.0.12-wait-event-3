@@ -29,13 +29,13 @@ availables=( \
 # is not currently supported.
 
 # By default we build video, timers and events modules
-enables=(video events timers sdl2-config)
+enables=(video events timers assembly sdl2-config)
 
 needs_loadso=no
 
-disables=(atomic dbus ibus fcitx render-metal)
+disables=(atomic dbus ibus fcitx)
 audio_disables=(jack arts nas fusionsound)
-video_disables=(video-{vulkan,metal,directfb,dummy,opengles,opengles1,opengles2,vivante})
+video_disables=(video-{vulkan,directfb,dummy,opengles,opengles1,opengles2,vivante})
 if [[ "$OSTYPE" == "linux"* ]]; then
     os_audio_enables=(pulseaudio)
     os_audio_disables=(esd "${audio_disables[@]}")
@@ -51,8 +51,10 @@ elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
     # need to be explicitly enabled with configure.
     disables+=(directx render-d3d "${video_disables[@]}")
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    enables+=(cocoa)
-    disables+=("${video_disables[@]}")
+    os_audio_enables=(coreaudio)
+    enables+=(video-{cocoa,opengl,metal} file threads render)
+    disables+=(video-x11 "${video_disables[@]}")
+    needs_loadso=yes
 fi
 
 options=()
