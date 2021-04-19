@@ -86,9 +86,6 @@ while [ ! -z ${1+x} ]; do
     -file)
         enables+=(file)
         ;;
-    -threads)
-        enables+=(threads)
-        ;;
     -cpuinfo)
         enables+=(cpuinfo)
         ;;
