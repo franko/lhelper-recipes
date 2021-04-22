@@ -52,6 +52,7 @@ elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
     disables+=(directx render-d3d "${video_disables[@]}")
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     os_audio_enables=(coreaudio)
+    os_audio_disables=("${audio_disables[@]}")
     enables+=(video-{cocoa,opengl,metal} file threads render)
     disables+=(video-x11 "${video_disables[@]}")
     needs_loadso=yes
