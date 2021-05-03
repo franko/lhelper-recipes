@@ -1,5 +1,6 @@
 enter_git_repository https://github.com/franko/glew.git "v$version"
 
+export GLEW_PREFIX="${INSTALL_PREFIX}"
 export GLEW_DEST="${INSTALL_PREFIX}"
 export GLEW_NO_GLU="-DGLEW_NO_GLU"
 
