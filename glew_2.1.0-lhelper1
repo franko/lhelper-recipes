@@ -2,6 +2,6 @@ enter_git_repository https://github.com/franko/glew.git "v$version"
 
 export GLEW_DEST="${INSTALL_PREFIX}"
 
-make extentions
+make extensions
 make all
 make install.all
