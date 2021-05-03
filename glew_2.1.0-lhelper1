@@ -1,0 +1,7 @@
+enter_git_repository https://github.com/franko/glew.git "v$version-lhelper1"
+
+export GLEW_DEST="${INSTALL_PREFIX}"
+
+make extentions
+make all
+make install.all
