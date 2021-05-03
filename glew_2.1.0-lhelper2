@@ -1,3 +1,22 @@
+#!/bin/bash
+
+lib="static"
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -shared)
+        lib="shared"
+        ;;
+    -pic)
+        CFLAGS+="-fPIC"
+        ;;
+    *)
+        echo "error: unknow option \"$1\""
+        exit 1
+        ;;
+    esac
+    shift
+done
+
 enter_git_repository https://github.com/franko/glew.git "v$version"
 
 export GLEW_PREFIX="${INSTALL_PREFIX}"
@@ -5,5 +24,6 @@ export GLEW_DEST="${INSTALL_PREFIX}"
 export GLEW_NO_GLU="-DGLEW_NO_GLU"
 
 make extensions
-make all
-make install.all
+make "glew.lib.$lib" glew.bin
+make install.include "install.lib.$lib" install.pkgconfig install.bin
+
