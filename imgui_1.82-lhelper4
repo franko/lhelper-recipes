@@ -1,0 +1,17 @@
+#!/bin/bash
+
+options=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -window=* | -renderer=*)
+        options+=("${1/#-/-D}")
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+enter_git_repository https://github.com/franko/imgui.git "v${version}"
+build_and_install meson "${options[@]}"
