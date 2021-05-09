@@ -1,0 +1,79 @@
+#!/usr/bin/bash
+
+function join_by {
+    local d=${1-} f=${2-}
+    if shift 2; then
+        printf %s "$f" "${@/#/$d}"
+    fi
+}
+
+api=()
+options=()
+default_lib=static
+profile=compatibility
+loader=no
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -gl=* | -gles=* | -glx=* | -wgl=*)
+        api+=("${1#-}")
+        ;;
+    -core)
+        profile=core
+        ;;
+    -loader)
+        loader=yes
+        ;;
+    -shared)
+        default_lib=shared
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+# if no api are given it use by default the latest versions
+if [ ${#api[@]} -gt 0 ]; then
+    options+=(--api="$(join_by , ${api[@]})")
+fi
+
+if [ $loader != yes ]; then
+    options+=(--no-loader)
+fi
+
+enter_git_repository https://github.com/Dav1dde/glad.git "v$version"
+# There is also the option --extensions but it leaved out all the extensions are included
+# By using --reproducile we prevent glad from fetching specifications from Khronos website.
+echo "using glad options" --reproducible --out-path=gen-src --generator=c --profile=$profile "${options[@]}"
+python3 -m glad --reproducible --out-path=gen-src --generator=c --profile=$profile "${options[@]}"
+
+cat << 'EOF' > gen-src/meson.build
+project('glad', 'c')
+
+glad_include = include_directories('include')
+
+libglad = library('glad',
+    'src/glad.c',
+    include_directories: glad_include,
+    install: true
+)
+
+install_headers('include/glad/glad.h', subdir: 'glad')
+
+pkg = import('pkgconfig')
+
+pkg.generate(libglad,
+    filebase : 'glad',
+    name : 'glad',
+    libraries : libglad,
+    description : 'Glad openGL loader library',
+    url : 'https://github.com/Dav1dde/glad',
+)
+EOF
+
+pushd gen-src
+meson setup -Ddefault_library=$default_lib --buildtype=release --prefix="$INSTALL_PREFIX" .build
+meson compile -C .build
+meson install -C .build
+popd

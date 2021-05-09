@@ -46,3 +46,4 @@ cppcheck 2.3
 pcre2 10.36
 imgui 1.82-lhelper3
 implot 0.9-lhelper1
+glad 0.1.34
