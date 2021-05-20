@@ -130,5 +130,5 @@ for name in "${disables[@]}"; do
     options+=("--disable-$name")
 done
 
-enter_git_repository https://github.com/franko/SDL-4d.git "release-${version}"
+enter_git_repository https://github.com/franko/SDL-1.git "release-${version}"
 build_and_install configure "${options[@]}"
