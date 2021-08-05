@@ -1,6 +1,6 @@
 enter_git_repository https://github.com/gsl-lite/gsl-lite.git "v${version}"
 
-gsl_include_dir="$INSTALL_PREFIX/include"
+gsl_include_dir="$INSTALL_PREFIX/include/gsl"
 mkdir -p "$gsl_include_dir"
 cp include/gsl/gsl-lite.hpp "$gsl_include_dir"
 
