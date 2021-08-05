@@ -1,0 +1,24 @@
+enter_git_repository https://github.com/gsl-lite/gsl-lite.git "v${version}"
+
+gsl_include_dir="$INSTALL_PREFIX/include"
+mkdir -p "$gsl_include_dir"
+cp include/gsl/gsl-lite.hpp "$gsl_include_dir"
+
+PKG_NAME=gsl-lite
+
+# Warning, since the 'EOF' below is unquoted shell variables substitutions
+# will be done on the text body. The '$' should be therefore escaped to
+# avoid shell substitution when needed.
+cat << EOF > $PKG_NAME.pc
+prefix=${WIN_INSTALL_PREFIX}
+includedir=\${prefix}/include
+
+Name: ${PKG_NAME}
+Description: Guidelines Support Library for C++98, C++11 up
+Version: "${version}"
+
+Libs: 
+Cflags: -I\${includedir}
+EOF
+
+install_pkgconfig_file "${PKG_NAME}.pc"
