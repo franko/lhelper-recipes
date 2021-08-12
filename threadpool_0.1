@@ -1,0 +1,21 @@
+enter_git_repository https://github.com/franko/ThreadPool.git "v${version}"
+
+mkdir -p "$DESTDIR$INSTALL_PREFIX/include"
+cp ThreadPool.h "$DESTDIR$INSTALL_PREFIX/include"
+
+PKG_NAME=threadpool
+
+cat << EOF > $PKG_NAME.pc
+prefix=${WIN_INSTALL_PREFIX}
+includedir=\${prefix}/include
+
+Name: ${PKG_NAME}
+Description: A simple C++11 Thread Pool implementation
+Version: ${version}
+
+Libs:
+Cflags: -I\${includedir}
+EOF
+
+install_pkgconfig_file "${PKG_NAME}.pc"
+

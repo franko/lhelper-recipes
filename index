@@ -50,3 +50,4 @@ glad 0.1.34
 reproc 14.2.2
 gsl-lite 0.38.1
 flatbuffers 2.0.0
+threadpool 0.1
