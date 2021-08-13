@@ -1,0 +1,23 @@
+options=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -shared)
+        shared=on
+        ;;
+    *)
+        options+=($1)
+        ;;
+    esac
+    shift
+done
+
+if [ -z ${shared+x} ]; then
+    cmake_options=(-DBOX2D_BUILD_STATIC=ON -DBOX2D_BUILD_SHARED=OFF)
+else
+    cmake_options=(-DBOX2D_BUILD_STATIC=OFF -DBOX2D_BUILD_SHARED=ON)
+fi
+cmake_options+=(-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_BUILD_UNITTESTS=OFF -DBOX2D_INSTALL=ON -DBOX2D_INSTALL_DOC=OFF)
+
+enter_git_repository https://github.com/franko/liquidfun.git "v$version"
+cd liquidfun/Box2D
+build_and_install cmake "${cmake_options[@]}" "${options[@]}"
