@@ -4,8 +4,9 @@ check_commands make gcc
 # Options in the array below will be disabled unless they are
 # explicitly enabled.
 availables=( \
-    video video-opengl loadso render audio joystick haptic hidapi sensor power \
-    filesystem threads timers file cpuinfo ime assembly)
+    video video-opengl video-wayland video-opengles video-opengles2 loadso render \
+    audio joystick haptic hidapi sensor power filesystem threads timers file cpuinfo \
+    ime assembly)
 
 # Notes about the activation of loadso
 #
@@ -34,8 +35,8 @@ enables=(assembly video events timers sdl2-config)
 needs_loadso=no
 
 disables=(atomic dbus ibus fcitx)
-audio_disables=(jack arts nas fusionsound)
-video_disables=(video-{vulkan,directfb,dummy,opengles,opengles1,opengles2,vivante})
+audio_disables=(jack arts nas fusionsound pipeware)
+video_disables=(video-{vulkan,directfb,dummy,opengles1,vivante,wayland-qt-touch})
 
 if [[ "$OSTYPE" == "linux"* ]]; then
     os_audio_enables=(pulseaudio)
@@ -62,6 +63,15 @@ fi
 options=()
 while [ ! -z ${1+x} ]; do
     case $1 in
+    -wayland)
+        if [[ "$OSTYPE" == "linux"* ]]; then
+            enables+=(video-wayland)
+            need_opengles=yes
+        fi
+        ;;
+    -opengles)
+        need_opengles=yes
+        ;;
     -audio)
         enables+=(audio "${os_audio_enables[@]}")
         disables+=("${os_audio_disables[@]}")
@@ -115,6 +125,10 @@ done
 
 if [[ $needs_loadso == yes ]]; then
     enables+=(loadso)
+fi
+
+if [ ! -z ${need_opengles+x} ]; then
+    enables+=(video-{opengles,opengles2})
 fi
 
 all_enables="${enables[*]}"
