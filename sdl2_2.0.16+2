@@ -32,8 +32,6 @@ availables=( \
 # By default we build video, timers and events modules
 enables=(assembly video events timers sdl2-config)
 
-needs_loadso=no
-
 disables=(atomic dbus ibus fcitx)
 audio_disables=(jack arts nas fusionsound pipeware)
 video_disables=(video-{vulkan,directfb,dummy,opengles1,vivante,wayland-qt-touch})
@@ -55,9 +53,9 @@ elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     os_audio_enables=(coreaudio)
     os_audio_disables=("${audio_disables[@]}")
-    enables+=(video-cocoa video-opengl video-metal file threads render)
+    enables+=(video-cocoa video-metal file threads)
     disables+=(video-x11 "${video_disables[@]}")
-    needs_loadso=yes
+    needs_opengl=yes
 fi
 
 options=()
@@ -66,19 +64,20 @@ while [ ! -z ${1+x} ]; do
     -wayland)
         if [[ "$OSTYPE" == "linux"* ]]; then
             enables+=(video-wayland)
-            need_opengles=yes
+            # Normally both opengl and opengles are needed for wayland.
+            needs_opengl=yes
+            needs_opengles=yes
         fi
         ;;
     -opengles)
-        need_opengles=yes
+        needs_opengles=yes
         ;;
     -audio)
         enables+=(audio "${os_audio_enables[@]}")
         disables+=("${os_audio_disables[@]}")
         ;;
     -opengl)
-        enables+=(video-opengl)
-        needs_loadso=yes
+        needs_opengl=yes
         ;;
     -threads)
         enables+=(threads)
@@ -123,12 +122,19 @@ while [ ! -z ${1+x} ]; do
     shift
 done
 
-if [[ $needs_loadso == yes ]]; then
+if [ ! -z ${needs_loadso+x} ]; then
     enables+=(loadso)
 fi
 
-if [ ! -z ${need_opengles+x} ]; then
-    enables+=(video-{opengles,opengles2})
+if [ ! -z ${needs_opengles+x} ]; then
+    enables+=(render video-{opengles,opengles2})
+    # Currently we don't know if loadso is needed for opengles
+    # like it is needed for opengl. On Windows it works fine without
+    # but it should be tested on linux.
+fi
+
+if [ ! -z ${needs_opengl+x} ]; then
+    enables+=(render loadso video-opengl)
 fi
 
 all_enables="${enables[*]}"
