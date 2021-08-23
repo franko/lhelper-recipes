@@ -1,0 +1,8 @@
+#!/bin/bash
+version_tag="R_${version//./_}"
+# Git repository available:
+# https://github.com/libexpat/libexpat.git
+# with tags of the form R_2_4_1 but the configure script is not included.
+enter_archive "https://github.com/libexpat/libexpat/releases/download/${version_tag}/expat-${version}.tar.gz"
+build_and_install configure --without-xmlwf --without-examples --without-tests --without-docbook "$@"
+

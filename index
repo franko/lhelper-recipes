@@ -53,3 +53,4 @@ flatbuffers 2.0.0
 threadpool 0.1
 box2d 2.4.1
 liquidfun 1.1.0-lhelper1
+expat 2.4.1
