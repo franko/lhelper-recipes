@@ -6,7 +6,7 @@ check_commands make gcc
 availables=( \
     video video-opengl video-wayland video-opengles video-opengles2 loadso render \
     audio joystick haptic hidapi sensor power filesystem threads timers file cpuinfo \
-    ime assembly)
+    dbus ibus fcitx ime assembly)
 
 # Notes about the activation of loadso
 #
@@ -32,7 +32,7 @@ availables=( \
 # By default we build video, timers and events modules
 enables=(assembly video events timers sdl2-config)
 
-disables=(atomic dbus ibus fcitx)
+disables=(atomic)
 audio_disables=(jack arts nas fusionsound pipeware)
 video_disables=(video-{vulkan,directfb,dummy,opengles1,vivante,wayland-qt-touch})
 
@@ -94,26 +94,8 @@ while [ ! -z ${1+x} ]; do
     -filesystem)
         enables+=(filesystem)
         ;;
-    -file)
-        enables+=(file)
-        ;;
-    -cpuinfo)
-        enables+=(cpuinfo)
-        ;;
-    -render)
-        enables+=(render)
-        ;;
-    -haptic)
-        enables+=(haptic)
-        ;;
-    -sensor)
-        enables+=(sensor)
-        ;;
-    -hidapi)
-        enables+=(hidapi)
-        ;;
-    -ime)
-        enables+=(ime)
+    -cpuinfo | -file | -render | -haptic | -sensor | -hidapi | -ime | -dbus | -ibus | -fcitx)
+        enables+=("${1#-}")
         ;;
     *)
         options+=("$1")
