@@ -91,10 +91,13 @@ while [ ! -z ${1+x} ]; do
     -loadso)
         needs_loadso=yes
         ;;
-    -filesystem)
-        enables+=(filesystem)
+    -ime)
+        enables+=(ime)
+        if [[ "$OSTYPE" == "linux"* ]]; then
+            enables+=(dbus ibus fcitx)
+        fi
         ;;
-    -cpuinfo | -file | -render | -haptic | -sensor | -hidapi | -ime | -dbus | -ibus | -fcitx)
+    -filesystem | -cpuinfo | -file | -render | -haptic | -sensor | -hidapi)
         enables+=("${1#-}")
         ;;
     *)
