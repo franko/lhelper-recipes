@@ -44,7 +44,7 @@ glfw3 3.3.2
 libjpeg 9d
 cppcheck 2.3
 pcre2 10.36
-imgui 1.82-lhelper4
+imgui 1.85-lhelper1
 implot 0.9-lhelper1
 glad 0.1.34
 reproc 14.2.3-meson-1
