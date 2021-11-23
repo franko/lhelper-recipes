@@ -1,0 +1,79 @@
+#!/bin/bash
+
+with_list=(zlib bzip2 png harfbuzz brotli)
+with_in=()
+options=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -brotli)
+        with_in+=(brotli)
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for name in "${with_in[@]}"; do
+    options+=("--with-$name=yes")
+done
+for name in "${with_list[@]}"; do
+    if [[ " ${with_in[*]} " != *" $name "* ]]; then
+        options+=("--with-$name=no")
+    fi
+done
+
+enter_archive "http://download.savannah.gnu.org/releases/freetype/freetype-${version}.tar.gz"
+build_and_install configure "${options[@]}"
+
+# Version from:
+# https://github.com/freetype/freetype/blob/master/docs/VERSIONS.TXT
+#
+# We don't expose the libtool version to the user so we adjust the
+# pkg-config file so that it returns the release version of the
+# library.
+
+while read line; do
+    IFS=' ' read -ra line_a <<< "$line"
+    if [[ ${line_a[0]} == $version ]]; then
+        _libtool_ver=${line_a[1]}
+        break
+    fi
+done <<EOF
+     2.11.0     24.0.18   6.18.0
+     2.10.4     23.4.17   6.17.4
+     2.10.3     23.3.17   6.17.3
+     2.10.2     23.2.17   6.17.2
+     2.10.1     23.1.17   6.17.1
+     2.10.0     23.0.17   6.17.0
+     2.9.1      22.1.16   6.16.1
+     2.9.0      22.0.16   6.16.0
+     2.8.1      21.0.15   6.15.0
+     2.8.0      20.0.14   6.14.0
+     2.7.1      19.0.13   6.13.0
+     2.7.0      18.6.12   6.12.6
+     2.6.5      18.5.12   6.12.5
+     2.6.4      18.4.12   6.12.4
+     2.6.3      18.3.12   6.12.3
+     2.6.2      18.2.12   6.12.2
+     2.6.1      18.1.12   6.12.1
+     2.6.0      18.0.12   6.12.0
+     2.5.5      17.4.11   6.11.4
+     2.5.4      17.3.11   6.11.3
+     2.5.3      17.2.11   6.11.2
+     2.5.2      17.1.11   6.11.1
+     2.5.1      17.0.11   6.11.0
+     2.5.0      16.2.10   6.10.2
+EOF
+
+if [ ! -z ${_libtool_ver+x} ]; then
+    IFS=$'\n' pcfiles=($(find "$INSTALL_PREFIX" -name freetype2.pc)); unset IFS
+    for pcfile in "${pcfiles[@]}"; do
+        while IFS= read -r line; do
+            echo "${line//$_libtool_ver/$version}"
+        done < "$pcfile" > "$pcfile.tmp"
+    done
+    rm "$pcfile" && mv "$pcfile.tmp" "$pcfile"
+fi
+
