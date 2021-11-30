@@ -6,6 +6,7 @@ while [ ! -z ${1+x} ]; do
   case $1 in
 	-blas=*)
     options+=("${1/#-/-D}")
+    declare_dependency openblas
     ;;
 	-shared | -pic)
     options+=("$1")
