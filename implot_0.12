@@ -1,0 +1,3 @@
+declare_dependency imgui
+enter_git_repository https://github.com/franko/implot.git "v${version}-lhelper"
+build_and_install meson "${options[@]}"
