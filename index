@@ -43,7 +43,7 @@ stb-image 2.26
 glfw3 3.3.2
 libjpeg 9d
 cppcheck 2.3
-pcre2 10.36
+pcre2 10.39
 imgui 1.85
 implot 0.12
 glad 0.1.34
