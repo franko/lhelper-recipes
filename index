@@ -6,7 +6,7 @@ freetype2 2.10.2
 libelem 1.0-beta4
 nlopt 2.4.2
 libui alpha4.1
-luajit 2.0.5-lhelper2
+luajit 2.0.5
 sndfile 1.0.28
 sdl2 2.0.16
 magnum 2019.01
