@@ -1,4 +1,7 @@
-version="${version%-netlib*}"
+#!/bin/bash
+
+provides blas 3.10.0
+
 enter_archive "http://www.netlib.org/blas/blas-${version}.tgz"
 options=()
 while [ ! -z ${1+x} ]; do
@@ -29,7 +32,7 @@ make OPTS="${options[*]}" BLASLIB="libblas.a" double complex16
 
 mkdir -p "${INSTALL_PREFIX}/lib"
 cp libblas.a "${INSTALL_PREFIX}/lib"
-pkgname=blas
+pkgname=blas-netlib
 
 # Warning, since the 'EOF' below in unquoted shell variables substitutions
 # will be done on the text body. The '$' should be therefore escaped to

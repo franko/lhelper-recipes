@@ -1,10 +1,15 @@
 #!/bin/bash
 enter_git_repository "https://github.com/franko/gsl.git" "v${version%-ms}"
 
+# Note: the build of the library may be broken if the blas option is not given.
+# The gslcblas library is built but not installed neither it is referenced in
+# the pkg-config file.
 options=()
 while [ ! -z ${1+x} ]; do
   case $1 in
 	-blas=*)
+    # We support openblas and blas-netlib but in thoery we may support other
+    # possible BLAS implementation.
     options+=("${1/#-/-D}")
     declare_dependency blas
     ;;
