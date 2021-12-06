@@ -1,0 +1,47 @@
+#!/bin/bash
+
+enables_list=(gl threads cairo cairoext)
+enables_in=(threads)
+
+# Other enable/disable options: cp936 largefile
+# and XWindow only: xinerama xft xdbe xfixes xcursor xrender
+
+# Other enable options to use builtin or system libraries:
+# localjpeg, localpng, localzlib.
+
+tar_version=
+case $version in
+1.4-20211203)
+    tar_version="1.4.x-20211203-596a9375"
+    ;;
+*)
+    echo "unknown library version"
+    exit 1
+esac
+
+options=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -shared)
+        options+=("--enable-shared")
+        ;;
+    -opengl)
+        enables_in+=(gl)
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for name in "${enables_in[@]}"; do
+    options+=("--enable-$name=yes")
+done
+for name in "${enables_list[@]}"; do
+    if [[ " ${enables_in[*]} " != *" $name "* ]]; then
+        options+=("--disable-$name")
+    fi
+done
+enter_archive "https://www.fltk.org/pub/fltk/snapshots/fltk-${tar_version}.tar.gz"
+build_and_install configure "${options[@]}"
