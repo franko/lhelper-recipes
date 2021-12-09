@@ -11,7 +11,7 @@ while [ ! -z ${1+x} ]; do
     # We support openblas and blas-netlib but in thoery we may support other
     # possible BLAS implementation.
     options+=("${1/#-/-D}")
-    declare_dependency blas
+    dependency "${1#-blas=}"
     ;;
 	-shared | -pic)
     options+=("$1")
