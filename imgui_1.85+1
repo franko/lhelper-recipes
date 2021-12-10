@@ -6,6 +6,9 @@ while [ ! -z ${1+x} ]; do
     -window=* | -renderer=*)
         options+=("${1/#-/-D}")
         ;;
+    -largeidx)
+        options+=("-Dlargeidx=true")
+        ;;
     *)
         options+=("$1")
         ;;
