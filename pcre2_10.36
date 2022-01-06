@@ -11,6 +11,6 @@ for name in "${disables[@]}"; do
     options+=("--disable-$name")
 done
 
-enter_archive "https://ftp.pcre.org/pub/pcre/pcre2-${version}.tar.gz"
+enter_archive "https://sourceforge.net/projects/pcre/files/pcre2/${version}/pcre2-${version}.tar.gz"
 build_and_install configure "${options[@]}"
 
