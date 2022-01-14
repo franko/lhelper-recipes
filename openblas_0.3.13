@@ -2,6 +2,8 @@
 check_commands gcc
 enter_git_repository https://github.com/xianyi/OpenBLAS.git "v${version}"
 
+provides blas 3.9.0
+
 options=("DYNAMIC_ARCH=1" "NUM_THREADS=32")
 shared=
 lapack=
@@ -12,6 +14,7 @@ while [ ! -z ${1+x} ]; do
 	    targets+=("netlib")
 	    lapack=yes
 	    check_commands gfortran
+	    provides lapack 3.9.0
             ;;
         -shared)
             shared=yes

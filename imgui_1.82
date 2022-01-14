@@ -13,5 +13,9 @@ while [ ! -z ${1+x} ]; do
     shift
 done
 
-enter_git_repository https://github.com/franko/imgui.git "v${version}"
+dependency glew
+dependency freetype2
+dependency sdl2 -threads -opengl
+
+enter_git_repository https://github.com/franko/imgui.git "v${version}-lhelper"
 build_and_install meson "${options[@]}"
