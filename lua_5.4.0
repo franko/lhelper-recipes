@@ -1,5 +1,0 @@
-enter_git_repository https://github.com/franko/lua.git "v${version}"
-
-# Currently the shared and static library are always both compiled
-# and the lua executable is linked to the shared library.
-build_and_install meson "$@"

@@ -1,0 +1,29 @@
+enter_git_repository https://github.com/franko/lua.git "v${version}"
+
+options=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -shared)
+        needs_shared=yes
+        ;;
+    -app)
+        needs_app=yes
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+if [ -z ${needs_shared+x} ]; then
+    options+=("-Dshared=false")
+fi
+
+if [ -z ${needs_app+x} ]; then
+    options+=("-Dapp=false")
+fi
+
+# Currently the shared and static library are always both compiled
+# and the lua executable is linked to the shared library.
+build_and_install meson "${options[@]}"
