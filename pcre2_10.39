@@ -11,6 +11,9 @@ for name in "${disables[@]}"; do
     options+=("--disable-$name")
 done
 
-enter_archive "https://sourceforge.net/projects/pcre/files/pcre2/${version}/pcre2-${version}.tar.gz"
+# The old sourceforge location can be used up to version 10.36 but in lhelper we don't provide
+# versions older than 10.39.
+# enter_archive "https://sourceforge.net/projects/pcre/files/pcre2/${version}/pcre2-${version}.tar.gz"
+enter_archive "https://github.com/PhilipHazel/pcre2/releases/download/pcre2-${version}/pcre2-${version}.tar.gz"
 build_and_install configure "${options[@]}"
 
