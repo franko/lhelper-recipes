@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# information from:
+# https://curl.se/docs/install.html
+
+options=()
+openssl=no
+shared=no
+zlib=no
+# cursl accepts also gnutls and wolfssl but these options are not
+# currently supported in the build recipe.
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -openssl)
+        openssl=yes
+        ;;
+    -shared)
+        shared=yes
+        ;;
+    -zlib)
+        zlib=yes
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+options+=(--disable-{doh,libcurl-option,manual,progress-meter,netrc,verbose,brotli,zstd})
+
+if [[ $openssl == yes ]]; then
+    dependency openssl
+    options+=("--with-openssl")
+else
+    options+=("--without-ssl")
+fi
+
+if [[ $zlib == yes ]]; then
+    dependency zlib
+    options+=("--with-zlib")
+else
+    options+=("--without-zlib")
+fi
+
+if [[ $shared == yes ]]; then
+    options+=("--disable-static" "--enable-shared")
+else
+    options+=("--disable-shared")
+fi
+
+# Curl has a git repository, https://github.com/curl/curl.git, but it does not
+# provide the "configure" script out-fo-the-box.
+enter_archive "https://curl.se/download/curl-${version}.tar.gz"
+build_and_install configure "${options[@]}"
+
