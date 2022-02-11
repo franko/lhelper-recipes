@@ -1,5 +1,8 @@
 enter_git_repository https://github.com/franko/elementary-plotlib.git "v$version"
 
+dependency libagg
+dependency freetype2
+
 options=("-Dfox=false" "-Dlua=false" "-Dtests=false")
 while [ ! -z ${1+x} ]; do
     case $1 in
