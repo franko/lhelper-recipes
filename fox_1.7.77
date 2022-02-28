@@ -26,8 +26,8 @@ while [ ! -z ${1+x} ]; do
         ;;
     -xft)
         xft_option="-Dxft=true"
-        dependency freetype2
-        dependency xft
+        # dependency freetype2
+        # dependency xft
         ;;
     -apps)
         apps_option="-Dapps=true"
