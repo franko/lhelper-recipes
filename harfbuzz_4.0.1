@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# cairo used only by command-line utilities and not by the library itself.
+# https://harfbuzz.github.io/building.html
+availables=(glib gobject cairo chafa icu graphite freetype)
+
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
+  availables+=(gdi directwrite)
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+  availables+=(coretext)
+fi
+
+enables=(freetype)
+
+options=()
+for opt in "${availables[@]}"; do
+  if [[ " $enables " == *" $opt "* ]]; then
+    options+=(-D$opt=enabled)
+  else
+    options+=(-D$opt=disabled)
+  fi
+done
+
+enter_archive "https://github.com/harfbuzz/harfbuzz/releases/download/${version}/harfbuzz-${version}.tar.xz"
+build_and_install meson "${options[@]}"
