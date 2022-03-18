@@ -22,5 +22,7 @@ for opt in "${availables[@]}"; do
   fi
 done
 
+options+=(-Dtests=disabled -Ddocs=disabled)
+
 enter_archive "https://github.com/harfbuzz/harfbuzz/releases/download/${version}/harfbuzz-${version}.tar.xz"
 build_and_install meson "${options[@]}"
