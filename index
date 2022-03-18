@@ -59,3 +59,4 @@ fribidi 1.0.11
 curl 7.75.0
 libiconv 1.16
 libunistring 1.0
+pcre3 8.39
