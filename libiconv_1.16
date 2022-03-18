@@ -1,0 +1,29 @@
+#!/bin/bash
+
+enter_archive "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-${version}.tar.gz"
+
+# We use --disable-nls because we don't want all the localization .po files.
+build_and_install configure --disable-nls "$@"
+
+PKG_NAME=libiconv
+
+# Note: the recipe provide also a library libcharset but this latter is not
+# covered by the pkg-config file we generate below.
+
+# Warning, since the 'EOF' below is unquoted shell variables substitutions
+# will be done on the text body. The '$' should be therefore escaped to
+# avoid shell substitution when needed.
+cat << EOF > $PKG_NAME.pc
+prefix=${INSTALL_PREFIX}
+libdir=\${prefix}/lib
+includedir=\${prefix}/include
+
+Name: ${PKG_NAME}
+Description: A conversion library for text encoding
+Version: ${version}
+
+Libs: -L\${libdir} -liconv
+Cflags: -I\${includedir}
+EOF
+
+install_pkgconfig_file "${PKG_NAME}.pc"

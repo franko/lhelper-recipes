@@ -57,4 +57,4 @@ expat 2.4.1
 harfbuzz 4.0.1
 fribidi 1.0.11
 curl 7.75.0
-
+libiconv 1.16
