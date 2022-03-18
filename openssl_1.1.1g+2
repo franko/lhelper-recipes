@@ -37,11 +37,12 @@ release)
     ;;
 esac
 
-# we use a global directory for the ssl directory, not one for each environement.
 options+=("--prefix=$INSTALL_PREFIX" "--openssldir=${INSTALL_PREFIX}/lib/ssl")
 
 enter_git_repository https://github.com/openssl/openssl.git "OpenSSL_${version//./_}"
 ./config "${options[@]}"
-make
-make install
+# avoid building the documentation as it would be done by "make all"
+make build_{libs,engines}
+# make install is okay but would install the documentation and we don't need them
+make install_{sw,ssldirs}
 
