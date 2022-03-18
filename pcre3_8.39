@@ -1,0 +1,16 @@
+#!/bin/bash
+
+disables=(pcre16 pcre32 ebcdic jit cpp pcregrep-jit pcregrep-{libz,libbz2} pcretest-{libedit,libreadline})
+enables=(pcre8 utf newline-is-anycrlf)
+
+for name in "${enables[@]}"; do
+    options+=("--enable-$name")
+done
+for name in "${disables[@]}"; do
+    options+=("--disable-$name")
+done
+
+# https://packages.debian.org/bookworm/libpcre3-dev
+enter_archive "http://deb.debian.org/debian/pool/main/p/pcre3/pcre3_${version}.orig.tar.bz2"
+build_and_install configure "${options[@]}"
+
