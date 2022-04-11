@@ -4,6 +4,11 @@ enter_git_repository https://github.com/xianyi/OpenBLAS.git "v${version}"
 
 provides blas 3.9.0
 
+target=PRESCOTT
+# https://en.wikipedia.org/wiki/List_of_Intel_CPU_microarchitectures#x86_microarchitectures
+# https://en.wikipedia.org/wiki/X86-64#Microarchitecture_levels
+# https://en.wikipedia.org/wiki/X86#Chronology
+
 options=("DYNAMIC_ARCH=1" "NUM_THREADS=32")
 shared=
 lapack=
@@ -15,17 +20,24 @@ while [ ! -z ${1+x} ]; do
 	    lapack=yes
 	    check_commands gfortran
 	    provides lapack 3.9.0
-            ;;
-        -shared)
-            shared=yes
-            ;;
-        -pic)
-            options+=("NEED_PIC=1")
-            ;;
-        *)
-            echo "lhelper openblas recipe error: unknown option \"$1\""
-            exit 1
-            ;;
+        ;;
+    -target=*)
+        target=${1#-target=}
+        target=${target^^}
+        # valid targets for Intel x86/x86_64 are :
+        # P2 KATMAI COPPERMINE NORTHWOOD PRESCOTT BANIAS YONAH CORE2 PENRYN DUNNINGTON
+        # NEHALEM SANDYBRIDGE HASWELL SKYLAKEX ATOM COOPERLAKE SAPPHIRERAPIDS
+        ;;
+    -shared)
+        shared=yes
+        ;;
+    -pic)
+        options+=("NEED_PIC=1")
+        ;;
+    *)
+        echo "lhelper openblas recipe error: unknown option \"$1\""
+        exit 1
+        ;;
     esac
     shift
 done
@@ -53,7 +65,7 @@ fi
 # BINARY=32 or 64 can be used to choose 32 or 64 bit support
 # USE_THREAD=0 or 1 to force or not support for multi-threading
 # Possible target of make: libs netlib tests shared
-options+=("PREFIX=$WIN_INSTALL_PREFIX")
+options+=("TARGET=$target" "PREFIX=$INSTALL_PREFIX")
 
 while IFS= read -r line; do
     echo "${line/-lopenblas/-lopenblas -lpthread}"
