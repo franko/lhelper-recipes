@@ -5,28 +5,57 @@ enter_git_repository https://github.com/xianyi/OpenBLAS.git "v${version}"
 provides blas 3.9.0
 
 target=PRESCOTT
+dynamic_arch=1
+binary=64
+thread_options=("USE_THREAD=1" "NUM_THREADS=32")
 # https://en.wikipedia.org/wiki/List_of_Intel_CPU_microarchitectures#x86_microarchitectures
 # https://en.wikipedia.org/wiki/X86-64#Microarchitecture_levels
 # https://en.wikipedia.org/wiki/X86#Chronology
 
-options=("DYNAMIC_ARCH=1" "NUM_THREADS=32")
+options=()
 shared=
 lapack=
 targets=("libs")
 while [ ! -z ${1+x} ]; do
     case $1 in
-	-lapack)
-	    targets+=("netlib")
-	    lapack=yes
-	    check_commands gfortran
-	    provides lapack 3.9.0
+    -lapack)
+        targets+=("netlib")
+        lapack=yes
+        check_commands gfortran
+        provides lapack 3.9.0
         ;;
     -target=*)
+        # target are used to choose the target CPU microarchitecture.
+        # In case DYNAMIC_ARCH is set the target still applies and indicates
+        # the older architecture to support in dynamic mode.
         target=${1#-target=}
         target=${target^^}
         # valid targets for Intel x86/x86_64 are :
         # P2 KATMAI COPPERMINE NORTHWOOD PRESCOTT BANIAS YONAH CORE2 PENRYN DUNNINGTON
         # NEHALEM SANDYBRIDGE HASWELL SKYLAKEX ATOM COOPERLAKE SAPPHIRERAPIDS
+        ;;
+    -arch=*)
+        # Dynamic arch means that all kernels will be included in the library and dynamically
+        # choosen at run-time based on CPU information.
+        # Using the dynamic options means much larger binaries.
+        if [ "${1#-arch=}" == "dynamic" ]; then
+          dynamic_arch=1
+        elif [ "${1#-arch=}" == "static" ]; then
+          dynamic_arch=0
+        else
+          echo "invalid -arch option: ${1#-arch=}"
+          exit 1
+        fi
+        ;;
+    -binary=*)
+        # Valid values are 32 and 64 to choose the target instruction set of the kernel
+        binary="${1#-binary=}"
+        ;;
+    -threads=*)
+        # Valid values are 0 and 1 to disable or enable respectively multi-threading.
+        if [ "${1#-threads=}" == "false" ]; then
+            thread_options=("USE_THREAD=0")
+        fi
         ;;
     -shared)
         shared=yes
@@ -57,15 +86,10 @@ fi
 # require pthread library to link but the pkg-config --libs does not
 # report the options to include the pthread library.
 
-# TODO: take into account options
 # DEBUG=1 can be passed to make to enable debug version
-# TARGET=NEHALEM can be used to set a specific CPU
-# DYNAMIC_ARCH=1 All kernel will be included in the library and dynamically switched
-# the best architecutre at run time.
-# BINARY=32 or 64 can be used to choose 32 or 64 bit support
 # USE_THREAD=0 or 1 to force or not support for multi-threading
 # Possible target of make: libs netlib tests shared
-options+=("TARGET=$target" "PREFIX=$INSTALL_PREFIX")
+options+=("${thread_options[@]}" "BINARY=$binary" "DYNAMIC_ARCH=${dynamic_arch}" "TARGET=$target" "PREFIX=$INSTALL_PREFIX")
 
 while IFS= read -r line; do
     echo "${line/-lopenblas/-lopenblas -lpthread}"
