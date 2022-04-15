@@ -4,9 +4,15 @@ enter_git_repository https://github.com/xianyi/OpenBLAS.git "v${version}"
 
 provides blas 3.9.0
 
-target=PRESCOTT
+cpu_target="${CPU_TARGET:-PRESCOTT}"
 dynamic_arch=1
-binary=64
+
+if [ "$CPU_TYPE" == x86 ]; then
+    binary=32
+else
+    binary=64
+fi
+
 thread_options=("USE_THREAD=1" "NUM_THREADS=32")
 # https://en.wikipedia.org/wiki/List_of_Intel_CPU_microarchitectures#x86_microarchitectures
 # https://en.wikipedia.org/wiki/X86-64#Microarchitecture_levels
@@ -28,8 +34,8 @@ while [ ! -z ${1+x} ]; do
         # target are used to choose the target CPU microarchitecture.
         # In case DYNAMIC_ARCH is set the target still applies and indicates
         # the older architecture to support in dynamic mode.
-        target=${1#-target=}
-        target=${target^^}
+        cpu_target=${1#-target=}
+        cpu_target=${target^^}
         # valid targets for Intel x86/x86_64 are :
         # P2 KATMAI COPPERMINE NORTHWOOD PRESCOTT BANIAS YONAH CORE2 PENRYN DUNNINGTON
         # NEHALEM SANDYBRIDGE HASWELL SKYLAKEX ATOM COOPERLAKE SAPPHIRERAPIDS
@@ -46,10 +52,6 @@ while [ ! -z ${1+x} ]; do
           echo "invalid -arch option: ${1#-arch=}"
           exit 1
         fi
-        ;;
-    -binary=*)
-        # Valid values are 32 and 64 to choose the target instruction set of the kernel
-        binary="${1#-binary=}"
         ;;
     -threads=*)
         # Valid values are 0 and 1 to disable or enable respectively multi-threading.
@@ -89,7 +91,7 @@ fi
 # DEBUG=1 can be passed to make to enable debug version
 # USE_THREAD=0 or 1 to force or not support for multi-threading
 # Possible target of make: libs netlib tests shared
-options+=("${thread_options[@]}" "BINARY=$binary" "DYNAMIC_ARCH=${dynamic_arch}" "TARGET=$target" "PREFIX=$INSTALL_PREFIX")
+options+=("${thread_options[@]}" "BINARY=$binary" "DYNAMIC_ARCH=${dynamic_arch}" "TARGET=$cpu_target" "PREFIX=$INSTALL_PREFIX")
 
 while IFS= read -r line; do
     echo "${line/-lopenblas/-lopenblas -lpthread}"
