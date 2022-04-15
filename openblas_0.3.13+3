@@ -4,7 +4,8 @@ enter_git_repository https://github.com/xianyi/OpenBLAS.git "v${version}"
 
 provides blas 3.9.0
 
-cpu_target="${CPU_TARGET:-PRESCOTT}"
+cpu_target="${CPU_TARGET:-prescott}"
+cpu_target="${cpu_target^^}"
 dynamic_arch=1
 
 if [ "$CPU_TYPE" == x86 ]; then
