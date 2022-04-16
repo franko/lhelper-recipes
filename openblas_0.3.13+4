@@ -4,8 +4,50 @@ enter_git_repository https://github.com/xianyi/OpenBLAS.git "v${version}"
 
 provides blas 3.9.0
 
-cpu_target="${CPU_TARGET:-prescott}"
-cpu_target="${cpu_target^^}"
+# mapping between CPU_TARGET variable and OpenBLAS target's
+cpu_list=(
+    "x86    pentium2    p2         "
+    "x86    pentium4    northwood  "
+    "x86    prescott    prescott   "
+    "x86    nehalem     nehalem    "
+    "x86    haswell     haswell    "
+    "x86-64 x86-64      prescott   "
+    "x86-64 prescott    prescott   "
+    "x86-64 core2       core2   "
+    "x86-64 athlon      athlon     "
+    "x86-64 opteron     opteron    "
+    "x86-64 barcelona   barcelona  "
+    "x86-64 bobcat      bobcat     "
+    "x86-64 jaguar      bobcat     "
+    "x86-64 bulldozer   bulldozer  "
+    "x86-64 piledriver  piledriver "
+    "x86-64 steamroller steamroller"
+    "x86-64 excavator   excavator  "
+    "x86-64 x86-64-v2   nehalem    "
+    "x86-64 nehalem     nehalem    "
+    "x86-64 sandybridge sandybridge"
+    "x86-64 x86-64-v3   haswell    "
+    "x86-64 haswell     haswell    "
+    "x86-64 broadwell   haswell    "
+    "x86-64 skylake     haswell    "
+    "x86-64 atom        atom       "
+    "x86-64 cooperlake  cooperlake "
+    "x86-64 x86-64-v4   skylakex   "
+    "x86-64 skylakex    skylakex   "
+)
+
+for line in "${cpu_list[@]}"; do
+    read -a line_a <<< "$line"
+    if [[ "${line_a[0]}:${line_a[1]}" == "$CPU_TYPE:$CPU_TARGET" ]]; then
+        cpu_target="${line_a[2]^^}"
+    fi
+done
+
+if [ -z ${cpu_target+x} ]; then
+    echo "error: unknown CPU_TARGET value for OpenBLAS: $CPU_TARGET/$CPU_TYPE"
+    exit 1
+fi
+
 dynamic_arch=1
 
 if [ "$CPU_TYPE" == x86 ]; then
