@@ -34,6 +34,11 @@ cpu_list=(
     "x86-64 cooperlake  cooperlake "
     "x86-64 x86-64-v4   skylakex   "
     "x86-64 skylakex    skylakex   "
+    "arm64  armv8       armv8      "
+    "arm64  cortexa53   cortexa53  "
+    "arm64  cortexa57   cortexa57  "
+    "arm64  cortexa72   cortexa72  "
+    "arm64  cortexa73   cortexa73  "
 )
 
 for line in "${cpu_list[@]}"; do
