@@ -1,5 +1,5 @@
 #!/bin/bash
-check_commands make gcc
+check_commands make "$CC" "$CXX"
 
 # Options in the array below will be disabled unless they are
 # explicitly enabled.
@@ -7,6 +7,9 @@ availables=( \
     video video-opengl video-rpi video-wayland libdecor video-opengles video-opengles2 loadso render \
     audio joystick haptic hidapi sensor power filesystem threads timers file cpuinfo \
     dbus ibus fcitx ime assembly)
+
+simd_availables=(mmx 3dnow ssemath sse sse2 sse3 altivec)
+simd_enables=()
 
 # Notes about the activation of loadso
 #
@@ -35,6 +38,15 @@ enables=(assembly video events timers sdl2-config)
 disables=(atomic)
 audio_disables=(jack arts nas fusionsound pipewire)
 video_disables=(video-{vulkan,directfb,dummy,opengles1,vivante,wayland-qt-touch})
+
+case "$CPU_TYPE/$CPU_TARGET" in
+    x86/pentium2)
+        simd_enables+=(mmx);;
+    x86/pentium4 | x86-64/x86-64)
+        simd_enables+=(mmx ssemath sse sse2);;
+    x86*)
+        simd_enables+=(mmx ssemath sse sse2 sse3);;
+esac
 
 if [[ "$OSTYPE" == "linux"* ]]; then
     os_audio_enables=(pulseaudio)
@@ -129,6 +141,13 @@ fi
 if [ ! -z ${needs_opengl+x} ]; then
     enables+=(render loadso video-opengl)
 fi
+
+all_simd="${simd_enables[*]}"
+for opt in "${simd_availables[@]}"; do
+    if [[ " $all_simd " != *" $opt "* ]]; then
+        disables+=("$opt")
+    fi
+done
 
 all_enables="${enables[*]}"
 for opt in "${availables[@]}"; do
