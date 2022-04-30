@@ -40,8 +40,11 @@ audio_disables=(jack arts nas fusionsound pipewire)
 video_disables=(video-{vulkan,directfb,dummy,opengles1,vivante,wayland-qt-touch})
 
 case "$CPU_TYPE/$CPU_TARGET" in
+    x86/i586 | x86/i686) ;;
     x86/pentium2)
         simd_enables+=(mmx);;
+    x86/pentium3)
+        simd_enables+=(mmx ssemath sse);;
     x86/pentium4 | x86-64/x86-64)
         simd_enables+=(mmx ssemath sse sse2);;
     x86*)

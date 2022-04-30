@@ -7,6 +7,7 @@ provides blas 3.9.0
 # mapping between CPU_TARGET variable and OpenBLAS target's
 cpu_list=(
     "x86    pentium2    p2         "
+    "x86    pentium3    p2         "
     "x86    pentium4    northwood  "
     "x86    prescott    prescott   "
     "x86    core2       core2      "
