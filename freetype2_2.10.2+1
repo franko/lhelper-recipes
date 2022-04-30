@@ -1,5 +1,5 @@
 #!/bin/bash
-
+check_commands make "$CC"
 with_list=(zlib bzip2 png harfbuzz brotli)
 with_in=()
 options=()

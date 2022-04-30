@@ -1,5 +1,5 @@
 #!/bin/bash
-
+check_commands make "$CC"
 # availabes=(pcre2-8 pcre2-16 pcre2-32 debug jit unicode ebcdic)
 disables=(pcre2-16 pcre2-32 debug jit ebcdic pcre2grep-{jit,callout,callout-fork} pcre2grep-{libz,libbz2})
 enables=(pcre2-8 unicode newline-is-anycrlf)

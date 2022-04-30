@@ -1,2 +1,4 @@
+#!/bin/bash
+check_commands meson ninja "$CC"
 enter_git_repository https://github.com/franko/luajit.git "${version}"
 build_and_install meson

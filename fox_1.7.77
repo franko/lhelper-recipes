@@ -1,4 +1,5 @@
 #!/bin/bash
+check_commands meson ninja "$CC" "$CXX"
 options=()
 xft_option="-Dxft=false"
 apps_option="-Dapps=false"

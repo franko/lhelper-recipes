@@ -1,3 +1,5 @@
+#!/bin/bash
+check_commands meson ninja "$CC"
 # We use "lhelper" to differentiate from the releases from official repository.
 enter_git_repository https://github.com/franko/luajit.git "v${version}-lhelper"
 

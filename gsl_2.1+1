@@ -1,4 +1,5 @@
 #!/bin/bash
+check_commands meson ninja "$CC"
 enter_git_repository "https://github.com/franko/gsl.git" "v${version%-ms}"
 
 # Note: the build of the library may be broken if the blas option is not given.

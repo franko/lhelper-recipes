@@ -1,3 +1,5 @@
+#!/bin/bash
+check_commands cmake ninja "$CXX"
 enter_git_repository https://github.com/dealii/dealii.git "v$version"
 
 # RECIPE known problems:

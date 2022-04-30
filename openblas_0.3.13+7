@@ -1,5 +1,5 @@
 #!/bin/bash
-check_commands gcc
+check_commands make "$CC"
 enter_git_repository https://github.com/xianyi/OpenBLAS.git "v${version}"
 
 provides blas 3.9.0
