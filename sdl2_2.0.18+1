@@ -144,7 +144,9 @@ fi
 
 all_simd="${simd_enables[*]}"
 for opt in "${simd_availables[@]}"; do
-    if [[ " $all_simd " != *" $opt "* ]]; then
+    if [[ " $all_simd " == *" $opt "* ]]; then
+        enables+=("$opt")
+    else
         disables+=("$opt")
     fi
 done
