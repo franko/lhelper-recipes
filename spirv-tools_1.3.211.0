@@ -1,5 +1,4 @@
 #!/bin/bash
-check_commands git python3 cmake ninja "$CXX"
 
 libtype=STATIC
 options=()
@@ -15,12 +14,15 @@ while [ ! -z ${1+x} ]; do
     shift
 done
 
-options+=(-DSPIRV_TOOLS_LIBRARY_TYPE=$libtype)
+check_commands git python3 cmake ninja "$CXX"
+
+options+=(-DSPIRV_TOOLS_LIBRARY_TYPE=$libtype -DSPIRV_SKIP_TESTS=ON)
 
 enter_git_repository https://github.com/KhronosGroup/SPIRV-Tools "sdk-$version"
 
-pushd external
-git clone https://github.com/KhronosGroup/SPIRV-Headers --depth 1 -b "sdk-$version"
-popd
+# We don't use the following command because we just clone the SPIRV-Headers
+# python3 utils/git-sync-deps
+
+git clone https://github.com/KhronosGroup/SPIRV-Headers external/SPIRV-Headers --depth 1 -b "sdk-$version"
 
 build_and_install cmake "${options[@]}"
