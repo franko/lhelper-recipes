@@ -1,0 +1,4 @@
+#!/bin/bash
+check_commands meson ninja "$CXX"
+enter_git_repository https://github.com/franko/pystring "v${version}-lhelper"
+build_and_install meson "$@"
