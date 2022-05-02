@@ -1,0 +1,26 @@
+#!/bin/bash
+check_commands git python3 cmake ninja "$CXX"
+
+libtype=STATIC
+options=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -shared)
+        libtype=SHARED
+        ;;
+    *)
+        options+=($1)
+        ;;
+    esac
+    shift
+done
+
+options+=(-DSPIRV_TOOLS_LIBRARY_TYPE=$libtype)
+
+enter_git_repository https://github.com/KhronosGroup/SPIRV-Tools "sdk-$version"
+
+pushd external
+git clone https://github.com/KhronosGroup/SPIRV-Headers --depth 1 -b "sdk-$version"
+popd
+
+build_and_install cmake "${options[@]}"

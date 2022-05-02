@@ -1,0 +1,29 @@
+#!/bin/bash
+check_commands cmake ninja "$CXX"
+
+libtype=static
+options=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -shared)
+        libtype=shared
+        ;;
+    *)
+        options+=($1)
+        ;;
+    esac
+    shift
+done
+
+# We may add the CLI as an option and use the flag -DSPIRV_CROSS_CLI=ON or OFF,
+# by default it is ON.
+
+if [ $libtype == static ]; then
+    options+=(-DSPIRV_CROSS_STATIC=ON  -DSPIRV_CROSS_SHARED=OFF)
+else
+    options+=(-DSPIRV_CROSS_STATIC=OFF -DSPIRV_CROSS_SHARED=ON )
+fi
+options+=(-DSPIRV_CROSS_ENABLE_TESTS=OFF)
+
+enter_git_repository https://github.com/KhronosGroup/SPIRV-Cross "sdk-$version"
+build_and_install cmake "${options[@]}"

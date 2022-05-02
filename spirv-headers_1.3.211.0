@@ -1,0 +1,4 @@
+#!/bin/bash
+check_commands cmake ninja "$CXX"
+enter_git_repository https://github.com/KhronosGroup/SPIRV-Headers "sdk-$version"
+build_and_install cmake "$@"

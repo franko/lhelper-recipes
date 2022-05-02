@@ -1,0 +1,11 @@
+#!/bin/bash
+check_commands cmake ninja python3 "$CXX"
+enter_git_repository https://github.com/KhronosGroup/glslang "$version"
+
+provides spirv-headers $version
+provides spirv-tools $version
+
+# download and use SPIRV-Tools and SPIRV-headers
+./update_glslang_sources.py
+
+build_and_install cmake -DENABLE_OPT=ON "$@"

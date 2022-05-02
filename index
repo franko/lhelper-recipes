@@ -55,3 +55,7 @@ box2d 2.4.1
 liquidfun 1.1.0-lhelper1
 expat 2.4.1
 getopt 0.1
+spirv-headers 1.3.211.0
+spirv-tools 1.3.211.0
+spirv-cross 1.3.211.0
+glslang 11.9.0
