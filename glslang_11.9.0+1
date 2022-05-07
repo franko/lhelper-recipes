@@ -1,0 +1,24 @@
+#!/bin/bash
+
+check_commands cmake ninja "$CXX"
+
+# FIXME: currently it will fail if the option -optimizer is not enabled.
+
+options=()
+optimizer="-DENABLE_OPT=OFF"
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -optimizer)
+        optimizer="-DENABLE_OPT=ON"
+        dependency spirv-tools
+        ;;
+    *)
+        options+=($1)
+        ;;
+    esac
+    shift
+done
+options+=($optimizer)
+
+enter_git_repository https://github.com/franko/glslang "$version-lhelper"
+build_and_install cmake "${options[@]}"

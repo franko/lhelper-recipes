@@ -18,7 +18,7 @@ check_commands git python3 cmake ninja "$CXX"
 
 options+=(-DSPIRV_TOOLS_LIBRARY_TYPE=$libtype -DSPIRV_SKIP_TESTS=ON)
 
-enter_git_repository https://github.com/KhronosGroup/SPIRV-Tools "sdk-$version"
+enter_git_repository https://github.com/franko/SPIRV-Tools "sdk-$version-lhelper"
 
 # We don't use the following command because we just clone the SPIRV-Headers
 # python3 utils/git-sync-deps
