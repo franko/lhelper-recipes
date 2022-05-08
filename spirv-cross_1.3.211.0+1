@@ -1,0 +1,29 @@
+#!/bin/bash
+check_commands cmake ninja "$CXX"
+
+options=()
+cli_option="-DSPIRV_CROSS_CLI=OFF"
+pic_option="-DSPIRV_CROSS_FORCE_PIC=OFF"
+lib_option="-DSPIRV_CROSS_STATIC=ON -DSPIRV_CROSS_SHARED=OFF"
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -shared)
+        lib_option="-DSPIRV_CROSS_STATIC=OFF -DSPIRV_CROSS_SHARED=ON"
+        ;;
+    -cli)
+        cli_option="-DSPIRV_CROSS_CLI=ON"
+        ;;
+    -pic)
+        pic_option="-DSPIRV_CROSS_FORCE_PIC=ON"
+        ;;
+    *)
+        options+=($1)
+        ;;
+    esac
+    shift
+done
+
+options+=($lib_option $pic_option $cli_option -DSPIRV_CROSS_ENABLE_TESTS=OFF)
+
+enter_git_repository https://github.com/KhronosGroup/SPIRV-Cross "sdk-$version"
+build_and_install cmake "${options[@]}"
