@@ -6,6 +6,9 @@ mkdir -p "$INSTALL_PREFIX/include"
 for module in app args audio fetch gfx glue time; do
     cp "sokol_$module.h" "$INSTALL_PREFIX/include"
 done
+for module in shape color debugtext fontstash gfx_imgui gl imgui nuklear shape; do
+    cp "util/sokol_$module.h" "$INSTALL_PREFIX/include"
+done
 
 PKG_NAME=sokol
 
