@@ -1,0 +1,23 @@
+#!/bin/bash
+
+enter_git_repository https://github.com/franko/sokol "v$version-lhelper"
+
+mkdir -p "$INSTALL_PREFIX/include"
+for module in app args audio fetch gfx glue time; do
+    cp "sokol_$module.h" "$INSTALL_PREFIX/include"
+done
+
+PKG_NAME=sokol
+
+cat << EOF > $PKG_NAME.pc
+Name: $PKG_NAME
+Description: Header only library for OpenGL applications
+URL: github.com/floooh/sokol
+Requires: 
+Version: 2022.05.1
+Libs: 
+Cflags: -I$WIN_INSTALL_PREFIX/include
+EOF
+
+install_pkgconfig_file "$PKG_NAME.pc"
+
