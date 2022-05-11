@@ -1,0 +1,7 @@
+#!/bin/bash
+check_commands meson ninja "$CXX"
+for lib in pystring fmt getopt spirv-tools "glslang -optimizer" spirv-cross; do
+    dependency "$lib"
+done
+enter_git_repository https://github.com/franko/sokol-tools "v$version-lhelper"
+build_and_install meson "$@"
