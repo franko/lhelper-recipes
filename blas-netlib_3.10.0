@@ -1,6 +1,6 @@
 #!/bin/bash
 
-check_commands make "$CC"
+check_commands make gfortran "$CC"
 provides blas 3.10.0
 
 enter_archive "http://www.netlib.org/blas/blas-${version}.tgz"
