@@ -1,4 +1,7 @@
-enter_archive "https://www.zlib.net/zlib-${version}.tar.gz"
+#!/bin/bash
+# enter_archive "https://www.zlib.net/zlib-${version}.tar.gz"
+# The website zlib.net doesn't provides older library versions, we use github instead.
+enter_archive "https://github.com/madler/zlib/archive/refs/tags/v${version}.tar.gz"
 
 use_static="yes"
 while [ ! -z ${1+x} ]; do
