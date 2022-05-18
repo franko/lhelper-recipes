@@ -1,0 +1,27 @@
+#!/bin/bash
+
+check_commands meson ninja "$CC"
+
+options=()
+while [ ! -z ${1+x} ]; do
+  case $1 in
+	-target=*)
+    # We support openblas and blas-netlib but in thoery we may support other
+    # possible BLAS implementation.
+    options+=("${1/#-/-D}")
+    ;;
+	-shared | -pic)
+    options+=("$1")
+    ;;
+	*)
+    echo "recipe ${package} ${version}: unknown option \"$1\""
+    exit 1
+    ;;
+  esac
+  shift
+done
+
+# The -lib part in the tag below identies the version with a meson build as a library
+enter_git_repository https://github.com/franko/sokol "v$version-lib-lhelper"
+build_and_install meson "${options[@]}"
+
