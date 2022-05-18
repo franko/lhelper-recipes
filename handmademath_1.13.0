@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# The "v" in the tag is used since 1.13 release, before was not used.
+# Previous versions required to define HANDMADE_MATH_IMPLEMENTATION but since
+# 1.13 it is no longer used since all the methods are declared static inline.
+enter_git_repository https://github.com/HandmadeMath/Handmade-Math "v$version"
+
+mkdir -p "$INSTALL_PREFIX/include"
+cp HandmadeMath.h "$INSTALL_PREFIX/include"
+
+PKG_NAME=handmademath
+
+cat << EOF > $PKG_NAME.pc
+Name: $PKG_NAME
+Description: Header only library for 3D Maths
+URL: github.com/HandmadeMath/Handmade-Math
+Requires:
+Version: $version
+Libs: 
+Cflags: -I$WIN_INSTALL_PREFIX/include
+EOF
+
+install_pkgconfig_file "$PKG_NAME.pc"
+
