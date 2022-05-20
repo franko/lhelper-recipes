@@ -19,7 +19,6 @@ while [ ! -z ${1+x} ]; do
   shift
 done
 
-# The -lib part in the tag below identies the version with a meson build as a library
-enter_git_repository https://github.com/franko/sokol "v$version-lib-lhelper"
-build_and_install meson "${options[@]}"
+enter_git_repository https://github.com/franko/sokol "v$version-app-lhelper"
+build_and_install meson -Dgfx=false -Dapp=true "${options[@]}"
 
