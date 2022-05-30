@@ -1,0 +1,51 @@
+#!/bin/bash
+
+options=()
+ttf_option="-Dtruetype=stb"
+sdl_dep_options=(-opengl -threads)
+win_impl=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -freetype)
+        ttf_option="-Dtruetype=freetype"
+        dependency freetype2
+        ;;
+    -opengl2 | -opengl3 | -d3d9 | -d3d10 | -d3d11 | -d3d12 | -metal | -vulkan)
+        # We may additively add options to have additional library for 3D API backend
+        options+=("${1/#-/-D}=true")
+        if [[ $1 == "-d3d"* ]]; then
+            # It seems joystick support for SDL2 is needed when using D3D11 for the
+            # imgui-demo
+            sdl_dep_options+=(-joystick)
+        fi
+        ;;
+    -sdl | -glfw | -win32 | -osx)
+        # We may additively add options to have additional library for windows/events backend
+        options+=("${1/#-/-D}=true")
+        win_impl+=("${1/#-/}")
+        ;;
+    -largeidx)
+        options+=("-Dlargeidx=true")
+        ;;
+    -*)
+        options+=("$1")
+        ;;
+    *)
+        echo "unknown command: $1"
+        exit 1
+        ;;
+    esac
+    shift
+done
+
+if [[ " ${win_impl[@]} " == *" sdl "* ]]; then
+    dependency sdl2 "${sdl_dep_options[@]}"
+fi
+if [[ " ${win_impl[@]} " == *" glfw "* ]]; then
+    dependency glfw3
+fi
+
+options+=("$ttf_option")
+
+enter_git_repository https://github.com/franko/imgui.git "v${version}-lhelper"
+build_and_install meson "${options[@]}"
