@@ -19,8 +19,8 @@ while [ ! -z ${1+x} ]; do
     shift
 done
 
-dependency imgui $freetype_option
+dependency imgui -cimpl $freetype_option
 
-enter_git_repository https://github.com/franko/cimgui "lhelper-testing" # DEBUG ONLY
+enter_git_repository https://github.com/franko/cimgui "v$version-lhelper"
 build_and_install meson "${options[@]}"
 
