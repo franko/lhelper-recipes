@@ -1,0 +1,26 @@
+#!/bin/bash
+
+options=()
+freetype_option=""
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -freetype)
+        freetype_option="-freetype"
+        dependency freetype2
+        ;;
+    -*)
+        options+=("$1")
+        ;;
+    *)
+        echo "unknown command: $1"
+        exit 1
+        ;;
+    esac
+    shift
+done
+
+dependency imgui $freetype_option
+
+enter_git_repository https://github.com/franko/cimgui "lhelper-testing" # DEBUG ONLY
+build_and_install meson "${options[@]}"
+
