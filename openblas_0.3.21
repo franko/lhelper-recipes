@@ -1,0 +1,157 @@
+#!/bin/bash
+check_commands make "$CC"
+enter_git_repository https://github.com/xianyi/OpenBLAS.git "v${version}"
+
+provides blas 3.9.0
+
+# mapping between CPU_TARGET variable and OpenBLAS target's
+cpu_list=(
+    "x86    pentium2    p2         "
+    "x86    pentium3    p2         "
+    "x86    pentium4    northwood  "
+    "x86    prescott    prescott   "
+    "x86    core2       core2      "
+    "x86    nehalem     nehalem    "
+    "x86    haswell     haswell    "
+    "x86-64 x86-64      prescott   "
+    "x86-64 core2       core2      "
+    "x86-64 athlon      athlon     "
+    "x86-64 opteron     opteron    "
+    "x86-64 barcelona   barcelona  "
+    "x86-64 bobcat      bobcat     "
+    "x86-64 jaguar      bobcat     "
+    "x86-64 bulldozer   bulldozer  "
+    "x86-64 piledriver  piledriver "
+    "x86-64 steamroller steamroller"
+    "x86-64 excavator   excavator  "
+    "x86-64 x86-64-v2   nehalem    "
+    "x86-64 nehalem     nehalem    "
+    "x86-64 westmere    nehalem    "
+    "x86-64 sandybridge sandybridge"
+    "x86-64 x86-64-v3   haswell    "
+    "x86-64 haswell     haswell    "
+    "x86-64 broadwell   haswell    "
+    "x86-64 skylake     haswell    "
+    "x86-64 atom        atom       "
+    "x86-64 cooperlake  cooperlake "
+    "x86-64 x86-64-v4   skylakex   "
+    "x86-64 skylakex    skylakex   "
+    "arm    armv6+fp    armv6      "
+    "arm    armv7a+fp   armv7      "
+    "arm    cortexa15   cortexa15  "
+    "arm    cortexa9    cortexa9   "
+    "arm64  armv8       armv8      "
+    "arm64  cortexa53   cortexa53  "
+    "arm64  cortexa57   cortexa57  "
+    "arm64  cortexa72   cortexa72  "
+    "arm64  cortexa73   cortexa73  "
+)
+
+for line in "${cpu_list[@]}"; do
+    read -a line_a <<< "$line"
+    if [[ "${line_a[0]}:${line_a[1]}" == "$CPU_TYPE:$CPU_TARGET" ]]; then
+        cpu_target="${line_a[2]^^}"
+    fi
+done
+
+if [ -z ${cpu_target+x} ]; then
+    echo "error: unknown CPU_TARGET value for OpenBLAS: $CPU_TARGET/$CPU_TYPE"
+    exit 1
+fi
+
+dynamic_arch=1
+
+if [ "$CPU_TYPE" == x86 ]; then
+    binary=32
+else
+    binary=64
+fi
+
+thread_options=("USE_THREAD=1" "NUM_THREADS=32")
+# https://en.wikipedia.org/wiki/List_of_Intel_CPU_microarchitectures#x86_microarchitectures
+# https://en.wikipedia.org/wiki/X86-64#Microarchitecture_levels
+# https://en.wikipedia.org/wiki/X86#Chronology
+
+options=()
+shared=
+lapack=
+targets=("libs")
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -lapack)
+        targets+=("netlib")
+        lapack=yes
+        check_commands gfortran
+        provides lapack 3.9.0
+        ;;
+    -target=*)
+        # target are used to choose the target CPU microarchitecture.
+        # In case DYNAMIC_ARCH is set the target still applies and indicates
+        # the older architecture to support in dynamic mode.
+        cpu_target=${1#-target=}
+        cpu_target=${target^^}
+        # valid targets for Intel x86/x86_64 are :
+        # P2 KATMAI COPPERMINE NORTHWOOD PRESCOTT BANIAS YONAH CORE2 PENRYN DUNNINGTON
+        # NEHALEM SANDYBRIDGE HASWELL SKYLAKEX ATOM COOPERLAKE SAPPHIRERAPIDS
+        ;;
+    -arch=*)
+        # Dynamic arch means that all kernels will be included in the library and dynamically
+        # choosen at run-time based on CPU information.
+        # Using the dynamic options means much larger binaries.
+        if [ "${1#-arch=}" == "dynamic" ]; then
+          dynamic_arch=1
+        elif [ "${1#-arch=}" == "static" ]; then
+          dynamic_arch=0
+        else
+          echo "invalid -arch option: ${1#-arch=}"
+          exit 1
+        fi
+        ;;
+    -threads=*)
+        # Valid values are 0 and 1 to disable or enable respectively multi-threading.
+        if [ "${1#-threads=}" == "false" ]; then
+            thread_options=("USE_THREAD=0")
+        fi
+        ;;
+    -shared)
+        shared=yes
+        ;;
+    -pic)
+        options+=("NEED_PIC=1")
+        ;;
+    *)
+        echo "lhelper openblas recipe error: unknown option \"$1\""
+        exit 1
+        ;;
+    esac
+    shift
+done
+
+if [ -z "$lapack" ]; then
+    options+=("NO_LAPACK=1")
+fi
+
+if [ -z "$shared" ]; then
+    options+=("NO_SHARED=1")
+else
+    options+=("NO_STATIC=1")
+    targets+=("shared")
+fi
+
+# Problem reported when installed, static library only: the library
+# require pthread library to link but the pkg-config --libs does not
+# report the options to include the pthread library.
+
+# DEBUG=1 can be passed to make to enable debug version
+# USE_THREAD=0 or 1 to force or not support for multi-threading
+# Possible target of make: libs netlib tests shared
+options+=("${thread_options[@]}" "BINARY=$binary" "DYNAMIC_ARCH=${dynamic_arch}" "TARGET=$cpu_target" "PREFIX=$INSTALL_PREFIX")
+
+while IFS= read -r line; do
+    echo "${line/-lopenblas/-lopenblas -lpthread}"
+done < "openblas.pc.in" > "openblas.pc.tmp"
+rm "openblas.pc.in" && mv "openblas.pc.tmp" "openblas.pc.in"
+
+echo "using command: " make "${options[@]}" "${targets[@]}"
+make "${options[@]}" "${targets[@]}"
+make "${options[@]}" install
