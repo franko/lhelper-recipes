@@ -1,0 +1,58 @@
+#!/bin/bash
+check_commands meson ninja "$CC"
+
+dependency freetype2
+dependency expat
+
+enter_archive "https://www.freedesktop.org/software/fontconfig/release/fontconfig-${version}.tar.gz"
+
+options=("-Ddoc=disabled" "-Dnls=disabled" "-Dtests=disabled" "-Dcache-build=disabled")
+enable_tools=disabled
+system_config=yes
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -tools)
+        enable_tools=enabled
+        ;;
+    -private-config)
+        system_config=no
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+options+=("-Dtools=$enable_tools")
+
+if [[ $system_config == yes ]]; then
+    processed_options="$(meson_options "${options[@]}")"
+    mkdir build
+    pushd_quiet build
+    echo "Using meson command: " meson --prefix=/usr --buildtype="${BUILD_TYPE,,}" $processed_options
+    meson --prefix=/usr --buildtype="${BUILD_TYPE,,}" $processed_options .. || {
+        echo "error: while running meson config" >&2
+        exit 6
+    }
+    meson compile || {
+        echo "error: while running meson build" >&2
+        exit 6
+    }
+    echo "Using meson install command: " meson install --destdir="$INSTALL_PREFIX"
+    meson install --destdir="$INSTALL_PREFIX"
+    popd_quiet
+else
+    build_and_install meson "${options[@]}"
+fi
+
+if [[ $system_config == yes ]]; then
+    if [[ "${INSTALL_PREFIX+set}" == set && -d "$INSTALL_PREFIX" ]]; then
+        echo "Removing fontconfig config files"
+        rm -fr "$INSTALL_PREFIX/usr/share" "$INSTALL_PREFIX/etc"
+        mv "$INSTALL_PREFIX"/usr/* "$INSTALL_PREFIX"
+    else
+        echo "internal error with variable INSTALL_PREFIX: $INSTALL_PREFIX"
+        exit 1
+    fi
+fi
