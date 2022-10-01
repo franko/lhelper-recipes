@@ -3,7 +3,9 @@
 enter_git_repository https://github.com/troydhanson/uthash "v$version"
 
 mkdir -p "$INSTALL_PREFIX/include"
-cp "src/uthash.h" "$INSTALL_PREFIX/include"
+for name in array hash list ringbuffer stack string; do
+    cp "src/ut${name}.h" "$INSTALL_PREFIX/include"
+done
 
 PKG_NAME=uthash
 
