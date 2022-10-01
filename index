@@ -69,3 +69,4 @@ cimgui 1.87
 curl 7.75.0
 fontconfig 2.14.0
 xft 2.3.6
+uthash 2.3.0
