@@ -1,6 +1,8 @@
 #!/bin/bash
 
-enter_git_repository https://github.com/troydhanson/uthash.git "v$version"
+enter_git_repository https://github.com/troydhanson/uthash "v$version"
+
+cp "src/uthash.h" "$INSTALL_PREFIX/include"
 
 PKG_NAME=uthash
 
