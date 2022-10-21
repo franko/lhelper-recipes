@@ -1,0 +1,49 @@
+#!/bin/bash
+check_commands meson ninja "$CC"
+
+dependency freetype2
+dependency expat
+
+enter_archive "https://www.freedesktop.org/software/fontconfig/release/fontconfig-${version}.tar.gz"
+
+options=("-Ddoc=disabled" "-Dnls=disabled" "-Dtests=disabled" "-Dcache-build=disabled")
+enable_tools=disabled
+system_prefix="${LH_MSYSROOT:-/}usr"
+prefix_root="${system_prefix#[A-Z]:}"
+if [[ $system_prefix == /usr ]]; then
+    etc_root=/etc
+else
+    etc_root="$prefix_root/etc"
+fi
+prefix_option="--prefix=$system_prefix"
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -tools)
+        enable_tools=enabled
+        ;;
+    -private-config)
+        prefix_option=""
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+options+=("-Dtools=$enable_tools")
+
+# $prefix_option must be used unquoted below
+build_and_install meson $prefix_option "${options[@]}"
+
+if [ -n "$prefix_option" ]; then
+    if [[ "${INSTALL_PREFIX+set}" == set && -d "$INSTALL_PREFIX" ]]; then
+        echo "Removing fontconfig config files"
+        rm -fr "$INSTALL_PREFIX$prefix_root/share" "$INSTALL_PREFIX$etc_root"
+        mv "$INSTALL_PREFIX$prefix_root"/* "$INSTALL_PREFIX"
+        find "$INSTALL_PREFIX" -name '*.pc' -exec lh-path-replace '{}' "$system_prefix" "$WIN_INSTALL_PREFIX" \;
+    else
+        echo "internal error with variable INSTALL_PREFIX: $INSTALL_PREFIX"
+        exit 1
+    fi
+fi
