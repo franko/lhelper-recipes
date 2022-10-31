@@ -18,7 +18,7 @@ wxwidgets 3.1.3
 openblas 0.3.21
 luabridge 2.4.1-franko1
 lua 5.4.3
-sol2 3.2.0
+sol2 3.3.0
 zlib 1.2.11
 libpng16 1.6.37
 blas-netlib 3.10.0
