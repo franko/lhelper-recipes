@@ -1,0 +1,74 @@
+#!/bin/bash
+check_commands make "$CC" "$CXX"
+
+availables=(icu-config renaming plugins extras icuio layoutex tools samples)
+icu_disables=(tests fuzzer)
+icu_enables=()
+
+# possible options for data packaging: files, archive, library, static.
+options=(--with-data-packaging=library)
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -*)
+        name="${1#-}"
+        if [[ " ${availables[@]} " == *" $name "* ]]; then
+            icu_enables+=("$name")
+        else
+            options+=("$1")
+        fi
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+# Testing with icu4c 72.1 on Linux static build gives an error, trying to link
+# icutu, icu18n to build the "makeconv" util.
+# if [[ " ${options[@]} " != *" -shared "* ]]; then
+#    echo "Building as a static library does not currently work."
+    # exit 1
+# fi
+
+for opt in "${availables[@]}"; do
+    if [[ " ${icu_enables[@]} " != *" $opt "* ]]; then
+        icu_disables+=("$opt")
+    fi
+done
+
+for name in "${icu_enables[@]}"; do
+    options+=("--enable-$name")
+done
+for name in "${icu_disables[@]}"; do
+    options+=("--disable-$name")
+done
+
+# must be explicit about the static library
+if [[ " ${options[@]} " == *" -shared "* ]]; then
+    options+=(--disable-static)
+else
+    options+=(--enable-static)
+fi
+
+enter_git_repository "https://github.com/unicode-org/icu" "release-${version//./-}"
+mkdir build
+cd build
+
+processed_options="$(configure_options "${options[@]}")"
+add_build_type_compiler_flags "$BUILD_TYPE"
+echo "Using configure command: " configure --prefix="$WIN_INSTALL_PREFIX" $processed_options
+../icu4c/source/configure --prefix="$WIN_INSTALL_PREFIX" $processed_options
+
+make || {
+    echo "error: while running make build" >&2
+    exit 6
+}
+
+if [[ " ${icu_enables[@]} " != *" renaming "* ]]; then
+    uconfig_filename="../icu4c/source/common/unicode/uconfig.h"
+    printf '%s\n%s\n%s\n\n%s\n' "#ifndef __UCONFIG_H__" "#define U_DISABLE_RENAMING 1" "#endif" "$(cat "$uconfig_filename")" > "$uconfig_filename"
+fi
+
+make install
+
