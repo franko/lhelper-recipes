@@ -1,0 +1,9 @@
+enter_git_repository https://github.com/luarocks/luarocks.git "v${version}"
+
+dependency luajit -app -shared
+
+mkdir -p "$WIN_INSTALL_PREFIX/lib"
+./configure --prefix="$WIN_INSTALL_PREFIX" --with-lua-lib="$WIN_INSTALL_PREFIX/lib" --force-config
+make
+make install
+
