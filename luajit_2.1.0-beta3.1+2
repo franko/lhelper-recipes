@@ -1,15 +1,28 @@
 #!/bin/bash
 check_commands meson ninja "$CC"
+
 # We use "lhelper" to differentiate from the releases from official repository.
 if [[ $version == "2.1.0-beta3.1" ]]; then
     git_tag="v${version}-lhelper-1"
 else
     git_tag="v${version}-lhelper"
 fi
-echo "DEBUG $git_tag"
 enter_git_repository https://github.com/franko/luajit.git "$git_tag"
 
-# With older versions of Meson the option -Ddefault_library=static
-# triggers an error. With Meson 0.53.1 it seems to be fine.
-# The fix used was to add "-shared" in the options array.
-build_and_install meson -Dportable=true "$@"
+build_app=false
+options=(-Dportable=true)
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -app)
+        build_app=true
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+options+=(-Dapp=$build_app)
+
+build_and_install meson "${options[@]}"
