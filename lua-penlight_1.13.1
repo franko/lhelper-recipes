@@ -1,0 +1,25 @@
+dependency lua
+enter_git_repository "https://github.com/lunarmodules/penlight" "$version"
+
+cat << EOF > meson.build
+project('lua-penlight', [])
+
+lua_puc_rio_dep = dependency('lua', required : false)
+if lua_puc_rio_dep.found()
+    lua_dep = lua_puc_rio_dep
+    # We get the first 3 characters because we don't want the minor
+    # version number.
+    lua_abiver = lua_dep.version().substring(0, 3)
+else
+    lua_dep = dependency('luajit')
+    if lua_dep.version().substring(0, 3) in ['2.0', '2.1']
+        lua_abiver = '5.1'
+    else
+        error('unknown luajit version: ' + lua_dep.version())
+    endif
+endif
+
+install_subdir('lua/pl', install_dir: 'share/lua/' + lua_abiver, strip_directory: false)
+EOF
+
+build_and_install meson "$@"

@@ -1,0 +1,3 @@
+dependency lua
+enter_git_repository "https://github.com/franko/luafilesystem" "v${version}-lhelper"
+build_and_install meson "$@"
