@@ -1,0 +1,28 @@
+#!/bin/bash
+check_commands meson ninja "$CC"
+
+# We use "lhelper" to differentiate from the releases from official repository.
+if [[ $version == "2.1.0-beta3.1" ]]; then
+    git_tag="v${version}-lhelper-3"
+else
+    git_tag="v${version}-lhelper"
+fi
+enter_git_repository https://github.com/franko/luajit.git "$git_tag"
+
+build_app=false
+options=(-Dportable=true)
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -app)
+        build_app=true
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+options+=(-Dapp=$build_app)
+
+build_and_install meson "${options[@]}"
