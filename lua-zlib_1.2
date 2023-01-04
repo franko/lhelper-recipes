@@ -1,0 +1,4 @@
+dependency zlib -pic
+dependency lua
+enter_git_repository "https://github.com/franko/lua-zlib" "v${version}-lhelper"
+build_and_install meson "$@"

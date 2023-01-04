@@ -77,3 +77,4 @@ libunistring 1.0
 pcre3 8.39
 icu 72.1
 luarocks 3.9.2
+lua-zlib 1.2
