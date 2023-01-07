@@ -4,7 +4,7 @@ provides lua 5.1
 
 # We use "lhelper" to differentiate from the releases from official repository.
 if [[ $version == "2.1.0-beta3.1" ]]; then
-    git_tag="v${version}-lhelper-3"
+    git_tag="v${version}-lhelper-4"
 else
     git_tag="v${version}-lhelper"
 fi
