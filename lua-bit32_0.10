@@ -1,0 +1,31 @@
+dependency lua
+enter_archive "https://github.com/keplerproject/lua-compat-5.3/archive/v${version}.zip"
+
+cat << EOF > meson.build
+project('lua-bit32', 'c')
+
+lua_puc_rio_dep = dependency('lua', required : false)
+if lua_puc_rio_dep.found()
+    lua_dep = lua_puc_rio_dep
+    lua_abiver = lua_dep.version().substring(0, 3)
+else
+    lua_dep = dependency('luajit')
+    if lua_dep.version().substring(0, 3) in ['2.0', '2.1']
+        lua_abiver = '5.1'
+    else
+        error('unknown luajit version: ' + lua_dep.version())
+    endif
+endif
+
+shared_library('bit32', 'lbitlib.c',
+    dependencies : lua_dep,
+    include_directories: 'c-api',
+    c_args: ['-DLUA_COMPAT_BITLIB'],
+    name_prefix : '',
+    install_dir : 'lib/lua/' + lua_abiver,
+    install : true,
+)
+EOF
+
+build_and_install meson "$@"
+

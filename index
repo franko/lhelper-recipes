@@ -78,3 +78,6 @@ pcre3 8.39
 icu 72.1
 luarocks 3.9.2
 lua-zlib 1.2
+lua-cassowary 2.3.2
+lua-bit32 0.10
+lua-cldr 0.3.0
