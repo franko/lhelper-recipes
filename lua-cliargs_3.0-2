@@ -1,0 +1,43 @@
+dependency lua
+enter_archive "https://github.com/amireh/lua_cliargs/archive/v${version}.tar.gz"
+
+# notice that for this package we work inside the src folder
+cd src
+
+cat << EOF > meson.build
+project('lua-cliargs')
+
+lua_puc_rio_dep = dependency('lua', required : false)
+if lua_puc_rio_dep.found()
+    lua_dep = lua_puc_rio_dep
+    lua_abiver = lua_dep.version().substring(0, 3)
+else
+    lua_dep = dependency('luajit')
+    if lua_dep.version().substring(0, 3) in ['2.0', '2.1']
+        lua_abiver = '5.1'
+    else
+        error('unknown luajit version: ' + lua_dep.version())
+    endif
+endif
+
+install_data(
+    'cliargs.lua',
+    'cliargs/config_loader.lua',
+    'cliargs/constants.lua',
+    'cliargs/core.lua',
+    'cliargs/parser.lua',
+    'cliargs/printer.lua',
+    'cliargs/utils/disect.lua',
+    'cliargs/utils/disect_argument.lua',
+    'cliargs/utils/filter.lua',
+    'cliargs/utils/lookup.lua',
+    'cliargs/utils/shallow_copy.lua',
+    'cliargs/utils/split.lua',
+    'cliargs/utils/trim.lua',
+    'cliargs/utils/wordwrap.lua',
+    install_dir: 'share/lua/' + lua_abiver,
+    preserve_path: true,
+)
+EOF
+
+build_and_install meson "$@"
