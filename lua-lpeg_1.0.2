@@ -1,8 +1,8 @@
 dependency lua
-enter_git_repository "https://github.com/lunarmodules/penlight" "$version"
+enter_archive "http://www.inf.puc-rio.br/~roberto/lpeg/lpeg-${version}.tar.gz"
 
 cat << EOF > meson.build
-project('lua-penlight')
+project('lpeg', 'c')
 
 lua_puc_rio_dep = dependency('lua', required : false)
 if lua_puc_rio_dep.found()
@@ -17,7 +17,15 @@ else
     endif
 endif
 
-install_subdir('lua/pl', install_dir: 'share/lua/' + lua_abiver, strip_directory: false)
+shared_library('lpeg', ['lpcap.c', 'lpcode.c', 'lpprint.c', 'lptree.c', 'lpvm.c'],
+    dependencies : lua_dep,
+    name_prefix : '',
+    install_dir : 'lib/lua/' + lua_abiver,
+    install : true,
+)
+
+install_data('re.lua', install_dir: 'share/lua/' + lua_abiver)
 EOF
 
 build_and_install meson "$@"
+
