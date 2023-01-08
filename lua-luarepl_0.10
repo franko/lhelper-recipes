@@ -1,0 +1,44 @@
+dependency lua
+enter_archive "https://github.com/hoelzro/lua-repl/archive/${version}.tar.gz"
+
+cat << EOF > meson.build
+project('luarepl')
+
+lua_puc_rio_dep = dependency('lua', required : false)
+if lua_puc_rio_dep.found()
+    lua_dep = lua_puc_rio_dep
+    lua_abiver = lua_dep.version().substring(0, 3)
+else
+    lua_dep = dependency('luajit')
+    if lua_dep.version().substring(0, 3) in ['2.0', '2.1']
+        lua_abiver = '5.1'
+    else
+        error('unknown luajit version: ' + lua_dep.version())
+    endif
+endif
+
+install_data(
+    'repl/init.lua',
+    'repl/utils.lua',
+    'repl/sync.lua',
+    'repl/compat.lua',
+    'repl/console.lua',
+    'repl/plugins/autoreturn.lua',
+    'repl/plugins/completion.lua',
+    'repl/plugins/example.lua',
+    'repl/plugins/history.lua',
+    'repl/plugins/keep_last_eval.lua',
+    'repl/plugins/linenoise.lua',
+    'repl/plugins/pretty_print.lua',
+    'repl/plugins/rcfile.lua',
+    'repl/plugins/semicolon_suppress_output.lua',
+    'repl/plugins/filename_completion.lua',
+    'repl/plugins/rlwrap.lua',
+    install_dir: 'share/lua/' + lua_abiver,
+    preserve_path: true,
+)
+
+install_data('rep.lua', install_dir: 'bin')
+EOF
+
+build_and_install meson "$@"

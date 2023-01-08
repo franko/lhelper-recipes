@@ -89,3 +89,6 @@ lua-fluent 0.2.0
 lua-linenoise 0.9
 lua-loadkit 1.1.0
 lua-cliargs 3.0-2
+lua-expat 1.5.1
+luafilesystem 1.8.0
+lua-luarepl 0.10
