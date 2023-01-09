@@ -92,3 +92,4 @@ lua-cliargs 3.0-2
 lua-expat 1.5.1
 luafilesystem 1.8.0
 lua-luarepl 0.10
+lua-vstruct 2.1.1

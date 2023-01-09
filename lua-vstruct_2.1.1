@@ -1,0 +1,61 @@
+dependency lua
+enter_git_repository "https://github.com/ToxicFrog/vstruct" "v${version}"
+
+cat << EOF > meson.build
+project('lua-vstruct')
+
+lua_puc_rio_dep = dependency('lua', required : false)
+if lua_puc_rio_dep.found()
+    lua_dep = lua_puc_rio_dep
+    lua_abiver = lua_dep.version().substring(0, 3)
+else
+    lua_dep = dependency('luajit')
+    if lua_dep.version().substring(0, 3) in ['2.0', '2.1']
+        lua_abiver = '5.1'
+    else
+        error('unknown luajit version: ' + lua_dep.version())
+    endif
+endif
+
+install_data(
+    'api.lua',
+    'ast.lua',
+    'ast/Bitpack.lua',
+    'ast/IO.lua',
+    'ast/List.lua',
+    'ast/Name.lua',
+    'ast/Node.lua',
+    'ast/Repeat.lua',
+    'ast/Root.lua',
+    'ast/Table.lua',
+    'compat1x.lua',
+    'cursor.lua',
+    'frexp.lua',
+    'init.lua',
+    'io.lua',
+    'io/a.lua',
+    'io/b.lua',
+    'io/bigendian.lua',
+    'io/c.lua',
+    'io/defaults.lua',
+    'io/endianness.lua',
+    'io/f.lua',
+    'io/hostendian.lua',
+    'io/i.lua',
+    'io/littleendian.lua',
+    'io/m.lua',
+    'io/p.lua',
+    'io/s.lua',
+    'io/seekb.lua',
+    'io/seekf.lua',
+    'io/seekto.lua',
+    'io/u.lua',
+    'io/x.lua',
+    'io/z.lua',
+    'lexer.lua',
+    install_dir: 'share/lua/' + lua_abiver + '/vstruct',
+    preserve_path: true,
+)
+EOF
+
+build_and_install meson "$@"
