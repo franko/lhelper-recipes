@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# it seems that the configure script requires the commands cmp and diff.
+check_commands make cmp diff "$CC"
+
+# availabes=(pcre2-8 pcre2-16 pcre2-32 debug jit unicode ebcdic)
+disables=(pcre2-16 pcre2-32 debug jit ebcdic pcre2grep-{jit,callout,callout-fork} pcre2grep-{libz,libbz2})
+enables=(pcre2-8 unicode newline-is-anycrlf)
+
+for name in "${enables[@]}"; do
+    options+=("--enable-$name")
+done
+for name in "${disables[@]}"; do
+    options+=("--disable-$name")
+done
+
+# The old sourceforge location can be used up to version 10.36 but in lhelper we don't provide
+# versions older than 10.39.
+# enter_archive "https://sourceforge.net/projects/pcre/files/pcre2/${version}/pcre2-${version}.tar.gz"
+enter_archive "https://github.com/PhilipHazel/pcre2/releases/download/pcre2-${version}/pcre2-${version}.tar.gz"
+build_and_install configure "${options[@]}"
+
