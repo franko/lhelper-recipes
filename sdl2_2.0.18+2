@@ -1,5 +1,5 @@
 #!/bin/bash
-check_commands make "$CC" "$CXX"
+check_commands make grep "$CC" "$CXX"
 
 # Options in the array below will be disabled unless they are
 # explicitly enabled.
