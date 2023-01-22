@@ -1,5 +1,5 @@
 #!/bin/bash
-check_commands make grep "$CC" "$CXX"
+check_commands make grep cmp diff "$CC" "$CXX"
 
 # Options in the array below will be disabled unless they are
 # explicitly enabled.
@@ -52,6 +52,8 @@ case "$CPU_TYPE/$CPU_TARGET" in
 esac
 
 if [[ "$OSTYPE" == "linux"* ]]; then
+    dependency x11
+    dependency xext
     os_audio_enables=(pulseaudio)
     os_audio_disables=(esd "${audio_disables[@]}")
     enables+=(video-x11 video-x11-{xcursor,xrandr})
@@ -78,6 +80,12 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -wayland)
         if [[ "$OSTYPE" == "linux"* ]]; then
+            dependency wayland-client
+            dependency wayland-scanner
+            dependency wayland-egl
+            dependency wayland-cursor
+            dependency egl
+            dependency xkbcommon
             enables+=(video-wayland libdecor)
             # Not tested if libdecor works and how.
             # Normally both opengl and opengles are needed for wayland.
