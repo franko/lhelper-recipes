@@ -1,0 +1,5 @@
+#!/bin/bash
+enter_archive "https://github.com/fribidi/fribidi/releases/download/v${version}/fribidi-${version}.tar.xz"
+options=("$@")
+options+=(-Ddeprecated=false -Ddocs=false -Dbin=false -Dtests=false)
+build_and_install meson "${options[@]}"
