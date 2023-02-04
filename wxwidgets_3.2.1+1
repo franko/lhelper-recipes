@@ -10,14 +10,16 @@ options=()
 addons=()
 enables=()
 linux_backend=gtk
-if [[ "$OSTYPE" == "linux"* ]]; then
-    options+=("--disable-unicode")
-elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
+# if [[ "$OSTYPE" == "linux"* ]]; then
+    # nothing
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
     # on windows do not disable unicode, it doesn't work
     options+=("--with-msw")
+    enables+=("unicode")
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     # on MAC OS X do not disable unicode, not tested
     options=("--with-osx")
+    enables+=("unicode")
 fi
 
 while [ ! -z ${1+x} ]; do
@@ -49,7 +51,7 @@ done
 
 if [[ "$OSTYPE" == "linux"* ]]; then
     if [[ $linux_backend == x11 ]]; then
-        options+=("--with-x11" "--with-universal")
+        options+=("--with-x11" "--enable-universal")
     else
         options+=("--with-gtk=3")
     fi
