@@ -1,5 +1,14 @@
 #!/bin/bash
 check_commands meson ninja "$CC" "$CXX"
+
+if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
+    dependency x11
+    dependency xext
+    for depname in xrandr xrender xfixes xcursor xi; do
+        dependency --optional "$depname"
+    done
+fi
+
 options=()
 xft_option="-Dxft=false"
 apps_option="-Dapps=false"
@@ -27,8 +36,8 @@ while [ ! -z ${1+x} ]; do
         ;;
     -xft)
         xft_option="-Dxft=true"
-        # dependency freetype2
-        # dependency xft
+        dependency freetype2
+        dependency xft
         ;;
     -apps)
         apps_option="-Dapps=true"
