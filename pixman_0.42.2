@@ -1,0 +1,54 @@
+#!/bin/bash
+
+availables=(libpng gtk)
+
+simd_availables=(loongson-mmi mmx sse2 ssse3 vmx arm-simd neon a64-neon iwmmxt mips-dspr2)
+simd_enables=()
+
+case "$CPU_TYPE/$CPU_TARGET" in
+    x86/i586 | x86/i686) ;;
+    x86/pentium2 | x86/pentium3)
+        simd_enables+=(mmx);;
+    x86/pentium4 | x86-64/x86-64)
+        simd_enables+=(mmx sse2);;
+    x86*)
+        simd_enables+=(mmx sse2 ssse3);;
+    arm/cortexa15)
+        simd_enables+=(neon);;
+    arm64/armv8-a)
+        simd_enables+=(a64-neon);;
+esac
+
+enables=()
+options=(-Dtests=disabled -Dtimers=false -Dgnuplot=false -Diwmmxt2=false)
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -gtkdemos)
+        enables+=(gtk)
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${availables[@]}"; do
+  if [[ " ${enables[*]} " == *" $opt "* ]]; then
+    options+=(-D$opt=enabled)
+  else
+    options+=(-D$opt=disabled)
+  fi
+done
+
+all_simd="${simd_enables[*]}"
+for opt in "${simd_availables[@]}"; do
+    if [[ " $all_simd " == *" $opt "* ]]; then
+        options+=(-D$opt=enabled)
+    else
+        options+=(-D$opt=disabled)
+    fi
+done
+
+enter_git_repository "https://gitlab.freedesktop.org/pixman/pixman" "pixman-$version"
+build_and_install meson "${options[@]}"
