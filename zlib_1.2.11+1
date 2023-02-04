@@ -25,6 +25,14 @@ if [[ "$use_static" == "yes" ]]; then
 fi
 add_build_type_compiler_flags "$BUILD_TYPE"
 
-./configure "${zlib_options[@]}"
-make
-make install
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
+    export INCLUDE_PATH=${INSTALL_PREFIX}/include
+    export LIBRARY_PATH=${INSTALL_PREFIX}/lib
+    export BINARY_PATH=${INSTALL_PREFIX}/lib
+    make -f win32/Makefile.gcc
+    make -f win32/Makefile.gcc install
+else
+    ./configure "${zlib_options[@]}"
+    make
+    make install
+fi

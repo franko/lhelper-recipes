@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Does not install a pkg-config file but provide the unistring library files and headers.
+# Depends on iconv but this latter is installed by default in MSYS2 and is a sort of
+# system library in unix-like systems and MSYS2 as well.
+
+enter_archive "https://ftp.gnu.org/gnu/libunistring/libunistring-${version}.tar.gz"
+build_and_install configure "$@"
