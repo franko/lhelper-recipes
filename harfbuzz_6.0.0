@@ -18,6 +18,7 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -glib)
         enables+=(glib gobject)
+        dependency glib
         ;;
     *)
         options+=("$1")
