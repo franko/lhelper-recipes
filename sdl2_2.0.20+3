@@ -51,7 +51,7 @@ case "$CPU_TYPE/$CPU_TARGET" in
         simd_enables+=(mmx ssemath sse sse2 sse3);;
 esac
 
-if [[ "$OSTYPE" == "linux"* ]]; then
+if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
     dependency x11
     dependency xext
     os_audio_enables=(pulseaudio)
