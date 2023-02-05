@@ -4,7 +4,7 @@ enter_archive "https://github.com/wxWidgets/wxWidgets/releases/download/v${versi
 availables=(svg compat30 webview{webkit,ie,edge} unicode)
 addons_list=(\
     libxpm libiconv gnomevfs libnotify opengl dmalloc sdl regex zlib expat libpng \
-    libjpeg libtiff libmspack)
+    libjpeg libtiff libmspack cairo)
 
 options=()
 addons=()
@@ -39,6 +39,7 @@ while [ ! -z ${1+x} ]; do
         dependency x11
         dependency xext
         dependency pango -cairo -xft
+        addons+=(cairo)
         linux_backend=x11
         ;;
     *)
