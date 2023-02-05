@@ -1,0 +1,14 @@
+#!/bin/bash
+dependency glib
+dependency fribidi
+dependency harfbuzz -glib
+dependency fontconfig
+dependency cairo -fontconfig -freetype
+enter_git_repository "https://github.com/GNOME/pango" "$version"
+# Duing install both options, enable and disable fontconfig, appear to work but
+# the fontconfig in cairo is needed anyway.
+build_and_install meson \
+    -Dfontconfig=disabled -Dxft=disabled -Dintrospection=disabled \
+    -Dinstall-tests=false -Dsysprof=disabled -Dlibthai=disabled \
+    -Dcairo=enabled "$@"
+
