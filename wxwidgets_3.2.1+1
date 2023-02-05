@@ -8,18 +8,16 @@ addons_list=(\
 
 options=()
 addons=()
-enables=()
+enables=("unicode")
 linux_backend=gtk
 # if [[ "$OSTYPE" == "linux"* ]]; then
     # nothing
 if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
     # on windows do not disable unicode, it doesn't work
     options+=("--with-msw")
-    enables+=("unicode")
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     # on MAC OS X do not disable unicode, not tested
     options=("--with-osx")
-    enables+=("unicode")
 fi
 
 while [ ! -z ${1+x} ]; do
@@ -40,6 +38,7 @@ while [ ! -z ${1+x} ]; do
         # this option was not tested
         dependency x11
         dependency xext
+        dependency pango -cairo -xft
         linux_backend=x11
         ;;
     *)

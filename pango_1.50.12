@@ -1,14 +1,46 @@
 #!/bin/bash
-dependency glib
-dependency fribidi
-dependency harfbuzz -glib
-dependency fontconfig
-dependency cairo -fontconfig -freetype
+availables=(fontconfig xft libthai cairo)
+
+options=(-Dintrospection=disabled -Dinstall-tests=false -Dsysprof=disabled)
+enables=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -fontconfig)
+        enables+=(fontconfig)
+        dependency fontconfig
+        ;;
+    -xft)
+        enables+=(xft)
+        dependency xft
+        ;;
+    -cairo)
+        enables+=(cairo)
+        dependency glib
+        dependency fribidi
+        dependency harfbuzz -glib
+        dependency fontconfig
+        dependency cairo -fontconfig -freetype -xlib
+        ;;
+    -libthai)
+        enables+=(libthai)
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${availables[@]}"; do
+    if [[ " ${enables[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=enabled)
+    else
+        options+=(-D$opt=disabled)
+    fi
+done
+
 enter_git_repository "https://github.com/GNOME/pango" "$version"
 # Duing install both options, enable and disable fontconfig, appear to work but
 # the fontconfig in cairo is needed anyway.
-build_and_install meson \
-    -Dfontconfig=disabled -Dxft=disabled -Dintrospection=disabled \
-    -Dinstall-tests=false -Dsysprof=disabled -Dlibthai=disabled \
-    -Dcairo=enabled "$@"
+build_and_install meson "${options[@]}"
 
