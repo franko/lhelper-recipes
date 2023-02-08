@@ -25,7 +25,7 @@ if [[ "$use_static" == "yes" ]]; then
 fi
 add_build_type_compiler_flags "$BUILD_TYPE"
 
-if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
     export INCLUDE_PATH=${INSTALL_PREFIX}/include
     export LIBRARY_PATH=${INSTALL_PREFIX}/lib
     export BINARY_PATH=${INSTALL_PREFIX}/lib

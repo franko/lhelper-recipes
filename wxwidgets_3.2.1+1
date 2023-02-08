@@ -12,7 +12,7 @@ enables=("unicode")
 linux_backend=gtk
 # if [[ "$OSTYPE" == "linux"* ]]; then
     # nothing
-if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
     # on windows do not disable unicode, it doesn't work
     options+=("--with-msw")
 elif [[ "$OSTYPE" == "darwin"* ]]; then

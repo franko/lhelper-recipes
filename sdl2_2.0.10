@@ -42,7 +42,7 @@ if [[ "$OSTYPE" == "linux"* ]]; then
     disables+=(
         "${video_disables[@]}" video-wayland \
         video-x11-{xdbe,xinerama,scrnsaver,xshape,vm})
-elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
+elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
     os_audio_enables=(wasapi)
     os_audio_disables=("${audio_disables[@]}")
     # On windows the default video driver is directx but windib will

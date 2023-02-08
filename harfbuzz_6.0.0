@@ -4,7 +4,7 @@
 # https://harfbuzz.github.io/building.html
 availables=(glib gobject cairo chafa icu graphite freetype)
 
-if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
   availables+=(gdi directwrite)
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   availables+=(coretext)

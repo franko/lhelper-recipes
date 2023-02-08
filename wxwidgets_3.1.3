@@ -2,7 +2,7 @@ enter_archive "https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.3/w
 
 if [[ "$OSTYPE" == "linux"* ]]; then
     X_OS_OPTIONS=(--with-gtk=3 --disable-unicode)
-elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
+elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
     # on windows do not disable unicode, it doesn't work
     X_OS_OPTIONS=(--with-msw)
 elif [[ "$OSTYPE" == "darwin"* ]]; then

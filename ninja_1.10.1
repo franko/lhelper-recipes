@@ -1,6 +1,6 @@
 enter_git_repository https://github.com/ninja-build/ninja.git "v${version}"
 
-if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* ]]; then
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
   build_options=("--platform=mingw")
   NINJA_EXE="ninja.exe"
 else
