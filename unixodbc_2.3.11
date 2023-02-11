@@ -1,0 +1,42 @@
+#!/bin/bash
+check_commands "$CC"
+
+availables=(threads readline editline iconv gui stats drivers driver-config)
+# On linux the library does not build correctly if threads are not enabled.
+# It will fail to link because of missing pool_timedwait function.
+enables=(threads)
+
+# it seems that ltdl is a small library and the recomendded way of
+# using is to embed it with the source project, which unixodbc does.
+options=("--with-included-ltdl" "--enable-ltdl-install")
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -readline)
+        enables+=(readline)
+        ;;
+    -drivers)
+        enables+=(drivers driver-config)
+        ;;
+    -iconv)
+        if [[ "$OSTYPE" != "linux"* && "$OSTYPE" != "freebsd"* ]]; then
+            dependency libiconv
+        fi
+        enables+=(iconv)
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${availables[@]}"; do
+    if [[ " ${enables[*]} " == *" $opt "* ]]; then
+        options+=("--enable-$opt")
+    else
+        options+=("--disable-$opt")
+    fi
+done
+
+enter_archive "https://www.unixodbc.org/unixODBC-${version}.tar.gz"
+build_and_install configure "${options[@]}"

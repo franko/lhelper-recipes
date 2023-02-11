@@ -79,3 +79,4 @@ pcre3 8.39
 pixman 0.42.2
 cairo 1.17.8
 pango 1.50.12
+unixodbc 2.3.11
