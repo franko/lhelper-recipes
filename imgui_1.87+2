@@ -2,7 +2,7 @@
 
 options=()
 ttf_option="-Dtruetype=stb"
-sdl_dep_options=(-opengl -threads)
+sdl_dep_options=(-opengl)
 win_impl=()
 while [ ! -z ${1+x} ]; do
     case $1 in
