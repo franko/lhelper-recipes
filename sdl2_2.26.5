@@ -96,6 +96,7 @@ while [ ! -z ${1+x} ]; do
             needs_opengles=yes
         fi
         ;;
+    -threads) ;;
     -rpi)
         if [[ "$OSTYPE" == "linux"* ]]; then
             enables+=(video-rpi)
