@@ -181,4 +181,14 @@ for name in "${disables[@]}"; do
 done
 
 enter_archive "http://libsdl.org/release/SDL2-${version}.tar.gz"
+
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+    # on windows, when using mingw64, the command "pwd -P" creates a same like /c/something/foo
+    # while we need the form C:/something/foo because with GCC the include option -I require
+    # this latter form. So we replace (pwd -P) with (pwd -W) to produce the desired output.
+    if test -f "sdl2-config.in"; then
+        sed -i 's/(pwd -P)/(pwd -W)/g' "sdl2-config.in"
+    fi
+fi
+
 build_and_install configure "${options[@]}"
