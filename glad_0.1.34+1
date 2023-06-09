@@ -60,6 +60,7 @@ libglad = library('glad',
 )
 
 install_headers('include/glad/glad.h', subdir: 'glad')
+install_headers('include/KHR/khrplatform.h', subdir: 'KHR')
 
 pkg = import('pkgconfig')
 
