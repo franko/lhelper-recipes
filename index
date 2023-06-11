@@ -80,3 +80,4 @@ pixman 0.42.2
 cairo 1.17.8
 pango 1.50.12
 uchardet 0.0.8
+sokol-tools-bin 2023.06.1

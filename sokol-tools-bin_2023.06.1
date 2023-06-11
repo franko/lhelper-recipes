@@ -1,0 +1,31 @@
+#!/bin/bash
+
+program_name=sokol-shdc
+program_location=
+if [[ "$OSTYPE" == "linux"* ]]; then
+    program_location="bin/linux"
+elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+    program_location="bin/win32"
+    program_name=sokol-shdc.exe
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    case "$CPU_TYPE" in
+    x86-64)
+        program_location="bin/osx" ;;
+    arm64)
+        program_location="bin/osx_arm64" ;;
+    *)
+        echo "unsupported CPU type on macOS: $CPU_TYPE" >&2
+        exit 1
+        ;;
+    esac
+else
+    echo "unsupported OS: $OSTYPE" >&2
+    exit 1
+fi
+
+# The original repository https://github.com/floooh/sokol-tools-bin was forked
+# only to add tags to be used by lhelper's recipes.
+enter_git_repository https://github.com/lhelper-org/sokol-tools-bin "v$version"
+mkdir -p "$INSTALL_PREFIX/bin"
+cp "$program_location/$program_name" "$INSTALL_PREFIX/bin"
+
