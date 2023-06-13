@@ -40,6 +40,10 @@ while [ ! -z ${1+x} ]; do
         dependency freetype2
         dependency xft
         ;;
+    -cups)
+        options+=("-Dcups=true")
+        dependency cups
+        ;;
     -apps)
         apps_option="-Dapps=true"
         ;;
