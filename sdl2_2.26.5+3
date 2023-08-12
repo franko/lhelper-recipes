@@ -5,7 +5,7 @@ check_commands make grep cmp diff "$CC" "$CXX"
 # explicitly enabled.
 availables=( \
     video video-opengl video-rpi video-wayland libdecor video-opengles video-opengles2 loadso render \
-    audio joystick haptic hidapi sensor power filesystem misc locale timers file cpuinfo \
+    audio sndio joystick haptic hidapi sensor power filesystem misc locale timers file cpuinfo \
     dbus ibus fcitx ime assembly largefile)
 
 # lsx and lasx are extensions for MIPS Longsoon CPU type. Not currently recorgnized
@@ -61,6 +61,8 @@ if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
     dependency xext
     os_audio_enables=(pulseaudio)
     os_audio_deps=(libpulse-simple samplerate) # sndio ? (configure is looking for sndio)
+    CFLAGS+="$(pkg-config --cflags-only-I samplerate)"
+    echo "Added samplerate includes to CFLAGS: $CFLAGS"
     os_audio_disables=(esd "${audio_disables[@]}")
     enables+=(video-x11 video-x11-{xcursor,xrandr})
     disables+=(
@@ -116,6 +118,10 @@ while [ ! -z ${1+x} ]; do
         done
         enables+=(audio "${os_audio_enables[@]}")
         disables+=("${os_audio_disables[@]}")
+        ;;
+    -sndio)
+        dependency sndio
+        enables+=(sndio)
         ;;
     -opengl)
         needs_opengl=yes
