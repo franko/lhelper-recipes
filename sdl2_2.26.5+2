@@ -41,6 +41,8 @@ disables=(atomic)
 audio_disables=(jack arts nas fusionsound pipewire)
 video_disables=(video-{vulkan,directfb,dummy,opengles1,vivante,wayland-qt-touch})
 
+os_audio_deps=()
+
 case "$CPU_TYPE/$CPU_TARGET" in
     x86/i586 | x86/i686) ;;
     x86/pentium2)
@@ -58,6 +60,7 @@ if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
     dependency x11
     dependency xext
     os_audio_enables=(pulseaudio)
+    os_audio_deps=(libpulse-simple samplerate) # sndio ? (configure is looking for sndio)
     os_audio_disables=(esd "${audio_disables[@]}")
     enables+=(video-x11 video-x11-{xcursor,xrandr})
     disables+=(
@@ -108,6 +111,9 @@ while [ ! -z ${1+x} ]; do
         needs_opengles=yes
         ;;
     -audio)
+        for depname in "${os_audio_deps[@]}"; do
+            dependency "$depname"
+        done
         enables+=(audio "${os_audio_enables[@]}")
         disables+=("${os_audio_disables[@]}")
         ;;
