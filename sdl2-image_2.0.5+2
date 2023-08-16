@@ -1,0 +1,32 @@
+dependency sdl2
+
+unset extract_options
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
+  # Xcode subfolder contains symlinks that are not accepted on MSYS2
+  extract_options="--extract-options --exclude=SDL2_image-${version}/Xcode"
+fi
+# The source archive previously at libsdl.org is no longer available. The one on github
+# seems ok but is named "release-..." which is not fine.
+# In lhelper.cc we just keep a copy of the archive.
+enter_archive "https://www.lhelper.cc/archives/SDL2_image-${version}.tar.gz" $extract_options
+
+webp=disable
+options=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -webp)
+        # known problem with provided pkg-config file: the dependency from
+        # webp will not be included in the required libraries.
+        dependency libwebp
+        webp=enable
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+options+=(--${webp}-webp)
+
+build_and_install configure "${options[@]}"
