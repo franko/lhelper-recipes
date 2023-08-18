@@ -56,6 +56,7 @@ case "$CPU_TYPE/$CPU_TARGET" in
     # if we know about MIPS and Longsoon we may enable selectively LSX and LASX support
 esac
 
+unset enable_directx
 if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
     dependency x11
     dependency xext
@@ -69,12 +70,14 @@ if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
         "${video_disables[@]}" \
         video-x11-{xdbe,scrnsaver,xshape})
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
-    os_audio_enables=(wasapi)
+    availables+=(directx wasapi)
+    os_audio_enables=()
     os_audio_disables=("${audio_disables[@]}")
-    # On windows the default video driver is directx but windib will
-    # be used if directx is disabled. Windib is based on GDI32 and doesn't
-    # need to be explicitly enabled with configure.
-    disables+=(directx render-d3d "${video_disables[@]}")
+    # We need directx to have DirectSound. It seems DirectSound should be preferred
+    # over WASAPI.
+    # https://stackoverflow.com/questions/44186167/sdl-2-on-windows-works-incorrectly-with-audio-device
+    enable_directx=yes
+    disables+=(render-d3d "${video_disables[@]}")
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     os_audio_enables=(coreaudio)
     os_audio_disables=("${audio_disables[@]}")
@@ -100,6 +103,12 @@ while [ ! -z ${1+x} ]; do
             needs_opengl=yes
             needs_opengles=yes
         fi
+        ;;
+    -directx)
+        enable_directx=yes
+        ;;
+    -wasapi)
+        enables+=(wasapi)
         ;;
     -threads) ;;
     -rpi)
@@ -153,6 +162,10 @@ while [ ! -z ${1+x} ]; do
     esac
     shift
 done
+
+if [ ! -z ${enable_directx+x} ]; then
+    enables+=(directx)
+fi
 
 if [ ! -z ${needs_loadso+x} ]; then
     enables+=(loadso)
