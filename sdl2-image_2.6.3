@@ -1,0 +1,80 @@
+#!/bin/bash
+
+dependency sdl2
+
+unset extract_options
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
+  # Xcode subfolder contains symlinks that are not accepted on MSYS2
+  extract_options="--extract-options --exclude=SDL2_image-${version}/Xcode"
+fi
+
+# Other enables:
+# imageio (macOS), stb-image (for JPG and PNG format)
+
+availables=(avif bmp jpg jxl lbm pcx png pnm svg tga tif xcf xpm xv webp webpdec qoi stb-image save-jpg save-png)
+format_shared=(avif jpg jxl png tif webp)
+
+dependency libpng16
+enables=(png)
+disables=()
+
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -webp)
+        enables+=(webp)
+        # known problem with provided pkg-config file: the dependency from
+        # webp will not be included in the required libraries. TRUE at least up to 2.0.5.
+        dependency libwebp
+        ;;
+    -avif)
+        dependency libavif
+        enables+=($1)
+        ;;
+    -jpeg|-save-jpg)
+        dependency libjpeg
+        enables+=($1)
+        ;;
+    -jxl)
+        dependency libjxl
+        enables+=($1)
+        ;;
+    -pnm)
+        dependency libnetpbm
+        enables+=($1)
+        ;;
+    -tif)
+        dependency libtiff-4
+        enables+=($1)
+        ;;
+    -save-png)
+        enables+=($1)
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+all_enables="${enables[*]}"
+for opt in "${availables[@]}"; do
+    if [[ " $all_enables " != *" $opt "* ]]; then
+        disables+=("$opt")
+    fi
+done
+
+for opt in "${format_shared[@]}"; do
+    disables+=("$opt-shared")
+done
+
+options=()
+for name in "${enables[@]}"; do
+    options+=("--enable-$name")
+done
+for name in "${disables[@]}"; do
+    options+=("--disable-$name")
+done
+
+enter_archive "https://github.com/libsdl-org/SDL_image/releases/download/release-${version}/SDL2_image-${version}.tar.gz" $extract_options
+
+build_and_install configure "${options[@]}"
