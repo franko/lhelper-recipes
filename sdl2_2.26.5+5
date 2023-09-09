@@ -62,8 +62,6 @@ if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
     dependency xext
     os_audio_enables=(pulseaudio)
     os_audio_deps=(libpulse-simple samplerate) # sndio ? (configure is looking for sndio)
-    CFLAGS+="$(pkg-config --cflags-only-I samplerate)"
-    echo "Added samplerate includes to CFLAGS: $CFLAGS"
     os_audio_disables=(esd "${audio_disables[@]}")
     enables+=(video-x11 video-x11-{xcursor,xrandr})
     disables+=(
@@ -124,6 +122,10 @@ while [ ! -z ${1+x} ]; do
     -audio)
         for depname in "${os_audio_deps[@]}"; do
             dependency "$depname"
+            if [[ "$depname" == samplerate ]]; then
+                CFLAGS+="$(pkg-config --cflags-only-I samplerate)"
+                echo "Added samplerate includes to CFLAGS: $CFLAGS"
+            fi
         done
         enables+=(audio "${os_audio_enables[@]}")
         disables+=("${os_audio_disables[@]}")
