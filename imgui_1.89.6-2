@@ -31,6 +31,9 @@ while [ ! -z ${1+x} ]; do
         # needed by cimgui to define the Impl functions as extern "C" using IMGUI_IMPL_API
         options+=("-Dcimpl=true")
         ;;
+    -stdlib)
+        options+=("-Dstdlib=true")
+        ;;
     -*)
         options+=("$1")
         ;;
