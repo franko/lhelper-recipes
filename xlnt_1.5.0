@@ -1,0 +1,16 @@
+static_flag="-DSTATIC=ON"
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -shared)
+        static_flag="-DSTATIC=OFF"
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+enter_git_repository https://github.com/lhelper-org/xlnt "v${version}-lhelper"
+build_and_install cmake $static_flag -DSAMPLES=OFF -DTESTS=OFF -DBENCHMARKS=OFF -DPYTHON=OFF -DCOVERAGE=OFF "$@"
+
