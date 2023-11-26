@@ -1,0 +1,10 @@
+# No longer use the sourceforge download because it does no longer works
+# on Windows using a proxy. The SSL certificate check is disabled and
+# redirects are enabled with curl but it does not work.
+# Use github source code repository instead: glennrp/libpng.
+# Changed again to lhelper-org/libpng repository to use the Meson build
+# taken from wrapdb. Otherwise the configure script does not lookup for
+# zlib using pkg-config.
+dependency zlib
+enter_git_repository "https://github.com/lhelper-org/libpng" "v${version}-lhelper"
+build_and_install meson "$@"
