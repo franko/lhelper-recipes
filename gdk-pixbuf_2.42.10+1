@@ -1,17 +1,25 @@
 #!/bin/bash
+# NOTES:
+# if builtin_loaders is not set to "all"
+# gdk-pixbuf always attempt to create shared loader libraries like:
+# gdk-pixbuf/libpixbufloader-bmp.so
+# so the -fPIC flag is needed even when using static libraries.
+
+dependency glib
+
 availables=(introspection png jpeg tiff)
 available_options=(gio_sniffing man tests installed_tests gtk_doc docs relocatable native_windows_loaders)
 
 # all, none, windows, png, bmp, gif, ico, ani, jpeg, pnm, tiff, xpm, xbm, tga, icns, qtif
-builtin_loaders=()
+# We go for the strategy to use "all" to prevent creating small shared libraries loader like
+# gdk-pixbuf/libpixbufloader-bmp.so
+builtin_loaders=(all)
+
 options=()
 enables=()
 activates=(relocatable)
 if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
     activates+=(native_windows_loaders)
-    builtin_loaders=(windows)
-elif [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
-    builtin_loaders=(xpm)
 fi
 
 while [ ! -z ${1+x} ]; do
@@ -22,25 +30,16 @@ while [ ! -z ${1+x} ]; do
     #     dependency glib
     #     ;;
     -png)
-        if [[ ! " ${builtin_loaders[*]} " == *" windows "* ]]; then
-            builtin_loaders+=(png)
-        fi
         enables+=(png)
         dependency libpng16
         ;;
     -jpeg)
-        if [[ ! " ${builtin_loaders[*]} " == *" windows "* ]]; then
-            builtin_loaders+=(jpeg)
-        fi
         enables+=(jpeg)
         # It seems that at least on linux the -pic option is needed for jpeg even when
         # building static libraries.
         dependency libjpeg -pic
         ;;
     -tiff)
-        if [[ ! " ${builtin_loaders[*]} " == *" windows "* ]]; then
-            builtin_loaders+=(tiff)
-        fi
         enables+=(tiff)
         # Currently there is no lhelper recipe for libtiff
         dependency libtiff-4
@@ -52,6 +51,7 @@ while [ ! -z ${1+x} ]; do
     shift
 done
 
+# builtin_loaders is an array and we need to concatenate its values using commas
 IFS=','
 options+=(-Dbuiltin_loaders="${builtin_loaders[*]}")
 IFS=$' \t\n'
