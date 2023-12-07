@@ -1,0 +1,55 @@
+# NOT WORKING YET
+# TESTING CURRENTLY ON LINUX
+# it needs at least libtiff and probably GNU gettext
+
+# libffi -pic" pcre2 glib libpng16 "libjpeg -pic" libiconv "gdk-pixbuf -png -jpeg"
+# glib gobject-introspection "epoxy -x11 -egl" graphene freetype2 pixman expat
+# fontconfig xft "cairo -glib -fontconfig -freetype -png -xlib" fribidi
+# "harfbuzz -glib" "pango -fontconfig -xft -cairo" "libxml2 -sax1" "xkbcommon"
+
+# KNOWN PROBLEMS
+# libtiff, wants graphene-gobject, cairo-script-interpreter
+
+features_list=( \
+    f16c introspection print-{cpdb,cups} vulkan cloudproviders sysprof tracker \
+    colord)
+
+options_list=( \
+    {x11,wayland,broadway,win32,macos}-backend \
+    build-{demos,testsuite,examples,tests,documentation,gtk_doc,screenshots} \
+    media-{ffmpeg,gstreamer})
+
+options=()
+features_in=()
+options_in=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -introspection)
+        features_in+=(introspection)
+        dependency gobject-introspection
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${features_list[@]}"; do
+    if [[ " ${features_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=enabled)
+    else
+        options+=(-D$opt=disabled)
+    fi
+done
+
+for opt in "${options_list[@]}"; do
+    if [[ " ${options_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=true)
+    else
+        options+=(-D$opt=false)
+    fi
+done
+
+enter_git_repository "https://gitlab.gnome.org/GNOME/gtk.git" "$version"
+build_and_install meson "${options[@]}"
