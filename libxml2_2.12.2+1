@@ -1,5 +1,7 @@
 check_commands make "$CC"
 
+# https://gitlab.gnome.org/GNOME/libxml2
+
 with_list=( \
   c14n catalog debug ftp history readline html http iconv icu iso8859x mem-debug \
   modules output pattern push python reader regexps run-debug sax1 schemas \
@@ -16,6 +18,9 @@ while [ ! -z ${1+x} ]; do
     -zlib)
         with_in+=(zlib)
         dependency zlib
+        ;;
+    -sax1)
+        with_in+=(sax1)
         ;;
     *)
         options+=("$1")
