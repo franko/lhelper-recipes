@@ -1,0 +1,37 @@
+dependency xcb-xkb # this dependency is normally provided by the system
+dependency libxml2 -sax1
+
+available_options=(enable-{tools,x11,docs,cool-uris,wayland,xkbregistry,bash-completion})
+
+options=()
+enables=()
+activates=()
+
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -x11)
+        dependency x11
+        dependency xext
+        activates+=("enable$1")
+        ;;
+    -tools | -x11 | -wayland | -xkbregistry)
+        activates+=("enable$1")
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${available_options[@]}"; do
+    if [[ " ${activates[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=true)
+    else
+        options+=(-D$opt=false)
+    fi
+done
+
+enter_git_repository "https://github.com/xkbcommon/libxkbcommon.git" "xkbcommon-${version}"
+build_and_install meson "${options[@]}"
+
