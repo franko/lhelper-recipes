@@ -87,3 +87,4 @@ gdk-pixbuf 2.42.10
 epoxy 1.5.10
 gobject-introspection 1.78.1
 graphene 1.10.8
+libxml2 2.12.2 

@@ -1,0 +1,37 @@
+check_commands make "$CC"
+
+with_list=( \
+  c14n catalog debug ftp history readline html http iconv icu iso8859x mem-debug \
+  modules output pattern push python reader regexps run-debug sax1 schemas \
+  schematron threads thread-alloc tree valid writer xinclude xpath xptr tls lzma zlib)
+
+# debug,history,readline,html,http,icu,iso8859x,lzma,mem-debug,python,run-debug,sax1,threads,thread-alloc,zlib
+with_in=(\
+    c14n catalog iconv modules output pattern push reader regexps schemas \
+    schematron tree valid writer xinclude xpath xptr)
+
+options=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -zlib)
+        with_in+=(zlib)
+        dependency zlib
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for name in "${with_in[@]}"; do
+    options+=("--with-$name=yes")
+done
+for name in "${with_list[@]}"; do
+    if [[ " ${with_in[*]} " != *" $name "* ]]; then
+        options+=("--with-$name=no")
+    fi
+done
+
+enter_archive "https://download.gnome.org/sources/libxml2/${version%.*}/libxml2-${version}.tar.xz"
+build_and_install configure "${options[@]}"
