@@ -1,0 +1,39 @@
+#!/bin/bash
+available_options=(docs tests x11)
+
+options=()
+activates=()
+
+use_glx=no
+use_egl=no
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -x11)
+        dependency x11
+        # dependency xext
+        activates+=(x11)
+        use_glx=yes
+        ;;
+    -egl)
+        use_egl=yes
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${available_options[@]}"; do
+    if [[ " ${activates[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=true)
+    else
+        options+=(-D$opt=false)
+    fi
+done
+
+options+=(-Dglx=$use_glx -Degl=$use_egl)
+
+enter_git_repository https://github.com/anholt/libepoxy.git "$version"
+build_and_install meson "${options[@]}"
+
