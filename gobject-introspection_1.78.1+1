@@ -14,7 +14,7 @@ activates=()
 glib_options=()
 while [ ! -z ${1+x} ]; do
     case $1 in
-    -build-data)
+    -glib-data)
         activates+=(build_introspection_data)
         glib_options+=(-shared)
         ;;
