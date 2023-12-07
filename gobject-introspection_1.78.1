@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# IMPORTANT: even when compiled with default static library it will build
+# a shared library for girepository and it will fail at link time if libffi
+# (required by glib) is not compiled using the -pic option
+
+# Cairo is used only for tests: disable
+availables=(doctool cairo)
+available_options=(gtk_doc build_introspection_data)
+
+options=()
+activates=()
+
+glib_options=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -build-data)
+        activates+=(build_introspection_data)
+        glib_options+=(-shared)
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+dependency glib ${glib_options[@]}
+
+for opt in "${availables[@]}"; do
+    if [[ " ${enables[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=enabled)
+    else
+        options+=(-D$opt=disabled)
+    fi
+done
+
+for opt in "${available_options[@]}"; do
+    if [[ " ${activates[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=true)
+    else
+        options+=(-D$opt=false)
+    fi
+done
+
+enter_git_repository "https://gitlab.gnome.org/GNOME/gobject-introspection.git" "$version"
+build_and_install meson "${options[@]}"
+
