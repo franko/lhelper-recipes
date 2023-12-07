@@ -17,6 +17,10 @@ enables=()
 needs_zlib=no
 while [ ! -z ${1+x} ]; do
     case $1 in
+    -glib)
+        enables+=(glib)
+        dependency glib
+        ;;
     -fontconfig)
         enables+=(fontconfig)
         dependency fontconfig
