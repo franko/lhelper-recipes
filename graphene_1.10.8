@@ -1,0 +1,56 @@
+#!/bin/bash
+
+availables=(introspection)
+available_options=(sse2 arm_neon tests gobject_types gtk_doc tests installed_tests)
+
+options=()
+enables=()
+activates=()
+
+case "$CPU_TYPE/$CPU_TARGET" in
+    x86/pentium4 | x86-64/*)
+        activates+=(sse2)
+esac
+
+case "$CPU_TYPE/$CPU_TARGET" in
+    arm64/armv8* | arm64/cortexa53 | arm64/cortexa57 | arm64/cortexa72 | arm64/cortexa73)
+        activates+=(arm_neon)
+esac
+
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -introspection)
+        enables+=(introspection)
+        dependency gobject-introspection -glib-data
+        ;;
+    -gobject)
+        activates+=(gobject_types)
+        dependency gobject-introspection -glib-data
+        dependency glib
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${availables[@]}"; do
+    if [[ " ${enables[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=enabled)
+    else
+        options+=(-D$opt=disabled)
+    fi
+done
+
+for opt in "${available_options[@]}"; do
+    if [[ " ${activates[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=true)
+    else
+        options+=(-D$opt=false)
+    fi
+done
+
+enter_git_repository "https://github.com/ebassi/graphene" "$version"
+build_and_install meson "${options[@]}"
+
