@@ -89,3 +89,5 @@ gobject-introspection 1.78.1
 graphene 1.10.8
 libxml2 2.12.2
 xkbcommon 1.6.0
+libtiff 4.6.0
+
