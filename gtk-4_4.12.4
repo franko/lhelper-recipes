@@ -1,30 +1,64 @@
 #!/bin/bash
-# NOT WORKING YET
-# TESTING CURRENTLY ON LINUX
-# it needs at least libtiff and probably GNU gettext
+# WORKING ON LINUX
 
-# libiconv libffi -pic" pcre2 glib libpng16 "libjpeg -pic" "gdk-pixbuf -png -jpeg"
+# zlib libiconv libffi -pic" pcre2 glib libpng16 "libjpeg -pic" "gdk-pixbuf -png -jpeg"
 # glib gobject-introspection "epoxy -x11 -egl" graphene freetype2 pixman expat
 # fontconfig xft "cairo -glib -fontconfig -freetype -png -xlib" fribidi
 # "harfbuzz -glib" "pango -fontconfig -xft -cairo" "libxml2 -sax1" "xkbcommon"
 
 # For windows:
-# libiconv libffi -pic" pcre2 glib libpng16 "libjpeg -pic" "gdk-pixbuf -png -jpeg"
+# zlib libiconv libffi -pic" pcre2 glib libpng16 "libjpeg -pic" "gdk-pixbuf -png -jpeg"
 # glib gobject-introspection "epoxy -egl" graphene freetype2 pixman expat
 # fontconfig "cairo -dwrite -glib -fontconfig -freetype -png" fribidi
 # "harfbuzz -glib" "pango -fontconfig -cairo" "libxml2 -sax1"
 
-# KNOWN PROBLEMS
-# libtiff, wants graphene-gobject, cairo-script-interpreter
+# The following works on Linux:
+#   "libffi -pic" "zlib -pic" pcre2 "glib -shared -nls -xattr" libpng16 \
+#   "libjpeg -pic" "gdk-pixbuf -png -jpeg" "gobject-introspection -glib-data" \
+#   "epoxy -x11 -egl" "graphene -gobject -introspection" freetype2 pixman \
+#   "expat -pic" fontconfig xft \
+#   "cairo -zlib -glib -fontconfig -freetype -png -xlib -xlib-xcb" \
+#   fribidi "harfbuzz -glib" "pango -fontconfig -xft -cairo" \
+#   "libxml2 -sax1" "xkbcommon"
+#
+# meson setup -Ddefault_library=static -Dwayland-backend=false -Dmedia-{ffmpeg,gstreamer}=disabled -Dbuild-{testsuite,tests}=false .build
+
+# Te following works too:
+#  "libffi -pic" "zlib -pic" "pcre2" "glib -shared" "libpng16" \
+#  "libjpeg -pic" "gdk-pixbuf -png -jpeg" "gobject-introspection -glib-data" \
+#  "epoxy -x11 -egl" "graphene -gobject" "freetype2" "pixman" \
+#  "expat -pic" "fontconfig" "xft" \
+#  "cairo -zlib -glib -fontconfig -freetype -png -xlib" \
+#  "fribidi" "harfbuzz -glib" \
+#  "pango -fontconfig -xft -cairo" \
+#  "libxml2 -sax1" "xkbcommon" \
+#
+# The following works too without gobject-introspection
+#  "libffi -pic" "zlib -pic" "pcre2" "glib" "libpng16" \
+#  "libjpeg -pic" "libtiff -pic" "gdk-pixbuf -png -jpeg" \
+#  "epoxy -x11 -egl" "graphene -gobject" "freetype2" "pixman" \
+#  "expat -pic" "fontconfig" "xft" \
+#  "cairo -zlib -glib -fontconfig -freetype -png -xlib" \
+#  "fribidi" "harfbuzz -glib" \
+#  "pango -fontconfig -xft -cairo" \
+#  "libxml2 -sax1" "xkbcommon" \
+
+
+if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
+    dependency x11
+    dependency xext
+    dependency xdamage
+    dependency libdrm
+fi
 
 features_list=( \
+    media-{ffmpeg,gstreamer}
     f16c introspection print-{cpdb,cups} vulkan cloudproviders sysprof tracker \
     colord)
 
 options_list=( \
     {x11,wayland,broadway,win32,macos}-backend \
-    build-{demos,testsuite,examples,tests,documentation,gtk_doc,screenshots} \
-    media-{ffmpeg,gstreamer})
+    build-{demos,testsuite,examples,tests,documentation,gtk_doc,screenshots})
 
 options=()
 features_in=()

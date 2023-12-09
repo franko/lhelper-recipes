@@ -4,7 +4,11 @@
 
 dependency libffi
 dependency pcre2
-dependency libiconv
+
+# FIXME: It seems on windows iconv is not really used
+# On Linux if present seems to trigger a linker error for gtester not
+# actually linking to libiconv.
+# dependency libiconv
 
 features_list=(selinux libmount nls glib_debug libelf)
 options_list=(xattr man gtk_doc tests glib_assert glib_checks)
