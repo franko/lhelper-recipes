@@ -1,5 +1,7 @@
 #!/bin/bash
 
+check_commands "$CC" flex bison
+
 # IMPORTANT: even when compiled with default static library it will build
 # a shared library for girepository and it will fail at link time if libffi
 # (required by glib) is not compiled using the -pic option

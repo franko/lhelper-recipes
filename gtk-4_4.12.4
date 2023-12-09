@@ -1,11 +1,18 @@
+#!/bin/bash
 # NOT WORKING YET
 # TESTING CURRENTLY ON LINUX
 # it needs at least libtiff and probably GNU gettext
 
-# libffi -pic" pcre2 glib libpng16 "libjpeg -pic" libiconv "gdk-pixbuf -png -jpeg"
+# libiconv libffi -pic" pcre2 glib libpng16 "libjpeg -pic" "gdk-pixbuf -png -jpeg"
 # glib gobject-introspection "epoxy -x11 -egl" graphene freetype2 pixman expat
 # fontconfig xft "cairo -glib -fontconfig -freetype -png -xlib" fribidi
 # "harfbuzz -glib" "pango -fontconfig -xft -cairo" "libxml2 -sax1" "xkbcommon"
+
+# For windows:
+# libiconv libffi -pic" pcre2 glib libpng16 "libjpeg -pic" "gdk-pixbuf -png -jpeg"
+# glib gobject-introspection "epoxy -egl" graphene freetype2 pixman expat
+# fontconfig "cairo -dwrite -glib -fontconfig -freetype -png" fribidi
+# "harfbuzz -glib" "pango -fontconfig -cairo" "libxml2 -sax1"
 
 # KNOWN PROBLEMS
 # libtiff, wants graphene-gobject, cairo-script-interpreter
