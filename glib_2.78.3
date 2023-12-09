@@ -1,7 +1,0 @@
-#!/bin/bash
-dependency libffi
-dependency pcre2
-enter_git_repository "https://github.com/GNOME/glib.git" "$version"
-rm -fr subprojects/gvdb
-build_and_install meson "$@"
-

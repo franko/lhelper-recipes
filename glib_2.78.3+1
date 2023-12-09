@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# https://docs.gtk.org/glib/building.html
+
+dependency libffi
+dependency pcre2
+dependency libiconv
+
+features_list=(selinux libmount nls glib_debug libelf)
+options_list=(xattr man gtk_doc tests glib_assert glib_checks)
+
+options=()
+features_in=()
+options_in=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -nls)
+        features_in+=(nls)
+        # FIXME: nls should add new dependencies
+        ;;
+    -xattr)
+        options_in+=(xattr)
+        if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+            # FIXME: recipe for libattr not available. On Linux it should be provided by glibc.
+            dependency libattr
+        fi
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${features_list[@]}"; do
+    if [[ " ${features_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=enabled)
+    else
+        options+=(-D$opt=disabled)
+    fi
+done
+
+for opt in "${options_list[@]}"; do
+    if [[ " ${options_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=true)
+    else
+        options+=(-D$opt=false)
+    fi
+done
+
+enter_git_repository "https://github.com/GNOME/glib.git" "$version"
+# we need to remove the empty subdirectory gvdb because otherwise Meson will
+# error out because the directory already exists.
+rm -fr subprojects/gvdb
+build_and_install meson "${options[@]}"
+
