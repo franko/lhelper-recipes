@@ -94,6 +94,7 @@ if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]
     options_in+=(win32-backend)
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     options_in+=(macos-backend)
+    cairo_options+=(-quartz)
 fi
 
 while [ ! -z ${1+x} ]; do

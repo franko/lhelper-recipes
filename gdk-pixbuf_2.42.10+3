@@ -24,11 +24,11 @@ fi
 
 while [ ! -z ${1+x} ]; do
     case $1 in
-    # -introspection)
-    #     # currently broken, missing command g-ir-scanner
-    #     enables+=(introspection)
-    #     dependency glib
-    #     ;;
+    -introspection)
+        # This option is currently untested but in principle it should work.
+        enables+=(introspection)
+        dependency gobject-introspection
+        ;;
     -png)
         enables+=(png)
         dependency libpng16
@@ -70,6 +70,6 @@ for opt in "${available_options[@]}"; do
     fi
 done
 
-enter_git_repository "https://gitlab.gnome.org/GNOME/gdk-pixbuf.git" "$version"
+enter_git_repository "https://github.com/lhelper-org/gdk-pixbuf" "${version}-lhelper"
 build_and_install meson "${options[@]}"
 
