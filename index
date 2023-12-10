@@ -90,4 +90,5 @@ graphene 1.10.8
 libxml2 2.12.2
 xkbcommon 1.6.0
 libtiff 4.6.0
+libsass 3.5.5-1
 
