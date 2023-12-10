@@ -35,9 +35,7 @@ while [ ! -z ${1+x} ]; do
         ;;
     -jpeg)
         enables+=(jpeg)
-        # It seems that at least on linux the -pic option is needed for jpeg even when
-        # building static libraries.
-        dependency libjpeg -pic
+        dependency libjpeg
         ;;
     -tiff)
         enables+=(tiff)

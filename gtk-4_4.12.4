@@ -42,14 +42,36 @@
 #  "fribidi" "harfbuzz -glib" \
 #  "pango -fontconfig -xft -cairo" \
 #  "libxml2 -sax1" "xkbcommon" \
+#
+# The following works too
+# packages=( \
+#   "libffi" "zlib" "pcre2" "glib" "libpng16" \
+#   "libjpeg -pic" "libtiff -pic" "gdk-pixbuf -png -jpeg" \
+#   "epoxy -x11 -egl" "graphene -gobject" "freetype2" "pixman" \
+#   "expat -pic" "fontconfig" "xft" \
+#   "cairo -zlib -glib -fontconfig -freetype -png -xlib" \
+#   "fribidi" "harfbuzz -glib" \
+#   "pango -fontconfig -xft -cairo" \
+#   "libxml2 -sax1" "xkbcommon" \
+# )
 
+# FIXME: work out if the egl dependency is needed
+# FIXME: implement recipes for libsass and sassc so that gtk-4 does not
+#        fallback to subprojects for them.
 
-if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
-    dependency x11
-    dependency xext
-    dependency xdamage
-    dependency libdrm
-fi
+dependency glib
+dependency libjpeg -pic
+dependency libtiff -pic
+dependency gdk-pixbuf
+dependency graphene -gobject
+dependency fontconfig
+dependency fribidi
+dependency harfbuzz -glib
+dependency libxml2 -sax1
+dependency xkbcommon
+dependency expat -pic
+
+# f16c should be enabled only for very specific CPU types.
 
 features_list=( \
     media-{ffmpeg,gstreamer}
@@ -63,11 +85,48 @@ options_list=( \
 options=()
 features_in=()
 options_in=()
+
+epoxy_options=()
+cairo_options=()
+pango_options=()
+
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
+    options_in+=(win32-backend)
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    options_in+=(macos-backend)
+fi
+
 while [ ! -z ${1+x} ]; do
     case $1 in
     -introspection)
         features_in+=(introspection)
         dependency gobject-introspection
+        ;;
+    -x11)
+        options_in+=(x11-backend)
+        epoxy_options+=(-x11)
+        cairo_options+=(-xlib)
+        pango_options+=(-xft)
+        dependency x11
+        dependency xext
+        dependency xdamage
+        dependency libdrm
+        ;;
+    -wayland)
+        options_in+=(wayland-backend)
+        epoxy_options+=(-x11)
+        # The list of dependencies is not verified in detail
+        dependency wayland-client
+        dependency wayland-scanner
+        dependency wayland-egl
+        dependency wayland-cursor
+        dependency egl
+        ;;
+    -demos)
+        options_in+=(build-demos)
+        ;;
+    -examples)
+        options_in+=(build-examples)
         ;;
     *)
         options+=("$1")
@@ -75,6 +134,10 @@ while [ ! -z ${1+x} ]; do
     esac
     shift
 done
+
+dependency epoxy -egl ${epoxy_options[@]}
+dependency cairo -zlib -glib -fontconfig -freetype -png ${cairo_options[@]}
+dependency pango -fontconfig -cairo ${pango_options[@]}
 
 for opt in "${features_list[@]}"; do
     if [[ " ${features_in[*]} " == *" $opt "* ]]; then
