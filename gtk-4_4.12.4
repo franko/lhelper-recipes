@@ -59,6 +59,8 @@
 # FIXME: implement recipes for libsass and sassc so that gtk-4 does not
 #        fallback to subprojects for them.
 
+check_commands sassc
+
 dependency glib
 dependency libjpeg -pic
 dependency libtiff -pic
@@ -80,7 +82,8 @@ features_list=( \
 
 options_list=( \
     {x11,wayland,broadway,win32,macos}-backend \
-    build-{demos,testsuite,examples,tests,documentation,gtk_doc,screenshots})
+    build-{demos,testsuite,examples,tests} \
+    documentation gtk_doc screenshots)
 
 options=()
 features_in=()
@@ -108,9 +111,9 @@ while [ ! -z ${1+x} ]; do
         epoxy_options+=(-x11)
         cairo_options+=(-xlib)
         pango_options+=(-xft)
-        dependency x11
-        dependency xext
-        dependency xdamage
+        for name in x11 xrandr xrender xi xext xfixes xcursor xdamage; do # xcomposite
+            dependency $name
+        done
         dependency libdrm
         ;;
     -wayland)
@@ -156,5 +159,5 @@ for opt in "${options_list[@]}"; do
     fi
 done
 
-enter_git_repository "https://gitlab.gnome.org/GNOME/gtk.git" "$version"
+enter_git_repository "https://github.com/lhelper-org/gtk" "${version}-lhelper"
 build_and_install meson "${options[@]}"

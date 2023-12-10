@@ -63,7 +63,7 @@ packages=( \
   "cairo -zlib -glib -fontconfig -freetype -png -xlib" \
   "fribidi" "harfbuzz -glib" \
   "pango -fontconfig -xft -cairo" \
-  "libxml2 -sax1" "xkbcommon" "libsass" \
+  "libxml2 -sax1" "xkbcommon" "libsass" "sassc" \
 )
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 # trying epoxy with -egl
@@ -75,7 +75,7 @@ packages=( \
   "cairo -zlib -glib -fontconfig -freetype -png -quartz" \
   "fribidi" "harfbuzz -glib" \
   "pango -fontconfig -cairo" \
-  "libxml2 -sax1" "libsass" \
+  "libxml2 -sax1" "libsass" "sassc" \
 )
 fi
 # We can get rid of all the "-pic" option, very probably, is we build gtk-4 as a
