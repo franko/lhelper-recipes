@@ -2,16 +2,16 @@
 
 # cairo used only by command-line utilities and not by the library itself.
 # https://harfbuzz.github.io/building.html
-availables=(glib gobject cairo chafa icu graphite freetype)
-
-if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
-  availables+=(gdi directwrite)
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-  availables+=(coretext)
-fi
+availables=(glib gobject cairo chafa icu graphite freetype gdi directwrite coretext)
 
 enables=(freetype)
 dependency freetype2
+
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+  enables+=(gdi directwrite)
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+  enables+=(coretext)
+fi
 
 options=()
 while [ ! -z ${1+x} ]; do
