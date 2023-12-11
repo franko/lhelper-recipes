@@ -12,13 +12,25 @@ availables=( \
 
 dependency pixman
 dependency zlib # needed for cairo script interpreter
-enter_git_repository "git://anongit.freedesktop.org/git/cairo" "$version"
+enter_git_repository "https://github.com/sailfishos-mirror/cairo.git" "$version"
+# enter_git_repository "git://anongit.freedesktop.org/git/cairo" "$version"
+
+# See https://github.com/msys2/MINGW-packages/issues/5868
+# Observed the problem with MSYS2 abd TDM-GCC
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+    sed -i -e '/-D_FORTIFY_SOURCE=2/d' meson.build
+fi
 
 options=(-Dtests=disabled -Dgtk2-utils=disabled -Dgtk_doc=false)
-enables=(symbol-lookup)
+enables=()
 needs_zlib=no
 while [ ! -z ${1+x} ]; do
     case $1 in
+    -symbol-lookup)
+        # Requires the bfd library and the bfd.h header. On linux this library does
+        # not have a corresponding pkg-config file.
+        enables+=(symbol-lookup)
+        ;;
     -zlib)
         needs_zlib=yes
         ;;

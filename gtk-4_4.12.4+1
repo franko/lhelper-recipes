@@ -1,5 +1,10 @@
 #!/bin/bash
 # WORKING ON LINUX
+#
+# On windows does not compile yet. Several problems at link time:
+# - libtiff does not include zlib dependency
+# - cairo with the -dwrite option use some c++ but we don't have
+#   C++ support when linking gtk
 
 # zlib libiconv libffi -pic" pcre2 glib libpng16 "libjpeg -pic" "gdk-pixbuf -png -jpeg"
 # glib gobject-introspection "epoxy -x11 -egl" graphene freetype2 pixman expat
@@ -62,16 +67,15 @@
 check_commands sassc
 
 dependency glib
-dependency libjpeg -pic
-dependency libtiff -pic
+dependency libjpeg # -pic
+dependency libtiff # -pic
 dependency gdk-pixbuf
 dependency graphene -gobject
 dependency fontconfig
 dependency fribidi
 dependency harfbuzz -glib
 dependency libxml2 -sax1
-dependency xkbcommon
-dependency expat -pic
+dependency expat # -pic
 
 # f16c should be enabled only for very specific CPU types.
 
@@ -93,8 +97,13 @@ epoxy_options=()
 cairo_options=()
 pango_options=()
 
-if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
+if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
+    # TO BE TESTED: probably -egl is required and useful ony when targeting Wayland on
+    # linux.
+    epoxy_options+=(-egl)
+elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
     options_in+=(win32-backend)
+    cairo_options+=(-dwrite)
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     options_in+=(macos-backend)
     cairo_options+=(-quartz)
@@ -114,6 +123,7 @@ while [ ! -z ${1+x} ]; do
         for name in x11 xrandr xrender xi xext xfixes xcursor xdamage; do # xcomposite
             dependency $name
         done
+        dependency xkbcommon
         dependency libdrm
         ;;
     -wayland)
@@ -139,7 +149,7 @@ while [ ! -z ${1+x} ]; do
     shift
 done
 
-dependency epoxy -egl ${epoxy_options[@]}
+dependency epoxy ${epoxy_options[@]}
 dependency cairo -zlib -glib -fontconfig -freetype -png ${cairo_options[@]}
 dependency pango -fontconfig -cairo ${pango_options[@]}
 

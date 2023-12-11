@@ -65,6 +65,17 @@ packages=( \
   "pango -fontconfig -xft -cairo" \
   "libxml2 -sax1" "xkbcommon" "libsass" "sassc" \
 )
+elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+packages=( \
+  "libffi" "zlib" "pcre2" "glib" "libpng16" \
+  "libjpeg" "libtiff" "gdk-pixbuf -png -jpeg" \
+  "epoxy" "graphene -gobject" "freetype2" "pixman" \
+  "expat" "fontconfig"
+  "cairo -zlib -glib -fontconfig -freetype -png -dwrite" \
+  "fribidi" "harfbuzz -glib" \
+  "pango -fontconfig -cairo" \
+  "libxml2 -sax1" "libsass" "sassc" \
+)
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 # trying epoxy with -egl
 packages=( \
