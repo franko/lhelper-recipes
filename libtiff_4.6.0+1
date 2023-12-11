@@ -1,0 +1,33 @@
+#!/bin/bash
+enables_all=(jbig jpeg lerc lzma webp zlib zstd)
+enables_in=()
+
+options=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -zlib)
+        enables_in+=(zlib)
+        dependency zlib
+        ;;
+    -jpeg)
+        enables_in+=(jpeg)
+        dependency libjpeg
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${enables_all[@]}"; do
+    if [[ " ${enables_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=enabled)
+    else
+        options+=(-D$opt=disabled)
+    fi
+done
+
+enter_git_repository "https://github.com/lhelper-org/libtiff.git" "${version}-lhelper"
+build_and_install meson "${options[@]}"
+
