@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# FIXME: there is a problem with the lzo2 library. Cairo will detect if
+# present and if yes will try to use if.
+# On macOS if the lzo package is present from Homebrew it will fails because
+# the pkg-config --cflags is incorrectly set for the include directory.
+# In any case we should not allow a random, optional dependency to affect
+# the build of the library.
+# During macOS test removed the lzo homebrew package to avoid the problem.
+
 availables=( \
     # font backends:
     dwrite fontconfig freetype \
