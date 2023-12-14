@@ -72,7 +72,7 @@ xft 2.3.6
 uthash 2.3.0
 libffi 3.4.4
 fribidi 1.0.12
-harfbuzz 6.0.0
+harfbuzz 6.0.0-1
 libiconv 1.16
 libunistring 1.0
 pcre3 8.39
