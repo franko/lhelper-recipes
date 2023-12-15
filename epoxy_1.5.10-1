@@ -34,6 +34,6 @@ done
 
 options+=(-Dglx=$use_glx -Degl=$use_egl)
 
-enter_git_repository https://github.com/anholt/libepoxy.git "$version"
+enter_git_repository https://github.com/lhelper-org/libepoxy "${version}-lhelper"
 build_and_install meson "${options[@]}"
 
