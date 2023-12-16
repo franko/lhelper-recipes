@@ -1,0 +1,94 @@
+#!/bin/bash
+CC="${CC:-gcc}"
+CXX="${CXX:-g++}"
+
+BUILD_TYPE="Release"
+
+# Packages INSTALLED:
+# flex bison for gobject-introspection
+# libxdamage-dev libdrm-dev libx11-xcb-dev libxcb1-dev binutils-dev
+
+# packages=("libffi -pic" "zlib -pic" pcre2 glib libpng16 "libjpeg -pic" "gdk-pixbuf -png -jpeg" glib gobject-introspection "epoxy -x11 -egl" graphene freetype2 pixman expat fontconfig xft "cairo -zlib -glib -fontconfig -freetype -png -xlib" fribidi "harfbuzz -glib" "pango -fontconfig -xft -cairo" "libxml2 -sax1" "xkbcommon")
+# packages=("libffi -pic" "zlib -pic" pcre2 "glib -shared" libpng16 "libjpeg -pic" "gdk-pixbuf -png -jpeg" "gobject-introspection -glib-data" "epoxy -x11 -egl" "graphene -gobject" freetype2 pixman "expat -pic" fontconfig xft "cairo -zlib -glib -fontconfig -freetype -png -xlib -xlib-xcb" fribidi "harfbuzz -glib" "pango -fontconfig -xft -cairo" "libxml2 -sax1" "xkbcommon")
+
+# The following appear to works by disabling at runtime gles for gdk
+# packages=( \
+#   "libffi -pic" "zlib -pic" pcre2 "glib -shared -nls -xattr" libpng16 \
+#   "libjpeg -pic" "gdk-pixbuf -png -jpeg" "gobject-introspection -glib-data" \
+#   "epoxy -x11 -egl" "graphene -gobject -introspection" freetype2 pixman \
+#   "expat -pic" fontconfig xft \
+#   "cairo -zlib -glib -fontconfig -freetype -png -xlib -xlib-xcb" \
+#   fribidi "harfbuzz -glib" "pango -fontconfig -xft -cairo" \
+#   "libxml2 -sax1" "xkbcommon"
+# )
+
+# The following appear to works by disabling at runtime gles for gdk (reduced options,
+# no nls xattr, no xlib-xcb, no graphene introspection)
+# packages=( \
+#   "libffi -pic" "zlib -pic" "pcre2" "glib -shared" "libpng16" \
+#   "libjpeg -pic" "gdk-pixbuf -png -jpeg" "gobject-introspection -glib-data" \
+#   "epoxy -x11 -egl" "graphene -gobject" "freetype2" "pixman" \
+#   "expat -pic" "fontconfig" "xft" \
+#   "cairo -zlib -glib -fontconfig -freetype -png -xlib" \
+#   "fribidi" "harfbuzz -glib" \
+#   "pango -fontconfig -xft -cairo" \
+#   "libxml2 -sax1" "xkbcommon" \
+# )
+
+# The following appear to works by disabling at runtime gles for gdk (reduced options,
+# no nls xattr, no xlib-xcb, no gobject-introspection at all)
+# Require to pass -Dintrospection=disable when configuring gtk
+# CURRENT BEST OPTION
+# packages=( \
+#   "libffi -pic" "zlib -pic" "pcre2" "glib" "libpng16" \
+#   "libjpeg -pic" "libtiff -pic" "gdk-pixbuf -png -jpeg" \
+#   "epoxy -x11 -egl" "graphene -gobject" "freetype2" "pixman" \
+#   "expat -pic" "fontconfig" "xft" \
+#   "cairo -zlib -glib -fontconfig -freetype -png -xlib" \
+#   "fribidi" "harfbuzz -glib" \
+#   "pango -fontconfig -xft -cairo" \
+#   "libxml2 -sax1" "xkbcommon" \
+# )
+
+# TESTING WITHOUT -pic option
+# DOES NOT WORK in print systems are enabled: the meson build tries to build shared libraries
+# It turns out the print-to-file cannot be disabled and it builds a shared library so
+# I empirically found which library requires the -pic option.
+if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
+packages=( \
+  "libffi -pic" "zlib -pic" "pcre2 -pic" "glib -shared" "libpng16 -pic" \
+  "libjpeg -pic" "libtiff -pic" "gdk-pixbuf -png -jpeg" \
+  "epoxy -x11 -egl -shared" "graphene -gobject" "freetype2 -pic" "pixman" \
+  "expat -pic" "fontconfig -pic" "xft -pic" \
+  "cairo -zlib -glib -fontconfig -freetype -png -xlib -shared" \
+  "fribidi" "harfbuzz -glib" \
+  "pango -fontconfig -xft -cairo -shared" \
+  "libxml2 -sax1" "xkbcommon" "libsass" "sassc" \
+)
+elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+packages=( \
+  "libffi" "zlib" "pcre2" "glib" "libpng16" \
+  "libjpeg" "libtiff" "gdk-pixbuf -png -jpeg" \
+  "epoxy" "graphene -gobject" "freetype2" "pixman" \
+  "expat" "fontconfig"
+  "cairo -zlib -glib -fontconfig -freetype -png -dwrite" \
+  "fribidi" "harfbuzz -glib" \
+  "pango -fontconfig -cairo" \
+  "libxml2 -sax1" "libsass" "sassc" \
+)
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+# trying epoxy with -egl
+packages=( \
+  "libffi" "zlib" "pcre2" "glib" "libpng16" \
+  "libjpeg -pic" "libtiff -pic" "gdk-pixbuf -png -jpeg" \
+  "epoxy" "graphene -gobject" "freetype2" "pixman" \
+  "expat -pic" "fontconfig" \
+  "cairo -zlib -glib -fontconfig -freetype -png -quartz" \
+  "fribidi" "harfbuzz -glib" \
+  "pango -fontconfig -cairo" \
+  "libxml2 -sax1" "libsass" "sassc" \
+)
+fi
+# We can get rid of all the "-pic" option, very probably, is we build gtk-4 as a
+# static library which seems possible with some minor modifications in the
+# meson files.
