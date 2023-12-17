@@ -14,7 +14,8 @@ BUILD_TYPE="Release"
 # I empirically found which library requires the -pic option.
 if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
 packages=(
-  "libffi" "zlib" "pcre2" "glib" "libpng16"
+  "libffi" "zlib" "pcre2" "proxy-libintl"
+  "glib" "libpng16"
   "libjpeg -pic" "libtiff -pic" "gdk-pixbuf -png -jpeg"
   "epoxy -x11 -egl" "graphene -gobject" "freetype2" "pixman"
   "expat -pic" "fontconfig" "xft"
@@ -25,20 +26,11 @@ packages=(
 )
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
 
-# On Windows, epoxy can be compiled with -egl option at the condition to install the
-# MSYS2 packages egl-headers and gles-headers.
-#
-# Important: The Cairo library for Windows need to be built as a shared library because
-# the mutexes for win32 are initialited from DllMain (in src/win32/cairo-win32-system.c)
-# so if built as a static library they will be all unitialized and the applications will
-# crash.
-# Ideally we should make a patch to initialize in some way the mutexes when used as a
-# static library.
- 
 packages=(
-  "libffi" "zlib" "pcre2" "glib" "libpng16"
+  "libffi" "zlib" "pcre2" "proxy-libintl"
+  "glib" "libpng16"
   "libjpeg" "libtiff" "gdk-pixbuf -png -jpeg"
-  "epoxy -egl" "graphene -gobject" "freetype2" "pixman"
+  "epoxy" "graphene -gobject" "freetype2" "pixman"
   "expat" "fontconfig"
   "cairo -zlib -glib -fontconfig -freetype -png -dwrite"
   "fribidi" "harfbuzz -glib"
@@ -46,8 +38,8 @@ packages=(
   "libxml2 -sax1" "libsass" "sassc" "gtk-4 -demos"
 )
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-packages=(
-  "libffi" "zlib" "pcre2" "glib" "libpng16"
+  "libffi" "zlib" "pcre2" "proxy-libintl"
+  "glib" "libpng16"
   "libjpeg -pic" "libtiff -pic" "gdk-pixbuf -png -jpeg"
   "epoxy" "graphene -gobject" "freetype2" "pixman"
   "expat -pic" "fontconfig"
