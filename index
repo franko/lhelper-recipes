@@ -83,6 +83,7 @@ uchardet 0.0.8
 sokol-tools-bin 2023.06.1
 samplerate 0.2.2
 xlnt 1.5.0
+proxy-libintl 0.4
 gdk-pixbuf 2.42.10
 epoxy 1.5.10-1
 gobject-introspection 1.78.1
@@ -93,3 +94,4 @@ libtiff 4.6.0
 libsass 3.5.5-2
 sassc 3.5.0
 gtk-4 4.12.4-2
+
