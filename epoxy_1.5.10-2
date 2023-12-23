@@ -34,6 +34,12 @@ done
 
 options+=(-Dglx=$use_glx -Degl=$use_egl)
 
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
+    # Do not know the reason but MSYS2 is building the library using buildtype
+    # plain so we do the same.
+    options+=("--buildtype=plain")
+fi
+
 enter_git_repository https://github.com/lhelper-org/libepoxy "${version}-lhelper"
 build_and_install meson "${options[@]}"
 
