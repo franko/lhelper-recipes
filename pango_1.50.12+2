@@ -57,8 +57,8 @@ for opt in "${availables[@]}"; do
     fi
 done
 
-enter_git_repository "https://github.com/GNOME/pango" "$version"
-# Duing install both options, enable and disable fontconfig, appear to work but
+enter_git_repository "https://github.com/lhelper-org/pango" "${version}-lhelper"
+# During install both options, enable and disable fontconfig, appear to work but
 # the fontconfig in cairo is needed anyway.
 
 # Function to check if CC is GCC and its version is 13
