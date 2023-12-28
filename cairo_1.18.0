@@ -12,7 +12,7 @@ availables=( \
     # font backends:
     dwrite fontconfig freetype \
     # surface backends:
-    png quartz tee xcb xlib xlib-xcb xml zlib \
+    png quartz tee xcb xlib xlib-xcb zlib \
     # other
     # spectre seems related to postscript
     glib spectre symbol-lookup
