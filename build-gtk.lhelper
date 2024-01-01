@@ -40,7 +40,7 @@ packages=(
   "libjpeg" "libtiff" "gdk-pixbuf -png -jpeg"
   "epoxy -egl" "graphene -gobject" "freetype2" "pixman"
   "expat" "fontconfig"
-  "cairo -zlib -glib -fontconfig -freetype -png -dwrite -shared"
+  "cairo -zlib -glib -fontconfig -freetype -png -dwrite"
   "fribidi" "harfbuzz -glib"
   "pango -fontconfig -cairo"
   "libxml2 -sax1" "libsass" "sassc" "gtk-4 -demos"
