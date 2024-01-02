@@ -1,0 +1,36 @@
+#!/bin/bash
+
+features_list=(java native-java csharp c++ largefile nls curses openmp)
+features_in=()
+
+options=(
+  --enable-relocatable
+  --without-{cvs,git}
+  --with-included-{libcroco,libunistring,libxml,glib}
+  --without-emacs
+  --without-{bzip2,xz}
+  --disable-silent-rules
+)
+
+while [ ! -z ${1+x} ]; do
+    options+=($1)
+    shift
+done
+
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+  options+=(--enable-threads=win32)
+else
+  options+=(--enable-threads=posix)
+fi
+
+for opt in "${features_list[@]}"; do
+    if [[ " ${features_in[*]} " == *" $opt "* ]]; then
+        options+=(--enable-$opt)
+    else
+        options+=(--disable-$opt)
+    fi
+done
+
+enter_archive "https://ftp.gnu.org/pub/gnu/gettext/gettext-${version}.tar.gz"
+build_and_install configure "${options[@]}"
+
