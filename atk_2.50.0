@@ -1,0 +1,24 @@
+#!/bin/bash
+
+options=(-Datk_only=true)
+
+dependency glib
+
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
+    # Do not know the reason but MSYS2 is building the library using buildtype
+    # plain so we do the same.
+    options+=("--buildtype=plain")
+fi
+
+enter_archive "https://download.gnome.org/sources/at-spi2-core/${version%.*}/at-spi2-core-${version}.tar.xz"
+build_and_install meson "${options[@]}"
+
