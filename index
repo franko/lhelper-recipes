@@ -93,5 +93,6 @@ xkbcommon 1.6.0
 libtiff 4.6.0
 libsass 3.5.5-2
 sassc 3.5.0
-gtk-4 4.12.4-4
+gtk-4 4.12.4-5
+gtksourceview 5.10.0
 

@@ -1,0 +1,40 @@
+#!/bin/bash
+
+dependency gtk-4
+
+features_list=(introspection)
+options_list=(install_tests vapi gtk_doc sysprof)
+
+options=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -introspection)
+        features_in+=(introspection)
+        dependency gobject-introspection
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+
+for opt in "${features_list[@]}"; do
+    if [[ " ${features_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=enabled)
+    else
+        options+=(-D$opt=disabled)
+    fi
+done
+
+for opt in "${options_list[@]}"; do
+    if [[ " ${options_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=true)
+    else
+        options+=(-D$opt=false)
+    fi
+done
+
+enter_git_repository "https://gitlab.gnome.org/GNOME/gtksourceview.git" "${version}"
+build_and_install meson "${options[@]}"
