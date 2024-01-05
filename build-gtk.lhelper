@@ -38,6 +38,7 @@ packages=(
   "libxml2 -sax1" "libsass" "sassc" "gtk-4 -demos"
 )
 elif [[ "$OSTYPE" == "darwin"* ]]; then
+packages=(
   "libffi" "zlib" "pcre2" "proxy-libintl"
   "glib" "libpng16"
   "libjpeg -pic" "libtiff -pic" "gdk-pixbuf -png -jpeg"
