@@ -34,7 +34,7 @@ fmt 10.0.0
 cmake 3.18.4
 hdf5 1.12.0
 ninja 1.10.1
-glib 2.78.3
+glib 2.78.3-1
 sdl2-ttf 2.0.15
 sdl2-image 2.6.3
 sdl2-mixer 2.0.4
@@ -93,5 +93,5 @@ xkbcommon 1.6.0
 libtiff 4.6.0
 libsass 3.5.5-2
 sassc 3.5.0
-gtk-4 4.12.4-3
+gtk-4 4.12.4-4
 
