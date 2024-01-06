@@ -1,0 +1,46 @@
+#!/bin/bash
+
+enables_list=(microlzma lzip-decoder xz xzdec lzmadec lzmainfo lzma-links scripts doc nls largefile threads)
+enables_in=(threads)
+
+encoders_list=(lzma1 lzma2 delta x86 powerpc ia64 arm armthumb arm64 sparc)
+encoders_in=(lzma1 lzma2 delta)
+
+options=()
+
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -xz)
+        enables_in+=(xz xzdec)
+        encoders_in+=(x86 arm64)
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${enables_list[@]}"; do
+    if [[ " ${enables_in[*]} " == *" $opt "* ]]; then
+        options+=(--enable-$opt)
+    else
+        options+=(--disable-$opt)
+    fi
+done
+
+array_to_csv () {
+    local -n s=$1
+    shift
+    local IFS=',' # Set Internal Field Separator to comma
+    s="$*"
+}
+
+enc_list=
+array_to_csv enc_list "${encoders_in[@]}"
+
+options+=(--enable-encoders=$enc_list --enable-decoders=$enc_list)
+
+enter_archive "https://tukaani.org/xz/xz-${version}.tar.gz"
+build_and_install configure "${options[@]}"
+

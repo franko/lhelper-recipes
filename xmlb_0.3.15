@@ -1,0 +1,46 @@
+#!/bin/bash
+
+dependency glib
+
+features_list=()
+options_list=(gtkdoc introspection tests stemmer cli zstd)
+
+options=()
+features_in=()
+options_in=()
+
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -zstd)
+        options_in+=(zstd)
+        dependency zstd
+        ;;
+    -stemmer)
+        options_in+=(stemmer)
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${features_list[@]}"; do
+    if [[ " ${features_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=enabled)
+    else
+        options+=(-D$opt=disabled)
+    fi
+done
+
+for opt in "${options_list[@]}"; do
+    if [[ " ${options_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=true)
+    else
+        options+=(-D$opt=false)
+    fi
+done
+
+enter_git_repository "https://github.com/hughsie/libxmlb" "${version}"
+build_and_install meson "${options[@]}"
+

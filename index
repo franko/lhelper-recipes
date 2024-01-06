@@ -96,4 +96,6 @@ sassc 3.5.0
 gtk-4 4.12.4-5
 gtksourceview 5.10.0
 yaml 0.2.5
+liblzma 5.4.5
+xmlb 0.3.15
 
