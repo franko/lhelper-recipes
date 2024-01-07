@@ -98,4 +98,5 @@ gtksourceview 5.10.0
 yaml 0.2.5
 liblzma 5.4.5
 xmlb 0.3.15
+libzstd 1.5.5
 

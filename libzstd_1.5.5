@@ -1,0 +1,49 @@
+#!/bin/bash
+
+features_list=(zlib lzma lz4)
+options_list=(bin_{programs,tests,contrib})
+
+options=(-Dlegacy_level=0 -Ddebug_level=0)
+features_in=()
+options_in=()
+
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -zlib)
+        features_in+=(zlib)
+        dependency zlib
+        ;;
+    -lzma)
+        features_in+=(lzma)
+        dependency liblzma
+        ;;
+    -programs)
+        options_in+=(bin_programs)
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${features_list[@]}"; do
+    if [[ " ${features_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=enabled)
+    else
+        options+=(-D$opt=disabled)
+    fi
+done
+
+for opt in "${options_list[@]}"; do
+    if [[ " ${options_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=true)
+    else
+        options+=(-D$opt=false)
+    fi
+done
+
+enter_git_repository "https://github.com/facebook/zstd.git" "v${version}"
+cd build/meson
+build_and_install meson "${options[@]}"
+
