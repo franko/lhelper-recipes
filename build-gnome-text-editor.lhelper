@@ -1,0 +1,50 @@
+#!/bin/bash
+CC="${CC:-gcc}"
+CXX="${CXX:-g++}"
+
+BUILD_TYPE="Release"
+
+if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
+packages=(
+  "libffi" "zlib" "pcre2" "proxy-libintl"
+  "glib" "libpng16"
+  "libjpeg -pic" "libtiff -pic" "gdk-pixbuf -png -jpeg"
+  "epoxy -x11 -egl" "graphene -gobject" "freetype2" "pixman"
+  "expat -pic" "fontconfig" "xft"
+  "cairo -zlib -glib -fontconfig -freetype -png -xlib"
+  "fribidi" "harfbuzz -glib"
+  "pango -fontconfig -xft -cairo"
+  "libxml2 -sax1 -threads" "xkbcommon" "libsass" "sassc" "gtk-4 -x11"
+)
+elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+
+packages=(
+  "libffi" "zlib" "pcre2" "proxy-libintl"
+  "glib" "libpng16"
+  "libjpeg" "libtiff" "gdk-pixbuf -png -jpeg"
+  "epoxy" "graphene -gobject" "freetype2" "pixman"
+  "expat" "fontconfig"
+  "cairo -zlib -glib -fontconfig -freetype -png -dwrite"
+  "fribidi" "harfbuzz -glib"
+  "pango -fontconfig -cairo"
+  "libxml2 -sax1 -threads" "libsass" "sassc" "gtk-4 -demos"
+)
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+packages=(
+  "libffi" "zlib" "pcre2" "proxy-libintl"
+  "glib" "libpng16"
+  "libjpeg -pic" "libtiff -pic" "gdk-pixbuf -png -jpeg"
+  "epoxy" "graphene -gobject" "freetype2" "pixman"
+  "expat -pic" "fontconfig"
+  "cairo -zlib -glib -fontconfig -freetype -png -quartz"
+  "fribidi" "harfbuzz -glib"
+  "pango -fontconfig -cairo"
+  "libxml2 -sax1 -threads" "libsass" "sassc" "gtk-4 -demos"
+)
+fi
+
+packages+=(
+  "yaml" "liblzma" "xmlb" "curl -openssl" "libzstd" "appstream" "libadwaita" "gtksourceview"
+  "editorconfig" "aspell"
+)
+
