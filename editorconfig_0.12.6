@@ -1,0 +1,4 @@
+#!/bin/bash
+enter_git_repository "https://github.com/editorconfig/editorconfig-core-c.git" "v${version}"
+build_and_install cmake -DBUILD_DOCUMENTATION=OFF -DINSTALL_HTML_DOC=OFF "$@"
+

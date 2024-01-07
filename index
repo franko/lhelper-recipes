@@ -101,4 +101,7 @@ xmlb 0.3.15
 libzstd 1.5.5
 appstream 1.0.1
 libadwaita 1.4.2
+editorconfig 0.12.6
+aspell 0.60.8.1
+enchant 2.6.4
 

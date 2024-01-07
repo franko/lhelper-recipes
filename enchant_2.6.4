@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Official repository https://github.com/AbiWord/enchant
+# https://github.com/TingPing/enchant for meson branch
+
+# The problem with enchant and its configure script is it doesn't
+# see aspell if it is non in the standard system location.
+# In addition it tries to run groff with html format to run the
+# documentation and it does require special utils installed and
+# cannot be disabled.
+#
+# dist_man_MANS =
+# nodist_doc_DATA =
+#
+# from src/Makefile after configure.
+
+enter_archive "https://github.com/AbiWord/enchant/releases/download/v${version}/enchant-${version}.tar.gz"
+build_and_install configure "$@"
+
