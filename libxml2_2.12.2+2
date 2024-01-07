@@ -1,3 +1,5 @@
+#!/bin/bash
+
 check_commands make "$CC"
 
 # https://gitlab.gnome.org/GNOME/libxml2
@@ -15,6 +17,9 @@ with_in=(\
 options=()
 while [ ! -z ${1+x} ]; do
     case $1 in
+    -threads)
+        with_in+=(threads thread-alloc)
+        ;;
     -zlib)
         with_in+=(zlib)
         dependency zlib
