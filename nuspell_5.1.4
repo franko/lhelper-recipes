@@ -1,0 +1,29 @@
+#!/bin/bash
+
+enables_list=(build_tools)
+enables_in=()
+
+options=()
+
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -tools)
+        enables_in+=(build_tools)
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${enables_list[@]}"; do
+    if [[ " ${enables_in[*]} " == *" $opt "* ]]; then
+        options+=(-D${opt^^}=ON)
+    else
+        options+=(-D${opt^^}=OFF)
+    fi
+done
+
+enter_git_repository "https://github.com/nuspell/nuspell" "v${version}"
+build_and_install cmake "${options[@]}"
