@@ -1,9 +1,9 @@
 #!/bin/bash
 
-enables_list=(layoutex icuio utils extras tests samples)
+enables_list=(layoutex icuio tools extras tests samples)
 
 # utils are needed to compile the data so we enable it
-enables_in=(utils)
+enables_in=(tools)
 
 # files    raw files (.res, etc)
 # archive  build a single icudtXX.dat file
