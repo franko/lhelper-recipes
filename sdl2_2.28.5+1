@@ -58,15 +58,10 @@ esac
 
 unset enable_directx
 if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
-    dependency x11
-    dependency xext
     os_audio_enables=(pulseaudio)
     os_audio_deps=(libpulse-simple samplerate) # sndio ? (configure is looking for sndio)
     os_audio_disables=(esd "${audio_disables[@]}")
-    availables+=(video-x11-{xcursor,xdbe,xfixes,xrandr,xinput,scrnsaver,xshape})
-    # xinput seems to be required because otherwise we get:
-    # undefined reference to `XIBarrierReleasePointer'
-    enables+=(video-x11 video-x11-{xcursor,xfixes,xinput})
+    availables+=(video-x11 video-x11-{xcursor,xdbe,xfixes,xrandr,xinput,scrnsaver,xshape})
     disables+=("${video_disables[@]}")
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
     availables+=(directx wasapi)
@@ -88,21 +83,31 @@ fi
 options=()
 while [ ! -z ${1+x} ]; do
     case $1 in
+    -x11)
+        dependency x11
+        dependency xext
+        # xinput seems to be required because otherwise we get:
+        # undefined reference to `XIBarrierReleasePointer'
+        enables+=(video-x11 video-x11-{xcursor,xfixes,xinput})
+        ;;
     -wayland)
-        if [[ "$OSTYPE" == "linux"* ]]; then
-            dependency wayland-client
-            dependency wayland-scanner
-            dependency wayland-egl
-            dependency wayland-cursor
-            dependency egl
-            dependency xkbcommon
-            dependency libdecoration
-            enables+=(video-wayland libdecor)
-            # Not tested if libdecor works and how.
-            # Normally both opengl and opengles are needed for wayland.
-            needs_opengl=yes
-            needs_opengles=yes
-        fi
+        dependency wayland-client
+        dependency wayland-scanner
+        dependency wayland-egl
+        dependency wayland-cursor
+        dependency egl
+        dependency xkbcommon
+        enables+=(video-wayland)
+        # Normally both opengl and opengles are needed for wayland.
+        needs_opengl=yes
+        needs_opengles=yes
+        ;;
+    -libdecor)
+        # libdecor dev package is available on ubuntu 22.04 but not in 20.04 so it
+        # does require, roughly speaking, a pretty recent linux distribution.
+        # Not tested
+        enables+=(libdecor)
+        dependency libdecor
         ;;
     -directx)
         enable_directx=yes
