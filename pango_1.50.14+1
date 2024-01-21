@@ -16,17 +16,7 @@ while [ ! -z ${1+x} ]; do
         ;;
     -cairo)
         enables+=(cairo)
-        dependency glib
-        dependency fribidi
-        dependency harfbuzz -glib
-        dependency fontconfig
-        if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
-            dependency cairo -fontconfig -freetype -xlib
-        elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
-            dependency cairo -fontconfig -freetype -dwrite
-        elif [[ "$OSTYPE" == "darwin"* ]]; then
-            dependency cairo -fontconfig -freetype -quartz
-        fi
+        dependency cairo -freetpye
         ;;
     -libthai)
         enables+=(libthai)
