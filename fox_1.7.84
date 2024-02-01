@@ -1,0 +1,58 @@
+#!/bin/bash
+check_commands meson ninja "$CC" "$CXX"
+
+if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
+    dependency x11
+    dependency xext
+    for depname in xrandr xrender xfixes xcursor xi; do
+        dependency --optional "$depname"
+    done
+fi
+
+options=()
+xft_option="-Dxft=false"
+apps_option="-Dapps=false"
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -jpeg)
+        options+=("-Djpeg=true")
+        dependency libjpeg
+        ;;
+    -opengl)
+        options+=("-Dopengl=true")
+        # We may consider adding the "gl" dependency, it is provided on ubuntu.
+        ;;
+    -png)
+        options+=("-Dpng=true")
+        dependency libpng
+        ;;
+    -zlib)
+        options+=("-Dzlib=true")
+        dependency zlib
+        ;;
+    -bzlib)
+        options+=("-Dbzlib=true")
+        # Not able to detect a dependency without pkg-config file
+        # dependency bz2
+        ;;
+    -xft)
+        xft_option="-Dxft=true"
+        dependency freetype2
+        dependency xft
+        ;;
+    -cups)
+        options+=("-Dcups=true")
+        dependency cups
+        ;;
+    -apps)
+        apps_option="-Dapps=true"
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+enter_git_repository https://github.com/franko/fox.git "v${version}-lhelper"
+build_and_install meson "$xft_option" "$apps_option" "${options[@]}"
