@@ -1,0 +1,24 @@
+#!/bin/bash
+
+options=()
+shared=false
+build_commands=false
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -shared)
+        shared=true
+        ;;
+    -commands)
+        build_commands=true
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+options+=("-Dshared=$shared" "-Dbuild-commands=$build_commands")
+
+enter_git_repository https://github.com/franko/lua.git "v${version}"
+build_and_install meson "${options[@]}"
