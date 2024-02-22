@@ -28,6 +28,7 @@ while [ ! -z ${1+x} ]; do
 done
 
 dependency glib ${glib_options[@]}
+dependency python3
 
 for opt in "${availables[@]}"; do
     if [[ " ${enables[*]} " == *" $opt "* ]]; then

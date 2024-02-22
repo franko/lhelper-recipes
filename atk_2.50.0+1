@@ -1,16 +1,32 @@
 #!/bin/bash
 
-options=(-Datk_only=true)
+availables=(introspection)
 
-dependency glib
+enables=()
+options=(-Dgtk2_atk_adaptor=false)
+
+dependency glib libxml-2.0 xtst dbus-1
 
 while [ ! -z ${1+x} ]; do
     case $1 in
+    -introspection)
+        # This option is currently untested but in principle it should work.
+        enables+=(introspection)
+        dependency gobject-introspection
+        ;;
     *)
         options+=("$1")
         ;;
     esac
     shift
+done
+
+for opt in "${availables[@]}"; do
+    if [[ " ${enables[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=enabled)
+    else
+        options+=(-D$opt=disabled)
+    fi
 done
 
 if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
