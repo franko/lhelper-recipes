@@ -16,6 +16,9 @@ while [ ! -z ${1+x} ]; do
         ;;
     -egl)
         use_egl=yes
+        if [[ "$OSTYPE" == "linux"* ]]; then
+            dependency egl
+        fi
         ;;
     *)
         options+=("$1")
