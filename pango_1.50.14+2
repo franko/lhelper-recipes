@@ -16,7 +16,7 @@ while [ ! -z ${1+x} ]; do
         ;;
     -cairo)
         enables+=(cairo)
-        dependency cairo -freetpye
+        dependency cairo -freetype
         ;;
     -libthai)
         enables+=(libthai)
