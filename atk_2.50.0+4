@@ -7,11 +7,11 @@ options=(--wrap-mode=nodownload -Dgtk2_atk_adaptor=false)
 
 dependency glib
 dependency libxml-2.0
-dependency dbus-1
 
 if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
     # Tested on Linux and Windows. Not yet tested on macOS.
     dependency xtst
+    dependency dbus-1
 fi
 
 while [ ! -z ${1+x} ]; do
@@ -39,7 +39,8 @@ done
 if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
     # This is what MSYS2 is doing. My understanding is that they are essentially disabling ATK
     # because the atk_only option to yes does:
-    # "Build only the ATK stub library without atspi or at-spi2-atk"
+    # "Build only the ATK stub library without atspi or at-spi2-atk".
+    # In this case the library does not need dbus.
     options+=(--buildtype=plain -Datk_only=true)
 fi
 
