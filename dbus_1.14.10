@@ -1,0 +1,56 @@
+#!/bin/bash
+
+#  --enable-checks         include sanity checks on public API
+#  --enable-xml-docs       build XML documentation (requires xmlto)
+#  --enable-doxygen-docs   build DOXYGEN documentation (requires Doxygen)
+#  --enable-ducktype-docs  build Ducktype documentation (requires Ducktype)
+#  --enable-selinux        build with SELinux support
+#  --enable-apparmor       build with AppArmor support
+#  --enable-libaudit       build audit daemon support for SELinux
+#  --enable-inotify        build with inotify support (linux only)
+#  --enable-kqueue         build with kqueue support
+#  --enable-console-owner-file
+#                          enable console owner file
+#  --enable-launchd        build with launchd auto-launch support
+#  --enable-systemd        build with systemd at_console support
+#  --disable-traditional-activation
+#                          Do not build support for service activation without
+#                          using SystemdService
+#  --enable-embedded-tests enable unit test code in the library and binaries
+#  --enable-modular-tests  enable modular regression tests (requires GLib)
+#  --enable-tests          enable/disable all tests, overriding
+#                          embedded-tests/modular-tests
+#  --enable-installed-tests
+#                          enable unit test code in the library and binaries
+#  --enable-code-coverage  Whether to enable code coverage support
+#  --enable-epoll          use epoll(4) on Linux
+#  --enable-x11-autolaunch build with X11 auto-launch support
+#  --enable-compile-warnings=[no/yes/error]
+#                          Enable compiler warnings and errors
+#  --disable-Werror        Unconditionally make all compiler warnings non-fatal
+#  --enable-ld-version-script
+#                          enable linker version script (default is enabled
+#                          when possible)
+#  --enable-qt-help=auto|yes|no
+#                          Build Qt help documentation
+#  --enable-relocation=yes/no/auto
+#                          Make pkg-config metadata relocatable [default=auto]
+#  --disable-stats         disable bus daemon usage statistics
+#  --enable-user-session   enable user-session semantics for session bus under
+#                          systemd
+
+enables_list=(xml-docs ducktype-docs systemd selinux apparmor tests)
+enables_in=()
+
+options=()
+
+for opt in "${enables_list[@]}"; do
+    if [[ " ${enables_in[*]} " == *" $opt "* ]]; then
+        options+=(--enable-$opt)
+    else
+        options+=(--disable-$opt)
+    fi
+done
+
+enter_archive "https://dbus.freedesktop.org/releases/dbus/dbus-${version}.tar.xz"
+build_and_install configure "${options[@]}"

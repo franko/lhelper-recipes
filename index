@@ -106,5 +106,6 @@ aspell 0.60.8.1
 enchant 2.6.4
 icu 74-2-1
 nuspell 5.1.4
+dbus 1.14.10
 atk 2.50.0
 
