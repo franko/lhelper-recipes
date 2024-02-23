@@ -3,12 +3,16 @@
 availables=(introspection)
 
 enables=()
-options=(-Dgtk2_atk_adaptor=false)
+options=(--wrap-mode=nodownload -Dgtk2_atk_adaptor=false)
 
 dependency glib
 dependency libxml-2.0
-dependency xtst
 dependency dbus-1
+
+if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
+    # Tested on Linux and Windows. Not yet tested on macOS.
+    dependency xtst
+fi
 
 while [ ! -z ${1+x} ]; do
     case $1 in
@@ -33,9 +37,10 @@ for opt in "${availables[@]}"; do
 done
 
 if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
-    # Do not know the reason but MSYS2 is building the library using buildtype
-    # plain so we do the same.
-    options+=("--buildtype=plain")
+    # This is what MSYS2 is doing. My understanding is that they are essentially disabling ATK
+    # because the atk_only option to yes does:
+    # "Build only the ATK stub library without atspi or at-spi2-atk"
+    options+=(--buildtype=plain -Datk_only=true)
 fi
 
 enter_archive "https://download.gnome.org/sources/at-spi2-core/${version%.*}/at-spi2-core-${version}.tar.xz"
