@@ -1,0 +1,115 @@
+#!/bin/bash
+
+dependency glib
+dependency libjpeg
+dependency libtiff
+dependency gdk-pixbuf
+dependency graphene -gobject
+dependency fontconfig
+dependency fribidi
+dependency harfbuzz -glib
+dependency libxml2 -sax1
+dependency expat
+dependency atk
+
+features_list=()
+
+options_list=(
+    {x11,wayland,broadway,win32,quartz}_backend
+    cloudproviders tracker3
+    gtk_doc introspection demos examples tests)
+
+features_in=()
+options_in=()
+
+options=()
+
+epoxy_options=()
+cairo_options=()
+pango_options=()
+
+if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
+    # TO BE TESTED: probably -egl is required and useful ony when targeting Wayland on
+    # linux.
+    epoxy_options+=(-egl)
+elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
+    options_in+=(win32-backend)
+    cairo_options+=(-dwrite)
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    options_in+=(quartz_backend)
+    cairo_options+=(-quartz)
+fi
+
+colord_option=no
+print_backends=file,lpr
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -introspection)
+        features_in+=(introspection)
+        dependency gobject-introspection
+        ;;
+    -xinerama)
+        options+=(-Dxinerama=yes)
+        ;;
+    -cups)
+        colord_option=yes
+        print_backends="${print_backends},cups"
+        ;;
+    -x11)
+        options_in+=(x11_backend)
+        epoxy_options+=(-x11)
+        cairo_options+=(-xlib)
+        pango_options+=(-xft)
+        for name in x11 xrandr xrender xi xext xfixes xcursor xdamage; do # xcomposite
+            dependency $name
+        done
+        dependency xkbcommon
+        # dependency libdrm
+        ;;
+    -wayland)
+        options_in+=(wayland-backend)
+        epoxy_options+=(-egl)
+        # The list of dependencies is not verified in detail
+        dependency wayland-client
+        dependency wayland-scanner
+        dependency wayland-egl
+        dependency wayland-cursor
+        dependency egl
+        ;;
+    -demos)
+        options_in+=(demos)
+        ;;
+    -examples)
+        options_in+=(examples)
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+dependency epoxy ${epoxy_options[@]}
+dependency cairo -zlib -glib -fontconfig -freetype -png ${cairo_options[@]}
+dependency pango -fontconfig -cairo ${pango_options[@]}
+
+for opt in "${features_list[@]}"; do
+    if [[ " ${features_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=enabled)
+    else
+        options+=(-D$opt=disabled)
+    fi
+done
+
+for opt in "${options_list[@]}"; do
+    if [[ " ${options_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=true)
+    else
+        options+=(-D$opt=false)
+    fi
+done
+
+options+=(-Dprint_backends=${print_backends} -Dcolord=$colord_option)
+
+enter_git_repository "https://gitlab.gnome.org/GNOME/gtk.git" "${version}"
+build_and_install meson "${options[@]}"
