@@ -77,7 +77,7 @@ libiconv 1.16
 libunistring 1.0
 pcre3 8.39
 pixman 0.42.2
-cairo 1.18.0-2
+cairo 1.18.0-3
 pango 1.50.14
 uchardet 0.0.8
 sokol-tools-bin 2023.06.1
