@@ -44,6 +44,6 @@ for opt in "${availables[@]}"; do
     fi
 done
 
-enter_archive "https://download.gnome.org/sources/at-spi2-core/${version%.*}/at-spi2-core-${version}.tar.xz"
+enter_git_repository "https://github.com/lhelper-org/at-spi2-core.git" "${version}-lhelper"
 build_and_install meson "${options[@]}"
 
