@@ -33,7 +33,7 @@ if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
     # linux.
     epoxy_options+=(-egl)
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
-    options_in+=(win32-backend)
+    options_in+=(win32_backend)
     cairo_options+=(-dwrite)
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     options_in+=(quartz_backend)
@@ -67,7 +67,7 @@ while [ ! -z ${1+x} ]; do
         # dependency libdrm
         ;;
     -wayland)
-        options_in+=(wayland-backend)
+        options_in+=(wayland_backend)
         epoxy_options+=(-egl)
         # The list of dependencies is not verified in detail
         dependency wayland-client
