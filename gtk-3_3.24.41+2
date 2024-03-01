@@ -1,5 +1,12 @@
 #!/bin/bash
 
+concatenate_array() {
+    local -n result=$1
+    local -n arr=$2
+    local IFS=,
+    result="${arr[*]}"
+}
+
 dependency glib
 dependency libjpeg
 dependency libtiff
@@ -41,7 +48,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 colord_option=no
-print_backends=file,lpr
+print_backends=()
 while [ ! -z ${1+x} ]; do
     case $1 in
     -introspection)
@@ -51,9 +58,12 @@ while [ ! -z ${1+x} ]; do
     -xinerama)
         options+=(-Dxinerama=yes)
         ;;
-    -cups)
+    -print-file)
+        print_backends+=(file lpr)
+        ;;
+    -print-cups)
         colord_option=yes
-        print_backends="${print_backends},cups"
+        print_backends+=(cups)
         ;;
     -x11)
         options_in+=(x11_backend)
@@ -109,7 +119,9 @@ for opt in "${options_list[@]}"; do
     fi
 done
 
-options+=(-Dprint_backends=${print_backends} -Dcolord=$colord_option)
+print_csv=
+concatenate_array print_csv print_backends
+options+=(-Dprint_backends=${print_csv} -Dcolord=${colord_option})
 
 enter_git_repository "https://gitlab.gnome.org/GNOME/gtk.git" "${version}"
 build_and_install meson "${options[@]}"
