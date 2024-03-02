@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# FIXME: minor problem: the Meson build for gtk-3 does not see that we provide
+# proxy-libintl and create a subproject for it.
+
 concatenate_array() {
     local -n result=$1
     local -n arr=$2
