@@ -8,18 +8,19 @@ options=(--wrap-mode=nodownload -Dgtk2_atk_adaptor=false)
 dependency glib
 dependency libxml-2.0
 
+atk_only=no
 if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
     # This is what MSYS2 is doing. My understanding is that they are essentially disabling ATK
     # because the atk_only option to yes does:
     # "Build only the ATK stub library without atspi or at-spi2-atk".
     # In this case the library does not need dbus.
-    options+=(--buildtype=plain -Datk_only=true)
+    options+=(--buildtype=plain)
+    atk_only=yes
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     dependency xtst
-    options+=(-Datk_only=true)
+    atk_only=yes
 elif [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
     dependency xtst
-    dependency dbus-1
 fi
 
 while [ ! -z ${1+x} ]; do
@@ -28,6 +29,9 @@ while [ ! -z ${1+x} ]; do
         # This option is currently untested but in principle it should work.
         enables+=(introspection)
         dependency gobject-introspection
+        ;;
+    -atk-only)
+        atk_only=yes
         ;;
     *)
         options+=("$1")
@@ -43,6 +47,12 @@ for opt in "${availables[@]}"; do
         options+=(-D$opt=disabled)
     fi
 done
+
+if [[ $atk_only == yes ]]; then
+    options+=(-Datk_only=true)
+else
+    dependency dbus-1
+fi
 
 enter_git_repository "https://github.com/lhelper-org/at-spi2-core.git" "${version}-lhelper"
 build_and_install meson "${options[@]}"
