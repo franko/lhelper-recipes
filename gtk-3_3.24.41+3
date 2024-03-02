@@ -35,6 +35,7 @@ epoxy_options=()
 cairo_options=()
 pango_options=()
 
+need_file_print=no
 if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
     # TO BE TESTED: probably -egl is required and useful ony when targeting Wayland on
     # linux.
@@ -45,6 +46,7 @@ elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* 
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     options_in+=(quartz_backend)
     cairo_options+=(-quartz)
+    need_file_print=yes
 fi
 
 colord_option=no
@@ -59,7 +61,7 @@ while [ ! -z ${1+x} ]; do
         options+=(-Dxinerama=yes)
         ;;
     -print-file)
-        print_backends+=(file lpr)
+        need_file_print=yes
         ;;
     -print-cups)
         colord_option=yes
@@ -98,6 +100,10 @@ while [ ! -z ${1+x} ]; do
     esac
     shift
 done
+
+if [[ $need_file_print == yes ]]; then
+    print_backends+=(file lpr)
+fi
 
 dependency epoxy ${epoxy_options[@]}
 dependency cairo -zlib -glib -fontconfig -freetype -png ${cairo_options[@]}

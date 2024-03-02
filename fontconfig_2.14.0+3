@@ -8,21 +8,15 @@ enter_archive "https://www.freedesktop.org/software/fontconfig/release/fontconfi
 
 options=("-Ddoc=disabled" "-Dnls=disabled" "-Dtests=disabled" "-Dcache-build=disabled")
 enable_tools=disabled
-system_prefix="${LH_MSYSROOT:-/}usr"
-prefix_root="${system_prefix#[A-Z]:}"
-if [[ $system_prefix == /usr ]]; then
-    etc_root=/etc
-else
-    etc_root="$prefix_root/etc"
-fi
-prefix_option="--prefix=$system_prefix"
+
+private_config=no
 while [ ! -z ${1+x} ]; do
     case $1 in
     -tools)
         enable_tools=enabled
         ;;
     -private-config)
-        prefix_option=""
+        private_config=yes
         ;;
     *)
         options+=("$1")
@@ -36,12 +30,12 @@ options+=("-Dtools=$enable_tools")
 # $prefix_option must be used unquoted below
 build_and_install meson $prefix_option "${options[@]}"
 
-if [ -n "$prefix_option" ]; then
+if [[ $private_config == no ]]; then
     if [[ "${INSTALL_PREFIX+set}" == set && -d "$INSTALL_PREFIX" ]]; then
-        echo "Removing fontconfig config files"
-        rm -fr "$INSTALL_PREFIX$prefix_root/share" "$INSTALL_PREFIX$etc_root"
-        mv "$INSTALL_PREFIX$prefix_root"/* "$INSTALL_PREFIX"
-        find "$INSTALL_PREFIX" -name '*.pc' -exec lh-path-replace '{}' "$system_prefix" "$WIN_INSTALL_PREFIX" \;
+        echo "Removing fontconfig's share and etc directories"
+        pushd "$INSTALL_PREFIX"
+        rm -fr share etc
+        popd
     else
         echo "internal error with variable INSTALL_PREFIX: $INSTALL_PREFIX"
         exit 1
