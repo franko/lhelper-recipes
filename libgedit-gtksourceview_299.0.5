@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# FIXME: will not compile but the problem is when linking to gtk-3. It will miss the
+# libraries xi, xrandr, xcursor, xdamage, epoxy, atk, atk-bridge-2.0. It seems the problem
+# is gtk-3 does not gives these dependencies in the pkg-config file.
+# I have done a fork as lhelper-org/libgedit-gtksourceview but nothing is done
+# there as the problem lies in gtk-3.
+
+options_list=(gtk_doc gobject_introspection)
+
+options=()
+options_in=()
+
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -introspection)
+        options_in+=(gobject_introspection)
+        dependency gobject-introspection
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${options_list[@]}"; do
+    if [[ " ${options_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=true)
+    else
+        options+=(-D$opt=false)
+    fi
+done
+
+enter_git_repository "https://github.com/gedit-technology/libgedit-gtksourceview" "${version}"
+build_and_install meson "${options[@]}"
