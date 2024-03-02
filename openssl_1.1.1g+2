@@ -37,7 +37,7 @@ release)
     ;;
 esac
 
-options+=("--prefix=$INSTALL_PREFIX" "--openssldir=${INSTALL_PREFIX}/lib/ssl")
+options+=("--prefix=$LHELPER_SYSTEM_PREFIX" "--openssldir=${LHELPER_SYSTEM_PREFIX}/lib/ssl")
 
 enter_git_repository https://github.com/openssl/openssl.git "OpenSSL_${version//./_}"
 ./config "${options[@]}"

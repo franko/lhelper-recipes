@@ -40,7 +40,7 @@ else
 fi
 
 enter_archive "https://dl.bintray.com/boostorg/release/1.74.0/source/boost_${version}.tar.gz"
-./bootstrap.sh "${options[@]}" --with-libraries=${libraries_opt} --prefix=${WIN_INSTALL_PREFIX} || echo
+./bootstrap.sh "${options[@]}" --with-libraries=${libraries_opt} --prefix="$LHELPER_SYSTEM_PREFIX" || echo
 # Use a "if" below to avoid terminating on error when calling ./b2.
 # The script b2 can terminate with error just because it skipped some targets.
 if ./b2 install; then

@@ -65,6 +65,6 @@ enter_archive "https://github.com/Kitware/CMake/releases/download/v3.18.4/cmake-
 # We may consider using the option --system-libs that should significantly reduce
 # the build time.
 
-bash bootstrap --prefix="$INSTALL_PREFIX" -- -DCMAKE_BUILD_TYPE:STRING=Release
+bash bootstrap --prefix="$LHELPER_SYSTEM_PREFIX" -- -DCMAKE_BUILD_TYPE:STRING=Release
 make
 make install
