@@ -4,8 +4,6 @@ check_commands meson ninja "$CC"
 dependency freetype2
 dependency expat
 
-enter_archive "https://www.freedesktop.org/software/fontconfig/release/fontconfig-${version}.tar.gz"
-
 options=("-Ddoc=disabled" "-Dnls=disabled" "-Dtests=disabled" "-Dcache-build=disabled")
 enable_tools=disabled
 
@@ -27,8 +25,8 @@ done
 
 options+=("-Dtools=$enable_tools")
 
-# $prefix_option must be used unquoted below
-build_and_install meson $prefix_option "${options[@]}"
+enter_archive "https://www.freedesktop.org/software/fontconfig/release/fontconfig-${version}.tar.gz"
+build_and_install meson "${options[@]}"
 
 if [[ $private_config == no ]]; then
     if [[ "${INSTALL_PREFIX+set}" == set && -d "$INSTALL_PREFIX" ]]; then

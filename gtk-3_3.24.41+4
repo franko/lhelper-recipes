@@ -38,7 +38,7 @@ epoxy_options=()
 cairo_options=()
 pango_options=()
 
-need_file_print=no
+need_file_print=yes
 if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
     # TO BE TESTED: probably -egl is required and useful ony when targeting Wayland on
     # linux.
@@ -46,10 +46,10 @@ if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
     options_in+=(win32_backend)
     cairo_options+=(-dwrite)
+    need_file_print=no
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     options_in+=(quartz_backend)
     cairo_options+=(-quartz)
-    need_file_print=yes
 fi
 
 colord_option=no
