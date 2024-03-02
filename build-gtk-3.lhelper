@@ -14,7 +14,7 @@ BUILD_TYPE="Release"
 # I empirically found which library requires the -pic option.
 if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
 packages=(
-  "libffi" "zlib" "pcre2" "proxy-libintl"
+  "libffi" "zlib" "pcre2" "proxy-libintl" "dbus -pic"
   "glib" "libpng16"
   "libjpeg -pic" "libtiff -pic" "gdk-pixbuf -png -jpeg"
   "epoxy -x11 -egl" "graphene -gobject" "freetype2" "pixman"

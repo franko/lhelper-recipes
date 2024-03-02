@@ -38,11 +38,13 @@ epoxy_options=()
 cairo_options=()
 pango_options=()
 
+builtin_immodules=none
 need_file_print=yes
 if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
     # TO BE TESTED: probably -egl is required and useful ony when targeting Wayland on
     # linux.
     epoxy_options+=(-egl)
+    builtin_immodules=all
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
     options_in+=(win32_backend)
     cairo_options+=(-dwrite)
@@ -130,7 +132,7 @@ done
 
 print_csv=
 concatenate_array print_csv print_backends
-options+=(-Dprint_backends=${print_csv} -Dcolord=${colord_option})
+options+=(-Dprint_backends=${print_csv} -Dcolord=${colord_option} -Dbuiltin_immodules=$builtin_immodules)
 
 enter_git_repository "https://gitlab.gnome.org/GNOME/gtk.git" "${version}"
 build_and_install meson "${options[@]}"

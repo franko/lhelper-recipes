@@ -42,7 +42,7 @@
 enables_list=(xml-docs ducktype-docs systemd selinux apparmor tests)
 enables_in=()
 
-options=()
+options=("$@")
 
 for opt in "${enables_list[@]}"; do
     if [[ " ${enables_in[*]} " == *" $opt "* ]]; then
