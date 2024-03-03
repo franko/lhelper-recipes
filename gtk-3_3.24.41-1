@@ -2,6 +2,7 @@
 
 # FIXME: minor problem: the Meson build for gtk-3 does not see that we provide
 # proxy-libintl and create a subproject for it.
+# SOLVED with 3.24.41-1
 
 concatenate_array() {
     local -n result=$1
@@ -56,11 +57,15 @@ fi
 
 colord_option=no
 print_backends=()
+use_intl=disabled
 while [ ! -z ${1+x} ]; do
     case $1 in
     -introspection)
         features_in+=(introspection)
         dependency gobject-introspection
+        ;;
+    -intl)
+        use_intl=enabled
         ;;
     -xinerama)
         options+=(-Dxinerama=yes)
@@ -132,7 +137,7 @@ done
 
 print_csv=
 concatenate_array print_csv print_backends
-options+=(-Dprint_backends=${print_csv} -Dcolord=${colord_option} -Dbuiltin_immodules=$builtin_immodules)
+options+=(-Dprint_backends=${print_csv} -Dcolord=${colord_option} -Dbuiltin_immodules=$builtin_immodules -Dintl=$use_intl)
 
-enter_git_repository "https://gitlab.gnome.org/GNOME/gtk.git" "${version}"
+enter_git_repository "https://github.com/lhelper-org/gtk" "${version}-lhelper"
 build_and_install meson "${options[@]}"
