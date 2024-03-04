@@ -33,20 +33,23 @@ while [ ! -z ${1+x} ]; do
     shift
 done
 
+gen_options=()
 # if no api are given it use by default the latest versions
 if [ ${#api[@]} -gt 0 ]; then
-    options+=(--api="$(join_by , ${api[@]})")
+    gen_options+=(--api="$(join_by , ${api[@]})")
 fi
 
 if [ $loader != yes ]; then
-    options+=(--no-loader)
+    gen_options+=(--no-loader)
 fi
+
+options+=(-Ddefault_library=$default_lib)
 
 enter_git_repository https://github.com/Dav1dde/glad.git "v$version"
 # There is also the option --extensions but it leaved out all the extensions are included
 # By using --reproducile we prevent glad from fetching specifications from Khronos website.
-echo "using glad options" --reproducible --out-path=gen-src --generator=c --profile=$profile "${options[@]}"
-python3 -m glad --reproducible --out-path=gen-src --generator=c --profile=$profile "${options[@]}"
+echo "using glad options" --reproducible --out-path=gen-src --generator=c --profile=$profile "${gen_options[@]}"
+python3 -m glad --reproducible --out-path=gen-src --generator=c --profile=$profile "${gen_options[@]}"
 
 cat << 'EOF' > gen-src/meson.build
 project('glad', 'c')
@@ -74,7 +77,5 @@ pkg.generate(libglad,
 EOF
 
 pushd gen-src
-meson setup -Ddefault_library=$default_lib --buildtype=release --prefix="$LHELPER_SYSTEM_PREFIX" .build
-meson compile -C .build
-meson install -C .build
+build_and_install meson "${options[@]}"
 popd
