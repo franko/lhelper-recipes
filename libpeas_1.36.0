@@ -1,0 +1,48 @@
+#!/bin/bash
+
+dependency glib
+
+# gobject-introspection is required to build even if introspection
+# is set to false
+dependency gobject-introspection
+
+options_list=(gtk_doc introspection demos widgetry python2 vapi lua51)
+
+options=()
+options_in=()
+
+
+
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -introspection)
+        options_in+=(gobject_introspection)
+        ;;
+    -demos)
+        options_in+=(demos)
+        ;;
+    -widgetry)
+        options_in+=(widgetry)
+        dependency gtk-3
+        ;;
+    -vapi)
+        options_in+=(vapi)
+        dependency vapigen
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+for opt in "${options_list[@]}"; do
+    if [[ " ${options_in[*]} " == *" $opt "* ]]; then
+        options+=(-D$opt=true)
+    else
+        options+=(-D$opt=false)
+    fi
+done
+
+enter_git_repository "https://gitlab.gnome.org/GNOME/libpeas.git" "libpeas-${version}"
+build_and_install meson "${options[@]}"
