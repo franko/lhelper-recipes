@@ -28,26 +28,26 @@ while [ ! -z ${1+x} ]; do
         ;;
     -avif)
         dependency libavif
-        enables+=($1)
+        enables+=(${1#-})
         ;;
     -jpeg|-save-jpg)
         dependency libjpeg
-        enables+=($1)
+        enables+=(${1#-})
         ;;
     -jxl)
         dependency libjxl
-        enables+=($1)
+        enables+=(${1#-})
         ;;
     -pnm)
         dependency libnetpbm
-        enables+=($1)
+        enables+=(${1#-})
         ;;
     -tif)
         dependency libtiff-4
-        enables+=($1)
+        enables+=(${1#-})
         ;;
     -save-png)
-        enables+=($1)
+        enables+=(${1#-})
         ;;
     *)
         options+=("$1")
