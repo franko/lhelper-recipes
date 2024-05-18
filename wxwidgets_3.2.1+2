@@ -95,4 +95,4 @@ for name in "${addons[@]}"; do
     options+=("--with-$name")
 done
 
-build_and_install configure "${options[@]}"
+build_and_install configure --wxwidgets "${options[@]}"
