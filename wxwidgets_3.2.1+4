@@ -1,4 +1,9 @@
 #!/bin/bash
+
+# KNOWN PROBLEMS: on Windows, and may be on othe systems as well, wx-config --cxxflags dos return
+# an include path like $prefix/include where "wx/wx.h" is not found because the directory wx-3.2 is
+# not given. The right include path should be $prefix/include/wx-3.2
+
 enter_archive "https://github.com/wxWidgets/wxWidgets/releases/download/v${version}/wxWidgets-${version}.tar.bz2"
 
 availables=(svg compat30 webview{webkit,ie,edge} unicode)
@@ -101,30 +106,39 @@ build_and_install configure --wxwidgets "${options[@]}"
 # location, determined at run-time.
 # We achive this by prepending some code to define the variable this_prefix
 # based on "$0", the script location at run-time.
-for file in "$INSTALL_PREFIX/lib/wx/config/"*; do
+config_files=("$INSTALL_PREFIX/lib/wx/config/"*)
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+    # on windows bin/wx-config is not a symlink but a regular file: add it
+    # to the list of config files to patch
+    config_files+=("$INSTALL_PREFIX/bin/wx-config")
+fi
+for file in "${config_files[@]}"; do
     echo "Fixing config file $file"
     if [[ -f "$file" ]]; then
         temp_file=$(mktemp)
         cat << 'EOF' > "$temp_file"
 #!/bin/sh
-script_path=$(realpath "$0")
-this_prefix=$(dirname "$script_path")
-for i in 1 2 3; do
-    this_prefix=$(dirname "$this_prefix")
-done
+script_path="$(realpath "$0")"
+this_prefix="$(dirname "$script_path")"
+this_prefix="$(dirname "$this_prefix")"
 EOF
         cat "$file" >> "$temp_file"
         mv "$temp_file" "$file"
+        sed -i 's/^EGREP=.*/EGREP="grep -E"/' "$file"
     fi
 done
 
-echo "Fixing symlink bin/wx-config to be relative"
-# reads where the links points to...
-wxconfig_target=$(readlink "$INSTALL_PREFIX/bin/wx-config")
-pushd "$INSTALL_PREFIX/bin"
-rm wx-config
-# makes the link relative
-ln -s "..${wxconfig_target/#$LHELPER_SYSTEM_PREFIX/}" wx-config
-chmod a+x wx-config
-popd
+# We need to fix the target for the symlink of bin/wx-config but not on windows where there
+# are no symlinks.
+if [[ ! ("$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"*) ]]; then
+    echo "Fixing symlink bin/wx-config to be relative"
+    # reads where the links points to...
+    wxconfig_target=$(readlink "$INSTALL_PREFIX/bin/wx-config")
+    pushd "$INSTALL_PREFIX/bin"
+    rm wx-config
+    # makes the link relative
+    ln -s "..${wxconfig_target/#$LHELPER_SYSTEM_PREFIX/}" wx-config
+    chmod a+x wx-config
+    popd
+fi
 
