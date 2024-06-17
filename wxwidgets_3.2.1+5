@@ -116,12 +116,23 @@ for file in "${config_files[@]}"; do
     echo "Fixing config file $file"
     if [[ -f "$file" ]]; then
         temp_file=$(mktemp)
-        cat << 'EOF' > "$temp_file"
+        if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+            cat << 'EOF' > "$temp_file"
 #!/bin/sh
-script_path="$(realpath "$0")"
-this_prefix="$(dirname "$script_path")"
-this_prefix="$(dirname "$this_prefix")"
+this_prefix="$(realpath "$0")"
+for i in 1 2; do
+    this_prefix="$(dirname "$this_prefix")"
+done
 EOF
+        else
+            cat << 'EOF' > "$temp_file"
+#!/bin/sh
+this_prefix="$(realpath "$0")"
+for i in 1 2 3 4; do
+    this_prefix="$(dirname "$this_prefix")"
+done
+EOF
+        fi
         cat "$file" >> "$temp_file"
         mv "$temp_file" "$file"
         sed -i 's/^EGREP=.*/EGREP="grep -E"/' "$file"
