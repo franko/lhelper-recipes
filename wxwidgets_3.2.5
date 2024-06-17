@@ -1,0 +1,99 @@
+#!/bin/bash
+
+enter_archive "https://github.com/wxWidgets/wxWidgets/releases/download/v${version}/wxWidgets-${version}.tar.bz2"
+
+availables=(svg compat30 webview{webkit,ie,edge} unicode)
+addons_list=(\
+    libxpm libiconv gnomevfs libnotify opengl dmalloc sdl regex zlib expat libpng \
+    libjpeg libtiff libmspack cairo)
+
+options=()
+addons=()
+enables=("unicode")
+linux_backend=gtk
+# if [[ "$OSTYPE" == "linux"* ]]; then
+    # nothing
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+    # on windows do not disable unicode, it doesn't work
+    options+=("--with-msw")
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    # on MAC OS X do not disable unicode, not tested
+    options=("--with-osx")
+fi
+
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -opengl)
+        addons+=(opengl)
+        ;;
+    -png)
+        addons+=(libpng)
+        ;;
+    -jpeg)
+        addons+=(libjpeg)
+        ;;
+    -zlib)
+        addons+=(zlib)
+        ;;
+    -x11)
+        # this option was not tested
+        dependency x11
+        dependency xext
+        dependency pango -cairo -xft
+        addons+=(cairo)
+        linux_backend=x11
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+if [[ "$OSTYPE" == "linux"* ]]; then
+    if [[ $linux_backend == x11 ]]; then
+        options+=("--with-x11" "--enable-universal")
+    else
+        options+=("--with-gtk=3")
+    fi
+fi
+# Normally we may use --enable-no_exceptions but as 3.1.3 is broken because Scintilla
+# requires exceptions. --enable-no_rtti doesn't work either one gets missing typeinfo at link time.
+
+# If SVG is enable PNG library is required.
+
+# wx-config will print the options enabled.
+
+# stc could be disabled (scintilla based styled text)
+
+# Disable language localisation maybe.
+
+# Problem: on install we have the script wx-config that works correctly but
+# we have no pkg-config file. It would be convenient to have a pkg-config file.
+
+all_enables="${enables[*]}"
+for opt in "${availables[@]}"; do
+    if [[ " $all_enables " != *" $opt "* ]]; then
+        disables+=("$opt")
+    fi
+done
+
+for name in "${enables[@]}"; do
+    options+=("--enable-$name")
+done
+for name in "${disables[@]}"; do
+    options+=("--disable-$name")
+done
+
+all_addons="${addons[*]}"
+for opt in "${addons_list[@]}"; do
+    if [[ " $all_addons " != *" $opt "* ]]; then
+        options+=("--without-$opt")
+    fi
+done
+
+for name in "${addons[@]}"; do
+    options+=("--with-$name")
+done
+
+build_and_install configure --wxwidgets "${options[@]}"
