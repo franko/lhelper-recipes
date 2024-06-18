@@ -35,6 +35,10 @@ while [ ! -z ${1+x} ]; do
     -zlib)
         addons+=(zlib)
         ;;
+    -expat)
+        addons+=(expat)
+        dependency expat
+        ;;
     -x11)
         # this option was not tested
         dependency x11
