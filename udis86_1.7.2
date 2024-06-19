@@ -1,0 +1,22 @@
+#!/bin/bash
+enter_archive "https://downloads.sourceforge.net/project/udis86/udis86/1.7/udis86-${version}.tar.gz"
+# The python below does not need to exists since it is not used unless a "make clean" is done
+# inside the project.
+build_and_install configure --with-python=/usr/bin/python "$@"
+
+PKG_NAME=udis86
+# Warning, since the 'EOF' below in unquoted shell variables substitutions
+# will be done on the text body. The '$' should be therefore escaped to
+# avoid shell substitution when needed.
+cat << EOF > $PKG_NAME.pc
+prefix=${WIN_INSTALL_PREFIX}
+
+Name: udis86
+Description: Library for x86 code disassembly
+Version: ${version}
+Libs: -L\${prefix}/lib -ludis86 -lm
+Cflags: -I\${prefix}/include
+EOF
+
+install_pkgconfig_file "${PKG_NAME}.pc"
+
