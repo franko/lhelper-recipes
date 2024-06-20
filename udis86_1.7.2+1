@@ -9,7 +9,7 @@ PKG_NAME=udis86
 # will be done on the text body. The '$' should be therefore escaped to
 # avoid shell substitution when needed.
 cat << EOF > $PKG_NAME.pc
-prefix=${WIN_INSTALL_PREFIX}
+prefix=${LHELPER_SYSTEM_PREFIX}
 
 Name: udis86
 Description: Library for x86 code disassembly
