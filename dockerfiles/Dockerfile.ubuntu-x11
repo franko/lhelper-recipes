@@ -1,0 +1,36 @@
+FROM ubuntu:focal
+
+# Build with: docker build -t ubuntu-x11 -f Dockerfile.ubuntu-x11 .
+# Run with: docker run -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix ubuntu-x11
+
+# Avoid warnings by switching to noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    sudo x11-apps xorg-dev build-essential pkg-config ninja-build \
+    git python3-pip ca-certificates curl vim \
+    bison libxcb-xkb-dev libegl1-mesa-dev openssh-client \
+    --no-install-recommends \
+    && pip3 install meson \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Setup a user to avoid running as root
+RUN useradd -m dockeruser && echo 'dockeruser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
+# Switch to the user
+USER dockeruser
+
+# Set the working directory
+WORKDIR /home/dockeruser
+
+RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> .bashrc
+
+RUN git clone https://github.com/franko/lhelper && \
+    cd lhelper && bash install $HOME/.local
+
+# Set the DISPLAY environment variable
+ENV DISPLAY=host.docker.internal:0
+
+CMD ["/bin/bash"]
+
