@@ -1,7 +1,10 @@
 FROM ubuntu:focal
 
-# Build with: docker build -t ubuntu-gtk -f Dockerfile.ubuntu-gtk .
+# Build with: docker build -t ubuntu-gtk --build-arg SSH_KEY_PATH="$HOME/.ssh/lhelper_user" --build-arg SSH_KEY_PORT=<port-number> -f Dockerfile.ubuntu-gtk .
 # Run with: docker run -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix ubuntu-gtk
+
+ARG SSH_KEY_PATH
+ARG SSH_KEY_PORT
 
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
@@ -27,7 +30,15 @@ WORKDIR /home/dockeruser
 
 RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> .bashrc
 
-RUN git clone https://github.com/franko/lhelper && cd lhelper && bash install $HOME/.local
+RUN mkdir -p /home/dockeruser/.ssh
+COPY --chown=dockeruser:dockeruser $SSH_KEY_PATH /home/dockeruser/.ssh/lhelper_user
+COPY --chown=dockeruser:dockeruser $SSH_KEY_PATH.pub /home/dockeruser/.ssh/lhelper_user.pub
+RUN chmod 600 /home/dockeruser/.ssh/lhelper_user && \
+    chmod 644 /home/dockeruser/.ssh/lhelper_user.pub
+
+RUN git clone https://github.com/franko/lhelper && cd lhelper && \
+  bash install $HOME/.local && \
+  $HOME/.local/bin/lhelper register key /home/dockeruser/.ssh/lhelper_user $SSH_KEY_PORT
 
 # Set the DISPLAY environment variable
 ENV DISPLAY=host.docker.internal:0
