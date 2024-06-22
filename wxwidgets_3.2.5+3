@@ -103,28 +103,6 @@ done
 build_and_install configure --wxwidgets "${options[@]}"
 
 if [[ ! ("$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"*) ]]; then
-    # patch all files in lib/wx/config to use a prefix relative to their own
-    # location, determined at run-time.
-    # We achive this by prepending some code to define the variable this_prefix
-    # based on "$0", the script location at run-time.
-    config_files=("$INSTALL_PREFIX/lib/wx/config/"*)
-    for file in "${config_files[@]}"; do
-        echo "Fixing config file $file"
-        if [[ -f "$file" ]]; then
-            temp_file=$(mktemp)
-            cat << 'EOF' > "$temp_file"
-#!/bin/sh
-this_prefix="$(realpath "$0")"
-for i in 1 2 3 4; do
-    this_prefix="$(dirname "$this_prefix")"
-done
-EOF
-            cat "$file" >> "$temp_file"
-            mv "$temp_file" "$file"
-            sed -i 's/^EGREP=.*/EGREP="grep -E"/' "$file"
-        fi
-    done
-
     # We need to fix the target for the symlink of bin/wx-config but not on windows where there
     # are no symlinks.
     echo "Fixing symlink bin/wx-config to be relative"
