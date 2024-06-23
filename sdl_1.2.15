@@ -1,0 +1,144 @@
+#!/bin/bash
+check_commands make grep cmp diff "$CC" "$CXX"
+
+# Options in the array below will be disabled unless they are
+# explicitly enabled.
+availables=( \
+    video video-opengl loadso audio sndio joystick misc timers file cpuinfo assembly events threads)
+
+simd_availables=(altivec arm-simd arm-neon)
+simd_enables=()
+
+# By default we build video, timers and events modules
+enables=(assembly video events timers)
+
+disables=()
+audio_disables=(arts nas)
+video_disables=(video-{dga,nanox,svfa,qtopia,picogui,gem,xbios,fbcon,directfb,ggi,ps2gs,ps3})
+
+os_audio_deps=()
+
+unset enable_directx
+if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
+    os_audio_enables=(pulseaudio)
+    os_audio_deps=(libpulse-simple samplerate) # sndio ? (configure is looking for sndio)
+    os_audio_disables=(esd "${audio_disables[@]}")
+    availables+=(video-x11 video-x11-{vm,xv,xinerama,xme,xrandr})
+    disables+=("${video_disables[@]}")
+elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+    availables+=(directx)
+    os_audio_enables=()
+    os_audio_disables=("${audio_disables[@]}")
+    enable_directx=yes
+    disables+=("${video_disables[@]}")
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    os_audio_enables=()
+    os_audio_disables=("${audio_disables[@]}")
+    enables+=(video-cocoa file)
+    disables+=(video-x11 "${video_disables[@]}")
+    needs_opengl=yes
+fi
+
+options=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -x11)
+        dependency x11
+        dependency xext
+        enables+=(video-x11 video-x11-xrandr)
+        ;;
+    -directx)
+        enable_directx=yes
+        ;;
+    -threads)
+        enables+=(threads)
+        ;;
+    -audio)
+        for depname in "${os_audio_deps[@]}"; do
+            dependency "$depname"
+            if [[ "$depname" == samplerate ]]; then
+                CFLAGS+="$(pkg-config --cflags-only-I samplerate)"
+                echo "Added samplerate includes to CFLAGS: $CFLAGS"
+            fi
+        done
+        enables+=(audio "${os_audio_enables[@]}")
+        disables+=("${os_audio_disables[@]}")
+        ;;
+    -sndio)
+        dependency sndio
+        enables+=(sndio)
+        ;;
+    -opengl)
+        needs_opengl=yes
+        ;;
+    -joystick)
+        enables+=(joystick joystick-virtual)
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            enables+=(joystick-mfi)
+        fi
+        ;;
+    -loadso)
+        needs_loadso=yes
+        ;;
+    -filesystem | -cpuinfo | -file)
+        enables+=("${1#-}")
+        ;;
+    -xinerama)
+        enables+=(video-x11$1)
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+if [ ! -z ${enable_directx+x} ]; then
+    enables+=(directx)
+fi
+
+if [ ! -z ${needs_loadso+x} ]; then
+    enables+=(loadso)
+fi
+
+if [ ! -z ${needs_opengl+x} ]; then
+    enables+=(loadso video-opengl threads)
+fi
+
+all_simd="${simd_enables[*]}"
+for opt in "${simd_availables[@]}"; do
+    if [[ " $all_simd " == *" $opt "* ]]; then
+        enables+=("$opt")
+    else
+        disables+=("$opt")
+    fi
+done
+
+all_enables="${enables[*]}"
+for opt in "${availables[@]}"; do
+    if [[ " $all_enables " != *" $opt "* ]]; then
+        disables+=("$opt")
+    fi
+done
+
+for name in "${enables[@]}"; do
+    options+=("--enable-$name")
+done
+for name in "${disables[@]}"; do
+    options+=("--disable-$name")
+done
+
+if [ $version == "1.2.15" ]; then
+    # version including some fixes from official repository, otherwise the
+    # release 1.2.15 does not compile.
+    git_version="1.2.15-06-2024"
+else
+    git_version="$version"
+fi
+
+# Using a forked repository only to have a tag for the 1.2.15 version with
+# fixes from libsdl's official git repository
+enter_git_repository "https://github.com/lhelper-org/SDL-1.2" "v${git_version}"
+
+build_and_install configure "${options[@]}"
+
