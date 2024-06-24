@@ -1,0 +1,47 @@
+#!/bin/bash
+
+dependency sdl
+
+# probably we should add support for at least midi and mp3
+
+availables=(music-{cmd,wave,mod,midi,timidity-midi,native-midi,fluidsynth-midi,ogg,ogg-tremor,flac,mp3})
+enables=(music-wave)
+
+options=()
+
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -mp3)
+        # not validated or tested
+        dependency libmpg123
+        enables+=(music-mp3)
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+all_enables="${enables[*]}"
+for opt in "${availables[@]}"; do
+    if [[ " $all_enables " != *" $opt "* ]]; then
+        disables+=("$opt")
+    fi
+done
+
+for name in "${enables[@]}"; do
+    options+=("--enable-$name")
+done
+for name in "${disables[@]}"; do
+    options+=("--disable-$name")
+done
+
+options+=(--disable-sdltest)
+
+# we made a version in lhelper-org repository and used a tag v1.2.12-1 because
+# the official tag release-1.2.12 was too behind a lot of improvements found on
+# the SDL-1.2 branch.
+enter_git_repository "https://github.com/lhelper-org/SDL_mixer" "v${version}"
+
+build_and_install configure "${options[@]}"

@@ -115,3 +115,6 @@ libpeas 1.36.0
 mhash 0.9.9.9
 udis86 1.7.2
 sdl 1.2.15
+sdl-mixer 1.2.12-1
+sdl-net 1.2.8-1
+

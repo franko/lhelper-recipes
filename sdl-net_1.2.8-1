@@ -1,0 +1,8 @@
+#!/bin/bash
+dependency sdl
+# we made a version in lhelper-org repository and used a tag v1.2.8-1 because
+# the official tag release-1.2.8 was too behind a lot of improvements found on
+# the SDL-1.2 branch.
+enter_git_repository "https://github.com/lhelper-org/SDL_net" "v${version}"
+options=(--disable-sdltest --disable-gui)
+build_and_install configure "${options[@]}"
