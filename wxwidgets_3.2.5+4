@@ -29,6 +29,10 @@ while [ ! -z ${1+x} ]; do
     -png)
         addons+=(libpng)
         ;;
+    -regex)
+        addons+=(regex)
+        dependency pcre2
+        ;;
     -jpeg)
         addons+=(libjpeg)
         ;;
