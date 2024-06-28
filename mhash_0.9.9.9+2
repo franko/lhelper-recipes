@@ -1,5 +1,10 @@
 #!/bin/bash
-enter_archive "https://downloads.sourceforge.net/project/mhash/mhash/${version}/mhash-${version}.tar.gz"
+enter_git_repository "https://github.com/lhelper-org/mhash" "v${version}-lhelper"
+
+if [[ " $* " == *" -shared "* ]]; then
+  CFLAGS="$CFLAGS -DMHASH_BUILD_SHARED"
+fi
+
 build_and_install configure "$@"
 
 PKG_NAME=mhash
