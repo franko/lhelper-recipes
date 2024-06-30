@@ -1,0 +1,51 @@
+#!/bin/bash
+# No longer use the sourceforge download because it does no longer works
+# on Windows using a proxy. The SSL certificate check is disabled and
+# redirects are enabled with curl but it does not work.
+# Use github source code repository instead: glennrp/libpng.
+# Changed again to lhelper-org/libpng repository to use the Meson build
+# taken from wrapdb. Otherwise the configure script does not lookup for
+# zlib using pkg-config.
+
+# There is a repository at https://github.com/lhelper-org/libpng using a Meson
+# build but it gives problem when compiling on macOS from ARM64 targeting x86-64,
+# the meson config tries to activate the NEON extensions which raise an error.
+# We switch back to the standard repository and the configure based build
+dependency zlib
+
+cpu_ext_availables=(intel-sse arm-neon mips-{msa,mmi} powerpc-vsx loongarch-lsx)
+cpu_ext_enables=()
+
+case "$CPU_TYPE/$CPU_TARGET" in
+    x86/i586 | x86/i686 | x86/pentium2 | x86/pentium3 | arm/*)
+        ;;
+    x86*)
+        cpu_ext_enables+=(intel-sse)
+        ;;
+    arm64/*)
+        cpu_ext_enables+=(arm-neon)
+        ;;
+    mips*)
+        cpu_ext_enables+=(mips-msa mips-mmi)
+        ;;
+    powerpc*)
+        cpu_ext_enables+=(powerpc-vsx)
+        ;;
+    loongarch*)
+        cpu_ext_enables+=(loongarch-lsx)
+        ;;
+esac
+
+options=("$@")
+
+all_cpu_ext="${cpu_ext_enables[*]}"
+for opt in "${cpu_ext_availables[@]}"; do
+    if [[ " $all_cpu_ext " == *" $opt "* ]]; then
+        options+=(--enable-${opt}=yes)
+    else
+        options+=(--enable-${opt}=no)
+    fi
+done
+
+enter_git_repository "https://github.com/pnggroup/libpng" "v${version}"
+build_and_install configure "${options[@]}"
