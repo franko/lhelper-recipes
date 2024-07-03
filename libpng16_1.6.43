@@ -11,6 +11,10 @@
 # build but it gives problem when compiling on macOS from ARM64 targeting x86-64,
 # the meson config tries to activate the NEON extensions which raise an error.
 # We switch back to the standard repository and the configure based build
+#
+# KNOWN PROBLEM observed on Windows: the configure script fails to see that the zlib is
+# actually available if this latter was installed using lhelper.
+# It will fail with an error about missing zlib.
 dependency zlib
 
 cpu_ext_availables=(intel-sse arm-neon mips-{msa,mmi} powerpc-vsx loongarch-lsx)
