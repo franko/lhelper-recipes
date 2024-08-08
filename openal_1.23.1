@@ -1,0 +1,77 @@
+#!/bin/bash
+enter_git_repository "https://github.com/kcat/openal-soft.git" "$version"
+
+# For Android OBOE and OPENSL but android is not covered
+availables=(ALSOFT_BACKEND_{PULSEAUDIO,PIPEWIRE,JACK,PORTAUDIO,SDL2,WAVE,})
+enables=()
+
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+    availables+=(ALSOFT_BACKEND_{WINMM,DSOUND,WASAPI})
+    enables+=(ALSOFT_BACKEND_WASAPI)
+else
+    availables+=(ALSOFT_BACKEND_{ALSA,OSS,SNDIO})
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        availables+=(ALSOFT_BACKEND_COREAUDIO)
+        enables+=(ALSOFT_BACKEND_COREAUDIO)
+    elif [[ "$OSTYPE" == "linux"*  ]]; then
+        enables+=(ALSOFT_BACKEND_PULSEAUDIO)
+        dependency libpulse
+    elif [[ "$OSTYPE" == "freebsd"* ]]; then
+        enables+=(ALSOFT_BACKEND_SNDIO)
+        dependency sndio
+    fi
+fi
+
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -dsound)
+        # Windows only
+        enables+=(ALSOFT_BACKEND_DSOUND)
+        ;;
+    -winmm)
+        # Windows only
+        enables+=(ALSOFT_BACKEND_WINMM)
+        ;;
+    -oss)
+        enables+=(ALSOFT_BACKEND_OSS)
+        ;;
+    -alsa)
+        enables+=(ALSOFT_BACKEND_ALSA)
+        dependency alsa
+        ;;
+    -wave)
+        enables+=(ALSOFT_BACKEND_WAVE)
+        ;;
+    -pipewire)
+        enables+=(ALSOFT_BACKEND_PIPEWIRE)
+        dependency libpipewire-0.3
+        ;;
+    -jack)
+        enables+=(ALSOFT_BACKEND_JACK)
+        dependency jack
+        ;;
+    *)
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+all_enables="${enables[*]}"
+all_availables="${availables[*]}"
+for opt in "${enables[@]}"; do
+    if [[ " $all_availables " != *" $opt "* ]]; then
+        echo "The option $opt is not available"
+        exit 1
+    fi
+done
+
+for opt in "${availables[@]}"; do
+    if [[ " $all_enables " == *" $opt "* ]]; then
+        options+=(-D$opt=ON)
+    else
+        options+=(-D$opt=OFF)
+    fi
+done
+
+build_and_install cmake "${options[@]}"
