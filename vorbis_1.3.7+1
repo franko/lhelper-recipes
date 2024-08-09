@@ -1,3 +1,0 @@
-dependency ogg
-enter_archive "https://github.com/xiph/vorbis/releases/download/v1.3.7/libvorbis-${version}.tar.gz"
-build_and_install configure "$@"

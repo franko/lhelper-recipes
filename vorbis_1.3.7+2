@@ -1,0 +1,12 @@
+#!/bin/bash
+dependency ogg
+enter_archive "https://github.com/xiph/vorbis/releases/download/v1.3.7/libvorbis-${version}.tar.gz"
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # On macOS the build is broken when using configure, see:
+  # https://gitlab.xiph.org/xiph/vorbis/-/issues/2348
+  # To avoid the problem we use CMake based build on macOS.
+  build_and_install cmake "$@"
+else
+  build_and_install configure "$@"
+fi
