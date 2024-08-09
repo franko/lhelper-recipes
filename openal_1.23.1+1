@@ -22,6 +22,7 @@ else
     fi
 fi
 
+libtype=STATIC
 while [ ! -z ${1+x} ]; do
     case $1 in
     -dsound)
@@ -51,11 +52,16 @@ while [ ! -z ${1+x} ]; do
         dependency jack
         ;;
     *)
+        if [[ $1 == -shared ]]; then
+            libtype=SHARED
+        fi
         options+=("$1")
         ;;
     esac
     shift
 done
+
+options+=(-DLIBTYPE=$libtype)
 
 all_enables="${enables[*]}"
 all_availables="${availables[*]}"
