@@ -29,9 +29,9 @@ if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; 
     export INCLUDE_PATH="${LHELPER_SYSTEM_PREFIX}/include"
     export LIBRARY_PATH="${LHELPER_SYSTEM_PREFIX}/lib"
     export BINARY_PATH="${LHELPER_SYSTEM_PREFIX}/lib"
-    make prefix="${LHELPER_SYSTEM_PREFIX}" -f win32/Makefile.gcc
+    make CC="$CC" CXX="$CXX" prefix="${LHELPER_SYSTEM_PREFIX}" -f win32/Makefile.gcc
     echo "Using make instal command: " DESTDIR="$INSTALL_PREFIX" make prefix="$LHELPER_SYSTEM_PREFIX" -f win32/Makefile.gcc install
-    make DESTDIR="$INSTALL_PREFIX" prefix="$LHELPER_SYSTEM_PREFIX" -f win32/Makefile.gcc install
+    make CC="$CC" CXX="$CXX"  DESTDIR="$INSTALL_PREFIX" prefix="$LHELPER_SYSTEM_PREFIX" -f win32/Makefile.gcc install
     normalize_destdir_install "$INSTALL_PREFIX" "$LHELPER_SYSTEM_PREFIX"
 else
     ./configure --prefix="$LHELPER_SYSTEM_PREFIX" "${zlib_options[@]}"
