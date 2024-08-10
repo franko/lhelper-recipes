@@ -2,7 +2,7 @@
 enter_git_repository "https://github.com/kcat/openal-soft.git" "$version"
 
 # For Android OBOE and OPENSL but android is not covered
-availables=(ALSOFT_BACKEND_{PULSEAUDIO,PIPEWIRE,JACK,PORTAUDIO,SDL2,WAVE,})
+availables=(ALSOFT_BACKEND_{PULSEAUDIO,PIPEWIRE,JACK,PORTAUDIO,SDL2,WAVE})
 enables=()
 
 if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
