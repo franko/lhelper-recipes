@@ -61,7 +61,7 @@ while [ ! -z ${1+x} ]; do
     shift
 done
 
-options+=(-DLIBTYPE=$libtype)
+options+=(-DALSOFT_EXAMPLES=OFF -DALSOFT_UTILS=OFF -DLIBTYPE=$libtype)
 
 all_enables="${enables[*]}"
 all_availables="${availables[*]}"
