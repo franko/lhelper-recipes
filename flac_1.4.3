@@ -1,0 +1,91 @@
+#!/bin/bash
+check_commands make "$CC"
+
+options=()
+
+# List all available features
+availables=(
+    asm-optimizations avx 64-bit-words
+    cpplibs programs examples
+    ogg thorough-tests debug oggtest
+)
+
+# Initialize enables array with default enabled features
+enables=(asm-optimizations)
+
+case "$CPU_TYPE/$CPU_TARGET" in
+    x86/i586 | x86/i686)
+        ;;
+    x86-64/x86-64)
+        enables+=(64-bit-words)
+        ;;
+    arm64/*)
+        enables+=(64-bit-words)
+        ;;
+    x86*)
+        enables+=(avx 64-bit-words)
+        ;;
+esac
+
+# Enable debug if BUILD_TYPE is set to "debug" (case-insensitive)
+if [[ "${BUILD_TYPE,,}" == "debug" ]]; then
+    enables+=(debug)
+fi
+
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -ogg)
+        dependency ogg
+        enables+=(ogg)
+        ;;
+    -cpplibs)
+        enables+=(cpplibs)
+        check_commands "$CXX"  # Ensure C++ compiler is available
+        ;;
+    -programs)
+        enables+=(programs)
+        ;;
+    -examples)
+        enables+=(examples)
+        ;;
+    *)
+        # Pass through all other options directly
+        options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+# Use the specified bash idiom to determine which options to disable
+all_enables="${enables[*]}"
+if [[ " $all_enables " == *" ogg "* ]]; then
+    if pkg-config --exists ogg; then
+        OGG_CFLAGS=$(pkg-config --cflags ogg)
+        OGG_LIBS=$(pkg-config --libs ogg)
+        export CFLAGS="$CFLAGS $OGG_CFLAGS"
+        export CXXFLAGS="$CXXFLAGS $OGG_CFLAGS"
+        export LDFLAGS="$LDFLAGS $OGG_LIBS"
+        echo "Adding OGG to CFLAGS, CXXFLAGS and LDFLAGS: $OGG_CFLAGS $OGG_LIBS"
+    else
+        echo "Warning: Ogg library not found via pkg-config. Ogg support may be disabled."
+        exit 1
+    fi
+fi
+
+for opt in "${availables[@]}"; do
+    if [[ " $all_enables " != *" $opt "* ]]; then
+        disables+=("$opt")
+    fi
+done
+
+for name in "${enables[@]}"; do
+    options+=("--enable-$name")
+done
+
+for name in "${disables[@]}"; do
+    options+=("--disable-$name")
+done
+
+enter_archive "https://github.com/xiph/flac/releases/download/${version}/flac-${version}.tar.xz"
+
+build_and_install configure "${options[@]}"
