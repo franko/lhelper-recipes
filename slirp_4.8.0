@@ -1,0 +1,3 @@
+enter_git_repository https://gitlab.freedesktop.org/slirp/libslirp "v${version}"
+build_and_install meson "${options[@]}"
+
