@@ -1,0 +1,35 @@
+#!/bin/bash
+
+lib="static"
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -shared)
+        lib="shared"
+        ;;
+    -pic)
+        CFLAGS+="-fPIC"
+        ;;
+    *)
+        echo "error: unknow option \"$1\""
+        exit 1
+        ;;
+    esac
+    shift
+done
+
+enter_git_repository https://github.com/franko/glew.git "v${version}-lhelper"
+
+export GLEW_PREFIX="${LHELPER_SYSTEM_PREFIX}"
+export GLEW_DEST="${LHELPER_SYSTEM_PREFIX}"
+export GLEW_NO_GLU="-DGLEW_NO_GLU"
+if [ "$lib" == "static" ]; then
+    export GLEW_STATIC_ONLY="true"
+fi
+
+echo "running make from $PWD" GLEW_PREFIX="$GLEW_PREFIX" GLEW_DEST="$GLEW_DEST"
+make extensions
+make "glew.lib.$lib" glew.bin
+echo make DESTDIR="$INSTALL_PREFIX" install.include "install.lib.$lib" install.pkgconfig install.bin
+make DESTDIR="$INSTALL_PREFIX" install.include "install.lib.$lib" install.pkgconfig install.bin
+echo normalize_destdir_install "$INSTALL_PREFIX" "${LHELPER_SYSTEM_PREFIX}"
+normalize_destdir_install "$INSTALL_PREFIX" "${LHELPER_SYSTEM_PREFIX}"
