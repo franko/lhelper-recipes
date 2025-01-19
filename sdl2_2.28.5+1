@@ -213,6 +213,13 @@ for opt in "${availables[@]}"; do
     fi
 done
 
+if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
+    if [[ " $all_enables " != *" video-x11 "* && " $all_enables " != *" video-wayland "* ]]; then
+        echo "On linux or bsd systems one video option should be enabled, either x11 or wayland." 1>&2
+        exit 7 # This specific exit code means for lhelper: recipe configuration error
+    fi
+fi
+
 for name in "${enables[@]}"; do
     options+=("--enable-$name")
 done
