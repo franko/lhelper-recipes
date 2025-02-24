@@ -1,0 +1,18 @@
+#!/bin/bash
+enter_git_repository "https://github.com/USCiLab/cereal.git" "v${version}"
+options=("$@" -DJUST_INSTALL_CEREAL=ON)
+# options+=(-DSKIP_PERFORMANCE_COMPARISON=ON -DSKIP_PORTABILITY_TEST=ON -DBUILD_{DOC,SANDBOX,TESTS}=OFF -DCEREAL_INSTALL=ON)
+build_and_install cmake "${options[@]}"
+
+PKG_NAME=cereal
+
+cat << EOF > $PKG_NAME.pc
+Name: $PKG_NAME
+Description: cereal is a header-only C++11 serialization library
+URL: https://uscilab.github.io/cereal/
+Version: $version
+Cflags: -I${LHELPER_SYSTEM_PREFIX}/include
+EOF
+
+install_pkgconfig_file "$PKG_NAME.pc"
+
