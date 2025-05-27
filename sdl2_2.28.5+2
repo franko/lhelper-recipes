@@ -1,5 +1,9 @@
 #!/bin/bash
-check_commands make grep cmp diff "$CC" "$CXX"
+check_commands make grep diff "$CC" "$CXX"
+
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+  check_commands sed
+fi
 
 # Options in the array below will be disabled unless they are
 # explicitly enabled.
