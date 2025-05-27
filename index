@@ -46,7 +46,7 @@ cppcheck 2.3
 pcre2 10.39
 imgui 1.89.6-2
 implot 0.14-1
-glad 0.1.34
+glad 0.1.36
 reproc 14.2.3-meson-1
 gsl-lite 0.38.1
 flatbuffers 2.0.0
