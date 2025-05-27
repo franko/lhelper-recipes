@@ -49,9 +49,9 @@ enter_git_repository https://github.com/Dav1dde/glad.git "v$version"
 
 # --- Python-3.12 / UTF-8-BOM workaround -----------------
 # must be done *inside the glad source tree*, before we run glad
+# https://github.com/microsoft/vcpkg/issues/40786
 sed -i "s/open_local(/open_local(/; s/\.xml')/\.xml', encoding='utf-8-sig')/" \
        glad/__main__.py
-# --------------------------------------------------------
 
 # There is also the option --extensions but it leaved out all the extensions are included
 # By using --reproducile we prevent glad from fetching specifications from Khronos website.
