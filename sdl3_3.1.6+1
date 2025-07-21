@@ -1,0 +1,232 @@
+#!/bin/bash
+check_commands cmake make grep diff "$CC" "$CXX"
+
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+  check_commands sed
+fi
+
+# Options in the array below will be disabled unless they are
+# explicitly enabled.
+availables=( \
+    video gpu render camera joystick haptic hidapi sensor power dialog \
+    audio wasapi directx \
+    libc pthreads clock-gettime \
+    x11 wayland cocoa rpi \
+    shared static tests examples)
+
+# SIMD extensions
+simd_availables=(sse sse2 sse3 sse41 sse42 avx avx2 avx512f lsx lasx neon)
+simd_enables=()
+
+# By default we build video, events, timers modules and static library
+# SDL3 uses CMake instead of autotools
+# Threads are required by many SDL subsystems
+# Assembly optimizations are enabled by default for performance
+enables=(static video pthreads assembly)
+
+os_audio_deps=()
+
+case "$CPU_TYPE/$CPU_TARGET" in
+    # x86 32-bit targets
+    x86/i586 | x86/i686 | x86/pentium2) ;;  # No SIMD or only MMX (not supported by SDL3)
+    x86/pentium3)
+        simd_enables+=(sse);;
+    x86/pentium4 | x86/prescott)
+        simd_enables+=(sse sse2);;
+    x86/nehalem | x86/haswell)
+        simd_enables+=(sse sse2 sse3 sse41 sse42);;
+
+    # x86-64 targets
+    x86-64/x86-64 | x86-64/core2 | x86-64/athlon | x86-64/opteron | x86-64/barcelona)
+        simd_enables+=(sse sse2);;  # Baseline x86-64
+    x86-64/bobcat | x86-64/jaguar | x86-64/atom)
+        simd_enables+=(sse sse2 sse3);;
+    x86-64/x86-64-v2 | x86-64/nehalem | x86-64/westmere)
+        simd_enables+=(sse sse2 sse3 sse41 sse42);;
+    x86-64/bulldozer | x86-64/piledriver | x86-64/sandybridge)
+        simd_enables+=(sse sse2 sse3 sse41 sse42 avx);;
+    x86-64/x86-64-v3 | x86-64/steamroller | x86-64/excavator | x86-64/zen | \
+    x86-64/haswell | x86-64/broadwell | x86-64/skylake)
+        simd_enables+=(sse sse2 sse3 sse41 sse42 avx avx2);;
+    x86-64/x86-64-v4 | x86-64/skylakex | x86-64/cooperlake)
+        simd_enables+=(sse sse2 sse3 sse41 sse42 avx avx2 avx512f);;
+
+    # ARM targets
+    arm/armv6) ;;  # No NEON
+    arm/armv6+fp) ;;  # No NEON
+    arm/armv7) ;;  # No guaranteed NEON
+    arm/armv7a | arm/armv7a+fp | arm/cortexa9 | arm/cortexa15)
+        simd_enables+=(neon);;  # NEON available with VFP
+    arm64/*)
+        simd_enables+=(neon);;  # NEON is mandatory in ARMv8/arm64
+esac
+
+unset enable_directx
+if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
+    os_audio_enables=(audio)
+    os_audio_deps=() # SDL3 handles audio dependencies internally
+    enables+=(libc rpath) # Enable rpath for Unix-like systems
+    availables+=(x11 wayland)
+elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
+    availables+=(directx wasapi)
+    os_audio_enables=()
+    # DirectX is preferred for Windows
+    enable_directx=yes
+    # Disable rpath on Windows (not applicable)
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    os_audio_enables=(audio)
+    enables+=(cocoa rpath) # Enable rpath for macOS
+fi
+
+cmake_options=()
+while [ ! -z ${1+x} ]; do
+    case $1 in
+    -x11)
+        dependency x11
+        dependency xext
+        enables+=(x11)
+        ;;
+    -wayland)
+        dependency wayland-client
+        dependency wayland-scanner
+        dependency wayland-egl
+        dependency wayland-cursor
+        dependency egl
+        dependency xkbcommon
+        enables+=(wayland)
+        ;;
+    -directx)
+        enable_directx=yes
+        ;;
+    -wasapi)
+        enables+=(wasapi)
+        ;;
+    -audio)
+        for depname in "${os_audio_deps[@]}"; do
+            dependency "$depname"
+        done
+        enables+=(audio "${os_audio_enables[@]}")
+        ;;
+    -gpu)
+        enables+=(gpu)
+        ;;
+    -render)
+        enables+=(render)
+        ;;
+    -camera)
+        enables+=(camera)
+        ;;
+    -joystick)
+        enables+=(joystick)
+        ;;
+    -haptic)
+        enables+=(haptic)
+        ;;
+    -hidapi)
+        enables+=(hidapi)
+        ;;
+    -sensor)
+        enables+=(sensor)
+        ;;
+    -power)
+        enables+=(power)
+        ;;
+    -dialog)
+        enables+=(dialog)
+        ;;
+    -rpi)
+        if [[ "$OSTYPE" == "linux"* ]]; then
+            enables+=(rpi)
+            # Remove x11 from enables if present
+            enables=("${enables[@]/x11}")
+        fi
+        ;;
+    -clock-gettime)
+        enables+=(clock-gettime)
+        ;;
+    -shared)
+        enables+=(shared)
+        # Remove static from enables if present
+        enables=("${enables[@]/static}")
+        ;;
+    -tests)
+        enables+=(tests)
+        ;;
+    -examples)
+        enables+=(examples)
+        ;;
+    *)
+        cmake_options+=("$1")
+        ;;
+    esac
+    shift
+done
+
+if [ ! -z ${enable_directx+x} ]; then
+    enables+=(directx)
+fi
+
+# Add enabled SIMD options to enables array
+for opt in "${simd_enables[@]}"; do
+    enables+=("$opt")
+done
+
+# Convert options to CMake format
+# Check all available options and SIMD options
+all_availables=("${availables[@]}" "${simd_availables[@]}")
+all_enables="${enables[*]}"
+
+for name in "${all_availables[@]}"; do
+    # Check if this option is enabled
+    if [[ " $all_enables " == *" $name "* ]]; then
+        on_off="ON"
+    else
+        on_off="OFF"
+    fi
+
+    # Convert to CMake option format
+    case $name in
+        shared) cmake_options+=("-DSDL_SHARED=$on_off") ;;
+        static) cmake_options+=("-DSDL_STATIC=$on_off") ;;
+        tests) cmake_options+=("-DSDL_TESTS=$on_off") ;;
+        examples) cmake_options+=("-DSDL_EXAMPLES=$on_off") ;;
+        video) cmake_options+=("-DSDL_VIDEO=$on_off") ;;
+        audio) cmake_options+=("-DSDL_AUDIO=$on_off") ;;
+        gpu) cmake_options+=("-DSDL_GPU=$on_off") ;;
+        render) cmake_options+=("-DSDL_RENDER=$on_off") ;;
+        camera) cmake_options+=("-DSDL_CAMERA=$on_off") ;;
+        joystick) cmake_options+=("-DSDL_JOYSTICK=$on_off") ;;
+        haptic) cmake_options+=("-DSDL_HAPTIC=$on_off") ;;
+        hidapi) cmake_options+=("-DSDL_HIDAPI=$on_off") ;;
+        sensor) cmake_options+=("-DSDL_SENSOR=$on_off") ;;
+        power) cmake_options+=("-DSDL_POWER=$on_off") ;;
+        dialog) cmake_options+=("-DSDL_DIALOG=$on_off") ;;
+        directx) cmake_options+=("-DSDL_DIRECTX=$on_off") ;;
+        wasapi) cmake_options+=("-DSDL_WASAPI=$on_off") ;;
+        x11) cmake_options+=("-DSDL_X11=$on_off") ;;
+        wayland) cmake_options+=("-DSDL_WAYLAND=$on_off") ;;
+        cocoa) cmake_options+=("-DSDL_COCOA=$on_off") ;;
+        rpi) cmake_options+=("-DSDL_RPI=$on_off") ;;
+        assembly) cmake_options+=("-DSDL_ASSEMBLY=$on_off") ;;
+        libc) cmake_options+=("-DSDL_LIBC=$on_off") ;;
+        pthreads) cmake_options+=("-DSDL_PTHREADS=$on_off") ;;
+        clock-gettime) cmake_options+=("-DSDL_CLOCK_GETTIME=$on_off") ;;
+        rpath) cmake_options+=("-DSDL_RPATH=$on_off") ;;
+        # SIMD options
+        sse) cmake_options+=("-DSDL_SSE=$on_off") ;;
+        sse2) cmake_options+=("-DSDL_SSE2=$on_off") ;;
+        sse3) cmake_options+=("-DSDL_SSE3=$on_off") ;;
+        sse41) cmake_options+=("-DSDL_SSE41=$on_off") ;;
+        sse42) cmake_options+=("-DSDL_SSE42=$on_off") ;;
+        avx) cmake_options+=("-DSDL_AVX=$on_off") ;;
+        avx2) cmake_options+=("-DSDL_AVX2=$on_off") ;;
+        avx512f) cmake_options+=("-DSDL_AVX512F=$on_off") ;;
+        lsx) cmake_options+=("-DSDL_LSX=$on_off") ;;
+        lasx) cmake_options+=("-DSDL_LASX=$on_off") ;;
+        neon) cmake_options+=("-DSDL_NEON=$on_off") ;;
+    esac
+done
+
+enter_archive "https://github.com/libsdl-org/SDL/releases/download/preview-${version}/SDL3-${version}.tar.gz"
+
+build_and_install cmake "${cmake_options[@]}"
