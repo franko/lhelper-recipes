@@ -3,7 +3,8 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-This repository contains build recipes for LHelper, a cross-platform package management and build system. Each recipe (.lhelper file) or versioned package file (e.g., `sdl2_2.28.5+2`) defines how to download, configure, and build a specific software package with its dependencies.
+This repository contains build recipes for LHelper, a cross-platform package management and build system.
+Each recipe is a versioned bash script (e.g., `sdl2_2.28.5+2`) and defines how to download, configure, and build a specific software package provided its dependencies are available.
 
 ## Recipe Structure and Format
 Recipes are bash scripts that follow a standardized pattern:
@@ -25,13 +26,15 @@ The SDL2 recipe (`sdl2_2.28.5+2`) demonstrates the typical structure:
 - Downloads source via `enter_archive` from GitHub releases
 - Builds using autotools `configure` with generated option flags
 
+Note: it is better to define disabled features *implicitly* as those feature that appears in `availables` but are not explicitly enabled.
+
 ### Option Processing Pattern
 Recipes use a consistent pattern for feature management:
 ```bash
 # Define available options
 availables=(feature1 feature2 feature3)
 enables=(default_feature)
-disables=(unwanted_feature)
+# All available features not in `enables` will be disabled
 
 # Process command line arguments
 while [ ! -z ${1+x} ]; do
@@ -63,11 +66,12 @@ Technical implementation details should be decided internally based on platform:
 - **Linker settings**: rpath, symbol visibility
 - **Platform-specific features**: clock-gettime, libc usage
 - **Compiler flags**: optimization levels, debug symbols
+- **Tests**: are normally skipped. It is not an option because tests does not *augment* the library features.
 
-These should be automatically configured based on `$OSTYPE` and CPU architecture.
+These should be automatically configured based on `$OSTYPE` and CPU architecture as defined by the environment variables CPU_TYPE and CPU_TARGET.
 
 #### Library Build Type Defaults
-- **Default**: Build **static library only** (`enables=(static)`)
+- **Default**: Build **static library only** (`enables=(static)` if the build system treat it as an option)
 - **Shared option**: `-shared` builds **shared library only** (removes static from enables)
 - **Never use**: `-static` option (redundant since static is the default)
 
@@ -89,11 +93,17 @@ Options should **add capabilities** to make the library more functional:
 - Each option enables additional features or backends
 - Without the option, the library has fewer capabilities
 - Example: `-audio` adds audio subsystem, `-joystick` adds joystick support
+- Additional programs like demos or examples
 
 Exceptions may exist for:
 - Mutually exclusive backends (e.g., choosing between x11 and wayland)
-- Build type selection (shared vs static)
-- Development features (tests, examples)
+- Build type selection (shared vs static).
+  In this case we may stretch the rule and say that a shared library is more *capable* than a static one.
+
+## Options treated by the build system
+
+Some options like `-shared`, `-pic` and `-prefix` are directly treated by the build system and should be passed to the build function in the `options` array.
+However the recipe may do additional non-standard configurations in response to one of such options.
 
 ## Build System Integration
 - **Autotools**: Most common, uses `build_and_install configure "${options[@]}"`
