@@ -10,8 +10,8 @@ fi
 availables=( \
     video gpu render camera joystick haptic hidapi sensor power dialog \
     audio wasapi directx \
-    libc pthreads clock-gettime \
-    x11 wayland cocoa rpi \
+    libc pthreads clock-gettime liburing \
+    x11 x11_{xcursor,xdbe,xinput,xfixes,xrandr,xscrnsaver,xshape,xsync} wayland cocoa rpi \
     shared static tests examples)
 
 # SIMD extensions
@@ -84,7 +84,7 @@ while [ ! -z ${1+x} ]; do
     -x11)
         dependency x11
         dependency xext
-        enables+=(x11)
+        enables+=(x11 x11_{xrandr,xcursor,xfixes,xinput)
         ;;
     -wayland)
         dependency wayland-client
@@ -144,6 +144,9 @@ while [ ! -z ${1+x} ]; do
     -clock-gettime)
         enables+=(clock-gettime)
         ;;
+    -liburing)
+        enables+=(liburing)
+        ;;
     -shared)
         enables+=(shared)
         # Remove static from enables if present
@@ -162,6 +165,18 @@ while [ ! -z ${1+x} ]; do
     shift
 done
 
+if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
+    case " ${enables[*]} " in
+    *" x11 "* | *" wayland "* | *" rpi "*)
+        : # OK
+        ;;
+    *)
+        echo "Error: Configuration requires at least one of 'x11', 'wayland', or 'rpi' to be enabled." >&2
+        exit 1
+        ;;
+    esac
+fi
+
 if [ ! -z ${enable_directx+x} ]; then
     enables+=(directx)
 fi
@@ -171,62 +186,23 @@ for opt in "${simd_enables[@]}"; do
     enables+=("$opt")
 done
 
-# Convert options to CMake format
-# Check all available options and SIMD options
 all_availables=("${availables[@]}" "${simd_availables[@]}")
-all_enables="${enables[*]}"
 
 for name in "${all_availables[@]}"; do
-    # Check if this option is enabled
-    if [[ " $all_enables " == *" $name "* ]]; then
-        on_off="ON"
+    # Is the option enabled?
+    if [[ " ${enables[*]} " == *" $name "* ]]; then
+        on_off=ON
     else
-        on_off="OFF"
+        on_off=OFF
     fi
 
-    # Convert to CMake option format
-    case $name in
-        shared) cmake_options+=("-DSDL_SHARED=$on_off") ;;
-        static) cmake_options+=("-DSDL_STATIC=$on_off") ;;
-        tests) cmake_options+=("-DSDL_TESTS=$on_off") ;;
-        examples) cmake_options+=("-DSDL_EXAMPLES=$on_off") ;;
-        video) cmake_options+=("-DSDL_VIDEO=$on_off") ;;
-        audio) cmake_options+=("-DSDL_AUDIO=$on_off") ;;
-        gpu) cmake_options+=("-DSDL_GPU=$on_off") ;;
-        render) cmake_options+=("-DSDL_RENDER=$on_off") ;;
-        camera) cmake_options+=("-DSDL_CAMERA=$on_off") ;;
-        joystick) cmake_options+=("-DSDL_JOYSTICK=$on_off") ;;
-        haptic) cmake_options+=("-DSDL_HAPTIC=$on_off") ;;
-        hidapi) cmake_options+=("-DSDL_HIDAPI=$on_off") ;;
-        sensor) cmake_options+=("-DSDL_SENSOR=$on_off") ;;
-        power) cmake_options+=("-DSDL_POWER=$on_off") ;;
-        dialog) cmake_options+=("-DSDL_DIALOG=$on_off") ;;
-        directx) cmake_options+=("-DSDL_DIRECTX=$on_off") ;;
-        wasapi) cmake_options+=("-DSDL_WASAPI=$on_off") ;;
-        x11) cmake_options+=("-DSDL_X11=$on_off") ;;
-        wayland) cmake_options+=("-DSDL_WAYLAND=$on_off") ;;
-        cocoa) cmake_options+=("-DSDL_COCOA=$on_off") ;;
-        rpi) cmake_options+=("-DSDL_RPI=$on_off") ;;
-        assembly) cmake_options+=("-DSDL_ASSEMBLY=$on_off") ;;
-        libc) cmake_options+=("-DSDL_LIBC=$on_off") ;;
-        pthreads) cmake_options+=("-DSDL_PTHREADS=$on_off") ;;
-        clock-gettime) cmake_options+=("-DSDL_CLOCK_GETTIME=$on_off") ;;
-        rpath) cmake_options+=("-DSDL_RPATH=$on_off") ;;
-        # SIMD options
-        sse) cmake_options+=("-DSDL_SSE=$on_off") ;;
-        sse2) cmake_options+=("-DSDL_SSE2=$on_off") ;;
-        sse3) cmake_options+=("-DSDL_SSE3=$on_off") ;;
-        sse41) cmake_options+=("-DSDL_SSE41=$on_off") ;;
-        sse42) cmake_options+=("-DSDL_SSE42=$on_off") ;;
-        avx) cmake_options+=("-DSDL_AVX=$on_off") ;;
-        avx2) cmake_options+=("-DSDL_AVX2=$on_off") ;;
-        avx512f) cmake_options+=("-DSDL_AVX512F=$on_off") ;;
-        lsx) cmake_options+=("-DSDL_LSX=$on_off") ;;
-        lasx) cmake_options+=("-DSDL_LASX=$on_off") ;;
-        neon) cmake_options+=("-DSDL_NEON=$on_off") ;;
-    esac
+    # Build the CMake variable: SDL_<NAME>, upper-cased, '-'→'_'
+    cmake_var="SDL_${name^^}"        # upper-case
+    cmake_var=${cmake_var//-/_}      # '-' → '_'
+
+    cmake_options+=("-D${cmake_var}=${on_off}")
 done
 
-enter_archive "https://github.com/libsdl-org/SDL/releases/download/preview-${version}/SDL3-${version}.tar.gz"
+enter_archive "https://github.com/libsdl-org/SDL/releases/download/release-${version}/SDL3-${version}.tar.gz"
 
 build_and_install cmake "${cmake_options[@]}"
