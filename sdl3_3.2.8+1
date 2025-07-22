@@ -84,7 +84,7 @@ while [ ! -z ${1+x} ]; do
     -x11)
         dependency x11
         dependency xext
-        enables+=(x11 x11_{xrandr,xcursor,xfixes,xinput)
+        enables+=(x11 x11_{xrandr,xcursor,xfixes,xinput})
         ;;
     -wayland)
         dependency wayland-client
