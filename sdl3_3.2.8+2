@@ -75,7 +75,7 @@ elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]
     # Disable rpath on Windows (not applicable)
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     os_audio_enables=(audio)
-    enables+=(cocoa rpath) # Enable rpath for macOS
+    enables+=(cocoa libc rpath) # Enable rpath for macOS
 fi
 
 cmake_options=()
@@ -205,4 +205,6 @@ done
 
 enter_archive "https://github.com/libsdl-org/SDL/releases/download/release-${version}/SDL3-${version}.tar.gz"
 
+# CFLAGS="$CFLAGS -include errno.h"
+# cmake_options+=("-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON")
 build_and_install cmake "${cmake_options[@]}"
