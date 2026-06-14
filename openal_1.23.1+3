@@ -15,10 +15,10 @@ else
         enables+=(ALSOFT_BACKEND_COREAUDIO)
     elif [[ "$OSTYPE" == "linux"*  ]]; then
         enables+=(ALSOFT_BACKEND_PULSEAUDIO)
-        dependency libpulse
+        declare_dependency libpulse
     elif [[ "$OSTYPE" == "freebsd"* ]]; then
         enables+=(ALSOFT_BACKEND_SNDIO)
-        dependency sndio
+        declare_dependency sndio
     fi
 fi
 
@@ -38,18 +38,18 @@ while [ ! -z ${1+x} ]; do
         ;;
     -alsa)
         enables+=(ALSOFT_BACKEND_ALSA)
-        dependency alsa
+        declare_dependency alsa
         ;;
     -wave)
         enables+=(ALSOFT_BACKEND_WAVE)
         ;;
     -pipewire)
         enables+=(ALSOFT_BACKEND_PIPEWIRE)
-        dependency libpipewire-0.3
+        declare_dependency libpipewire-0.3
         ;;
     -jack)
         enables+=(ALSOFT_BACKEND_JACK)
-        dependency jack
+        declare_dependency jack
         ;;
     *)
         if [[ $1 == -shared ]]; then

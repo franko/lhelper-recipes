@@ -88,19 +88,19 @@ options=()
 while [ ! -z ${1+x} ]; do
     case $1 in
     -x11)
-        dependency x11
-        dependency xext
+        declare_dependency x11
+        declare_dependency xext
         # xinput seems to be required because otherwise we get:
         # undefined reference to `XIBarrierReleasePointer'
         enables+=(video-x11 video-x11-{xcursor,xfixes,xinput})
         ;;
     -wayland)
-        dependency wayland-client
-        dependency wayland-scanner
-        dependency wayland-egl
-        dependency wayland-cursor
-        dependency egl
-        dependency xkbcommon
+        declare_dependency wayland-client
+        declare_dependency wayland-scanner
+        declare_dependency wayland-egl
+        declare_dependency wayland-cursor
+        declare_dependency egl
+        declare_dependency xkbcommon
         enables+=(video-wayland)
         # Normally both opengl and opengles are needed for wayland.
         needs_opengl=yes
@@ -111,7 +111,7 @@ while [ ! -z ${1+x} ]; do
         # does require, roughly speaking, a pretty recent linux distribution.
         # Not tested
         enables+=(libdecor)
-        dependency libdecor
+        declare_dependency libdecor
         ;;
     -directx)
         enable_directx=yes
@@ -132,7 +132,7 @@ while [ ! -z ${1+x} ]; do
         ;;
     -audio)
         for depname in "${os_audio_deps[@]}"; do
-            dependency "$depname"
+            declare_dependency "$depname"
             if [[ "$depname" == samplerate ]]; then
                 CFLAGS+="$(pkg-config --cflags-only-I samplerate)"
                 echo "Added samplerate includes to CFLAGS: $CFLAGS"
@@ -142,7 +142,7 @@ while [ ! -z ${1+x} ]; do
         disables+=("${os_audio_disables[@]}")
         ;;
     -sndio)
-        dependency sndio
+        declare_dependency sndio
         enables+=(sndio)
         ;;
     -opengl)

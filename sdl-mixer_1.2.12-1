@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dependency sdl
+declare_dependency sdl
 
 # probably we should add support for at least midi and mp3
 
@@ -13,7 +13,7 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -mp3)
         # not validated or tested
-        dependency libmpg123
+        declare_dependency libmpg123
         enables+=(music-mp3)
         ;;
     *)

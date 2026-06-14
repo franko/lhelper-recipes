@@ -2,8 +2,8 @@
 
 # https://docs.gtk.org/glib/building.html
 
-dependency libffi
-dependency pcre2
+declare_dependency libffi
+declare_dependency pcre2
 
 # FIXME: It seems on windows iconv is not really used
 # On Linux if present seems to trigger a linker error for gtester not
@@ -29,7 +29,7 @@ while [ ! -z ${1+x} ]; do
         options_in+=(xattr)
         if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; then
             # FIXME: recipe for libattr not available. On Linux it should be provided by glibc.
-            dependency libattr
+            declare_dependency libattr
         fi
         ;;
     *)

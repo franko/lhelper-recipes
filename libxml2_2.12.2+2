@@ -22,7 +22,7 @@ while [ ! -z ${1+x} ]; do
         ;;
     -zlib)
         with_in+=(zlib)
-        dependency zlib
+        declare_dependency zlib
         ;;
     -sax1)
         with_in+=(sax1)

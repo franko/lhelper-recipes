@@ -8,15 +8,15 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -fontconfig)
         enables+=(fontconfig)
-        dependency fontconfig
+        declare_dependency fontconfig
         ;;
     -xft)
         enables+=(xft)
-        dependency xft
+        declare_dependency xft
         ;;
     -cairo)
         enables+=(cairo)
-        dependency cairo -freetype
+        declare_dependency cairo -freetype
         ;;
     -libthai)
         enables+=(libthai)

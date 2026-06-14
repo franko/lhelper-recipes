@@ -1,5 +1,5 @@
 #!/bin/bash
-dependency ogg
+declare_dependency ogg
 enter_archive "https://github.com/xiph/vorbis/releases/download/v1.3.7/libvorbis-${version}.tar.gz"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then

@@ -35,7 +35,7 @@ fi
 while [ ! -z ${1+x} ]; do
     case $1 in
     -ogg)
-        dependency ogg
+        declare_dependency ogg
         enables+=(ogg)
         ;;
     -cpplibs)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dependency sdl2
+declare_dependency sdl2
 
 unset extract_options
 if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
@@ -14,7 +14,7 @@ fi
 availables=(avif bmp jpg jxl lbm pcx png pnm svg tga tif xcf xpm xv webp webpdec qoi stb-image save-jpg save-png)
 format_shared=(avif jpg jxl png tif webp)
 
-dependency libpng16
+declare_dependency libpng16
 enables=(png)
 disables=()
 
@@ -24,26 +24,26 @@ while [ ! -z ${1+x} ]; do
         enables+=(webp)
         # known problem with provided pkg-config file: the dependency from
         # webp will not be included in the required libraries. TRUE at least up to 2.0.5.
-        dependency libwebp
+        declare_dependency libwebp
         ;;
     -avif)
-        dependency libavif
+        declare_dependency libavif
         enables+=(${1#-})
         ;;
     -jpeg|-save-jpg)
-        dependency libjpeg
+        declare_dependency libjpeg
         enables+=(${1#-})
         ;;
     -jxl)
-        dependency libjxl
+        declare_dependency libjxl
         enables+=(${1#-})
         ;;
     -pnm)
-        dependency libnetpbm
+        declare_dependency libnetpbm
         enables+=(${1#-})
         ;;
     -tif)
-        dependency libtiff-4
+        declare_dependency libtiff-4
         enables+=(${1#-})
         ;;
     -save-png)

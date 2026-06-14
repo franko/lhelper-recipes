@@ -15,7 +15,7 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -introspection)
         options_in+=(gobject_introspection)
-        dependency gobject-introspection
+        declare_dependency gobject-introspection
         ;;
     *)
         options+=("$1")

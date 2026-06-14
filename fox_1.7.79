@@ -7,18 +7,18 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -jpeg)
         options+=("-Djpeg=true")
-        dependency libjpeg
+        declare_dependency libjpeg
         ;;
     -opengl)
         options+=("-Dopengl=true")
         ;;
     -png)
         options+=("-Dpng=true")
-        dependency libpng
+        declare_dependency libpng
         ;;
     -zlib)
         options+=("-Dzlib=true")
-        dependency zlib
+        declare_dependency zlib
         ;;
     -bzlib)
         options+=("-Dbzlib=true")

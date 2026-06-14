@@ -41,9 +41,9 @@ while [ ! -z ${1+x} ]; do
         ;;
     -x11)
         # this option was not tested
-        dependency x11
-        dependency xext
-        dependency pango -cairo -xft
+        declare_dependency x11
+        declare_dependency xext
+        declare_dependency pango -cairo -xft
         addons+=(cairo)
         linux_backend=x11
         ;;

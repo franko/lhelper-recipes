@@ -10,7 +10,7 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -optimizer)
         optimizer="-DENABLE_OPT=ON"
-        dependency spirv-tools
+        declare_dependency spirv-tools
         ;;
     *)
         options+=($1)

@@ -58,8 +58,8 @@ esac
 
 unset enable_directx
 if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
-    dependency x11
-    dependency xext
+    declare_dependency x11
+    declare_dependency xext
     os_audio_enables=(pulseaudio)
     os_audio_deps=(libpulse-simple samplerate) # sndio ? (configure is looking for sndio)
     os_audio_disables=(esd "${audio_disables[@]}")
@@ -89,12 +89,12 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -wayland)
         if [[ "$OSTYPE" == "linux"* ]]; then
-            dependency wayland-client
-            dependency wayland-scanner
-            dependency wayland-egl
-            dependency wayland-cursor
-            dependency egl
-            dependency xkbcommon
+            declare_dependency wayland-client
+            declare_dependency wayland-scanner
+            declare_dependency wayland-egl
+            declare_dependency wayland-cursor
+            declare_dependency egl
+            declare_dependency xkbcommon
             enables+=(video-wayland libdecor)
             # Not tested if libdecor works and how.
             # Normally both opengl and opengles are needed for wayland.
@@ -121,7 +121,7 @@ while [ ! -z ${1+x} ]; do
         ;;
     -audio)
         for depname in "${os_audio_deps[@]}"; do
-            dependency "$depname"
+            declare_dependency "$depname"
             if [[ "$depname" == samplerate ]]; then
                 CFLAGS+="$(pkg-config --cflags-only-I samplerate)"
                 echo "Added samplerate includes to CFLAGS: $CFLAGS"
@@ -131,7 +131,7 @@ while [ ! -z ${1+x} ]; do
         disables+=("${os_audio_disables[@]}")
         ;;
     -sndio)
-        dependency sndio
+        declare_dependency sndio
         enables+=(sndio)
         ;;
     -opengl)

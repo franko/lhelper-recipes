@@ -21,11 +21,11 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -introspection)
         enables+=(introspection)
-        dependency gobject-introspection -glib-data
+        declare_dependency gobject-introspection -glib-data
         ;;
     -gobject)
         activates+=(gobject_types)
-        dependency glib
+        declare_dependency glib
         ;;
     *)
         options+=("$1")

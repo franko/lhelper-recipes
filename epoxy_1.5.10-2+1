@@ -9,7 +9,7 @@ use_egl=no
 while [ ! -z ${1+x} ]; do
     case $1 in
     -x11)
-        dependency x11
+        declare_dependency x11
         # dependency xext
         activates+=(x11)
         use_glx=yes
@@ -17,7 +17,7 @@ while [ ! -z ${1+x} ]; do
     -egl)
         use_egl=yes
         if [[ "$OSTYPE" == "linux"* ]]; then
-            dependency egl
+            declare_dependency egl
         fi
         ;;
     *)

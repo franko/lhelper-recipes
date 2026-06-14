@@ -7,11 +7,11 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -zlib)
         enables_in+=(zlib)
-        dependency zlib
+        declare_dependency zlib
         ;;
     -jpeg)
         enables_in+=(jpeg)
-        dependency libjpeg
+        declare_dependency libjpeg
         ;;
     *)
         options+=("$1")

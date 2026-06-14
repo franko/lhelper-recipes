@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dependency gtk-4
+declare_dependency gtk-4
 
 features_list=(introspection)
 options_list=(install_tests vapi gtk_doc sysprof)
@@ -10,7 +10,7 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -introspection)
         features_in+=(introspection)
-        dependency gobject-introspection
+        declare_dependency gobject-introspection
         ;;
     *)
         options+=("$1")

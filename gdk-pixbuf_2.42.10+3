@@ -5,7 +5,7 @@
 # gdk-pixbuf/libpixbufloader-bmp.so
 # so the -fPIC flag is needed even when using static libraries.
 
-dependency glib
+declare_dependency glib
 
 availables=(introspection png jpeg tiff)
 available_options=(gio_sniffing man tests installed_tests gtk_doc docs relocatable native_windows_loaders)
@@ -27,20 +27,20 @@ while [ ! -z ${1+x} ]; do
     -introspection)
         # This option is currently untested but in principle it should work.
         enables+=(introspection)
-        dependency gobject-introspection
+        declare_dependency gobject-introspection
         ;;
     -png)
         enables+=(png)
-        dependency libpng16
+        declare_dependency libpng16
         ;;
     -jpeg)
         enables+=(jpeg)
-        dependency libjpeg
+        declare_dependency libjpeg
         ;;
     -tiff)
         enables+=(tiff)
         # Currently there is no lhelper recipe for libtiff
-        dependency libtiff-4
+        declare_dependency libtiff-4
         ;;
     *)
         options+=("$1")

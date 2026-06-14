@@ -2,10 +2,10 @@
 check_commands meson ninja "$CC" "$CXX"
 
 if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
-    dependency x11
-    dependency xext
+    declare_dependency x11
+    declare_dependency xext
     for depname in xrandr xrender xfixes xcursor xi; do
-        dependency --optional "$depname"
+        declare_dependency --optional "$depname"
     done
 fi
 
@@ -16,18 +16,18 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -jpeg)
         options+=("-Djpeg=true")
-        dependency libjpeg
+        declare_dependency libjpeg
         ;;
     -opengl)
         options+=("-Dopengl=true")
         ;;
     -png)
         options+=("-Dpng=true")
-        dependency libpng
+        declare_dependency libpng
         ;;
     -zlib)
         options+=("-Dzlib=true")
-        dependency zlib
+        declare_dependency zlib
         ;;
     -bzlib)
         options+=("-Dbzlib=true")
@@ -36,8 +36,8 @@ while [ ! -z ${1+x} ]; do
         ;;
     -xft)
         xft_option="-Dxft=true"
-        dependency freetype2
-        dependency xft
+        declare_dependency freetype2
+        declare_dependency xft
         ;;
     -apps)
         apps_option="-Dapps=true"

@@ -52,8 +52,8 @@ case "$CPU_TYPE/$CPU_TARGET" in
 esac
 
 if [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
-    dependency x11
-    dependency xext
+    declare_dependency x11
+    declare_dependency xext
     os_audio_enables=(pulseaudio)
     os_audio_disables=(esd "${audio_disables[@]}")
     enables+=(video-x11 video-x11-{xcursor,xrandr})
@@ -80,12 +80,12 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -wayland)
         if [[ "$OSTYPE" == "linux"* ]]; then
-            dependency wayland-client
-            dependency wayland-scanner
-            dependency wayland-egl
-            dependency wayland-cursor
-            dependency egl
-            dependency xkbcommon
+            declare_dependency wayland-client
+            declare_dependency wayland-scanner
+            declare_dependency wayland-egl
+            declare_dependency wayland-cursor
+            declare_dependency egl
+            declare_dependency xkbcommon
             enables+=(video-wayland libdecor)
             # Not tested if libdecor works and how.
             # Normally both opengl and opengles are needed for wayland.

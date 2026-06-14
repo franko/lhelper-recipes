@@ -31,7 +31,7 @@ while [ ! -z ${1+x} ]; do
         ;;
     -regex)
         addons+=(regex)
-        dependency pcre2
+        declare_dependency pcre2
         ;;
     -jpeg)
         addons+=(libjpeg)
@@ -41,13 +41,13 @@ while [ ! -z ${1+x} ]; do
         ;;
     -expat)
         addons+=(expat)
-        dependency expat
+        declare_dependency expat
         ;;
     -x11)
         # this option was not tested
-        dependency x11
-        dependency xext
-        dependency pango -cairo -xft
+        declare_dependency x11
+        declare_dependency xext
+        declare_dependency pango -cairo -xft
         addons+=(cairo)
         linux_backend=x11
         ;;

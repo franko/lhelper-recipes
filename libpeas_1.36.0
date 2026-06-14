@@ -1,10 +1,10 @@
 #!/bin/bash
 
-dependency glib
+declare_dependency glib
 
 # gobject-introspection is required to build even if introspection
 # is set to false
-dependency gobject-introspection
+declare_dependency gobject-introspection
 
 options_list=(gtk_doc introspection demos widgetry python2 vapi lua51)
 
@@ -23,11 +23,11 @@ while [ ! -z ${1+x} ]; do
         ;;
     -widgetry)
         options_in+=(widgetry)
-        dependency gtk-3
+        declare_dependency gtk-3
         ;;
     -vapi)
         options_in+=(vapi)
-        dependency vapigen
+        declare_dependency vapigen
         ;;
     *)
         options+=("$1")

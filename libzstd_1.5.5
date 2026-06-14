@@ -11,11 +11,11 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -zlib)
         features_in+=(zlib)
-        dependency zlib
+        declare_dependency zlib
         ;;
     -lzma)
         features_in+=(lzma)
-        dependency liblzma
+        declare_dependency liblzma
         ;;
     -programs)
         options_in+=(bin_programs)

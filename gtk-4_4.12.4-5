@@ -66,16 +66,16 @@
 
 check_commands sassc
 
-dependency glib
-dependency libjpeg # -pic
-dependency libtiff # -pic
-dependency gdk-pixbuf
-dependency graphene -gobject
-dependency fontconfig
-dependency fribidi
-dependency harfbuzz -glib
-dependency libxml2 -sax1
-dependency expat # -pic
+declare_dependency glib
+declare_dependency libjpeg # -pic
+declare_dependency libtiff # -pic
+declare_dependency gdk-pixbuf
+declare_dependency graphene -gobject
+declare_dependency fontconfig
+declare_dependency fribidi
+declare_dependency harfbuzz -glib
+declare_dependency libxml2 -sax1
+declare_dependency expat # -pic
 
 # f16c should be enabled only for very specific CPU types.
 
@@ -113,7 +113,7 @@ while [ ! -z ${1+x} ]; do
     case $1 in
     -introspection)
         features_in+=(introspection)
-        dependency gobject-introspection
+        declare_dependency gobject-introspection
         ;;
     -x11)
         options_in+=(x11-backend)
@@ -121,20 +121,20 @@ while [ ! -z ${1+x} ]; do
         cairo_options+=(-xlib)
         pango_options+=(-xft)
         for name in x11 xrandr xrender xi xext xfixes xcursor xdamage; do # xcomposite
-            dependency $name
+            declare_dependency $name
         done
-        dependency xkbcommon
-        dependency libdrm
+        declare_dependency xkbcommon
+        declare_dependency libdrm
         ;;
     -wayland)
         options_in+=(wayland-backend)
         epoxy_options+=(-x11)
         # The list of dependencies is not verified in detail
-        dependency wayland-client
-        dependency wayland-scanner
-        dependency wayland-egl
-        dependency wayland-cursor
-        dependency egl
+        declare_dependency wayland-client
+        declare_dependency wayland-scanner
+        declare_dependency wayland-egl
+        declare_dependency wayland-cursor
+        declare_dependency egl
         ;;
     -demos)
         options_in+=(build-demos)
@@ -149,9 +149,9 @@ while [ ! -z ${1+x} ]; do
     shift
 done
 
-dependency epoxy ${epoxy_options[@]}
-dependency cairo -zlib -glib -fontconfig -freetype -png ${cairo_options[@]}
-dependency pango -fontconfig -cairo ${pango_options[@]}
+declare_dependency epoxy ${epoxy_options[@]}
+declare_dependency cairo -zlib -glib -fontconfig -freetype -png ${cairo_options[@]}
+declare_dependency pango -fontconfig -cairo ${pango_options[@]}
 
 for opt in "${features_list[@]}"; do
     if [[ " ${features_in[*]} " == *" $opt "* ]]; then

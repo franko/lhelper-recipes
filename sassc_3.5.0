@@ -1,4 +1,4 @@
-dependency libsass
+declare_dependency libsass
 options=("$@")
 enter_git_repository "https://github.com/lhelper-org/sassc" "${version}-lhelper"
 build_and_install meson "${options[@]}"

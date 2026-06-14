@@ -15,7 +15,7 @@
 # KNOWN PROBLEM observed on Windows: the configure script fails to see that the zlib is
 # actually available if this latter was installed using lhelper.
 # It will fail with an error about missing zlib.
-dependency zlib
+declare_dependency zlib
 
 cpu_ext_availables=(intel-sse arm-neon mips-{msa,mmi} powerpc-vsx loongarch-lsx)
 cpu_ext_enables=()

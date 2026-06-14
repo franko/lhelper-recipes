@@ -30,14 +30,14 @@ done
 options+=(--disable-{doh,libcurl-option,manual,progress-meter,netrc,verbose,brotli,zstd})
 
 if [[ $openssl == yes ]]; then
-    dependency openssl
+    declare_dependency openssl
     options+=("--with-openssl")
 else
     options+=("--without-ssl")
 fi
 
 if [[ $zlib == yes ]]; then
-    dependency zlib
+    declare_dependency zlib
     options+=("--with-zlib")
 else
     options+=("--without-zlib")

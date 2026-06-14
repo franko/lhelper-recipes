@@ -1,4 +1,4 @@
-dependency imgui -largeidx
-dependency glad -loader
+declare_dependency imgui -largeidx
+declare_dependency glad -loader
 enter_git_repository https://github.com/franko/implot.git "v${version}-lhelper"
 build_and_install meson "$@"

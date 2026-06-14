@@ -43,8 +43,8 @@ options=()
 while [ ! -z ${1+x} ]; do
     case $1 in
     -x11)
-        dependency x11
-        dependency xext
+        declare_dependency x11
+        declare_dependency xext
         enables+=(video-x11 video-x11-xrandr)
         ;;
     -directx)
@@ -55,7 +55,7 @@ while [ ! -z ${1+x} ]; do
         ;;
     -audio)
         for depname in "${os_audio_deps[@]}"; do
-            dependency "$depname"
+            declare_dependency "$depname"
             if [[ "$depname" == samplerate ]]; then
                 CFLAGS+="$(pkg-config --cflags-only-I samplerate)"
                 echo "Added samplerate includes to CFLAGS: $CFLAGS"
@@ -65,7 +65,7 @@ while [ ! -z ${1+x} ]; do
         disables+=("${os_audio_disables[@]}")
         ;;
     -sndio)
-        dependency sndio
+        declare_dependency sndio
         enables+=(sndio)
         ;;
     -opengl)

@@ -1,4 +1,4 @@
-dependency sdl2
+declare_dependency sdl2
 
 unset extract_options
 if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || "$OSTYPE" == "cygwin"* ]]; then
@@ -17,7 +17,7 @@ while [ ! -z ${1+x} ]; do
     -webp)
         # known problem with provided pkg-config file: the dependency from
         # webp will not be included in the required libraries.
-        dependency libwebp
+        declare_dependency libwebp
         webp=enable
         ;;
     *)

@@ -1,8 +1,8 @@
 #!/bin/bash
 check_commands meson ninja "$CC"
 
-dependency freetype2
-dependency expat
+declare_dependency freetype2
+declare_dependency expat
 
 options=("-Ddoc=disabled" "-Dnls=disabled" "-Dtests=disabled" "-Dcache-build=disabled")
 enable_tools=disabled
