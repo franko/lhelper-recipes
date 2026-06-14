@@ -34,6 +34,11 @@ if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "mingw"* || $OSTYPE == "cygwin"* ]]; 
     make CC="$CC" CXX="$CXX"  DESTDIR="$INSTALL_PREFIX" prefix="$LHELPER_SYSTEM_PREFIX" -f win32/Makefile.gcc install
     normalize_destdir_install "$INSTALL_PREFIX" "$LHELPER_SYSTEM_PREFIX"
 else
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # zutil.h defines fdopen(fd,mode) to NULL for old Mac targets,
+        # but the macro conflicts with fdopen() in modern macOS SDKs.
+        sed -i.bak '/define fdopen(fd,mode) NULL/s/^/\/\/ /' zutil.h
+    fi
     ./configure --prefix="$LHELPER_SYSTEM_PREFIX" "${zlib_options[@]}"
     make
     make DESTDIR="$INSTALL_PREFIX" install
