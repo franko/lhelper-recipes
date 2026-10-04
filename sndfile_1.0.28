@@ -1,2 +1,0 @@
-enter_archive "http://www.mega-nerd.com/libsndfile/files/libsndfile-${version}.tar.gz"
-build_and_install configure --disable-{sqlite,alsa,octave} --enable-shared=no

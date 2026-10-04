@@ -1,2 +1,0 @@
-enter_git_repository https://github.com/HDFGroup/hdf5.git "hdf5-${version//./_}"
-build_and_install cmake "$@"

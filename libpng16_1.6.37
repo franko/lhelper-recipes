@@ -1,2 +1,0 @@
-enter_archive "https://downloads.sourceforge.net/project/libpng/libpng16/${version}/libpng-${version}.tar.gz"
-build_and_install configure "$@"

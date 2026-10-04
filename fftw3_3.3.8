@@ -1,9 +1,0 @@
-enter_archive "http://www.fftw.org/fftw-$version.tar.gz"
-
-options=(--disable-fortran)
-
-# cpuext=(sse sse2 avx avx2 avx512 avx-128-fma kcvi altivec vsx neon generic-simd128 generic-simd256)
-# In principe the options above with enable or disable should be all specified
-# because otherwise they are detected based on the current CPU.
-
-build_and_install configure "${options[@]}" "$@"

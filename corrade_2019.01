@@ -1,2 +1,0 @@
-enter_git_repository https://github.com/mosra/corrade.git "v$version"
-build_and_install cmake

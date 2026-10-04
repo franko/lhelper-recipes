@@ -1,2 +1,0 @@
-enter_git_repository https://github.com/franko/stb_truetype.git "v${version}"
-build_and_install meson "$@"
